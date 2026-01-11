@@ -1,0 +1,415 @@
+@import '../dashboard/dashboard.component.scss';
+
+/* Variables (Local for component to ensure consistency) */
+$primary-color: #1A3251;
+$accent-color: #2196F3;
+$bg-light: #f4f6f8;
+$white: #fff;
+$text-dark: #333;
+$text-light: #666;
+$border-color: #e0e0e0;
+$danger-color: #f44336;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+
+:host {
+    display: block;
+    width: 100%;
+}
+
+.dashboard-layout {
+  display: flex;
+  min-height: calc(100vh - 64px); // Minus header
+  background-color: $bg-light;
+  font-family: 'Poppins', sans-serif; /* Ensuring a clean font */
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
+}
+
+.sidebar {
+  width: 350px;
+  background: $white;
+  border-right: 1px solid $border-color;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex-shrink: 0;
+  height: calc(100vh - 64px);
+  position: sticky;
+  top: 64px;
+  overflow-y: auto;
+
+  @media (max-width: 900px) {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid $border-color;
+  }
+}
+
+.content-area {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  
+  @media (max-width: 600px) {
+      padding: 1rem;
+  }
+}
+
+/* SEARCH BOXES */
+.search-box, .search-box-small {
+  position: relative;
+  
+  input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+
+    &:focus {
+      outline: none;
+      border-color: $accent-color;
+      box-shadow: 0 0 0 3px rgba($accent-color, 0.1);
+    }
+  }
+}
+
+.search-box-small input {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+/* HEADERS & CONTROLS */
+.header-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  h2 {
+    margin: 0;
+    color: $primary-color;
+    font-weight: 700;
+  }
+}
+
+.controls-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.sidebar-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    h3 { margin: 0; color: $primary-color; font-size: 1.25rem; }
+}
+
+/* TITLES */
+h3 {
+    font-weight: 600;
+}
+
+/* SERVICES GRID */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.service-card {
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.04);
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  }
+
+  .card-img {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    background-color: #f0f2f5;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    h3 {
+      margin: 0 0 0.5rem 0;
+      color: $primary-color;
+      font-size: 1.15rem;
+    }
+
+    .service-price {
+      font-weight: 700;
+      color: $accent-color;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .service-desc {
+      font-size: 0.9rem;
+      color: $text-light;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    button {
+      margin-top: auto;
+    }
+  }
+}
+
+/* APPOINTMENT LISTS (Dentist Side) */
+.rv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.rv-card {
+    background: $white;
+    border: 1px solid lighten($border-color, 5%);
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: $accent-color;
+    }
+
+    .rv-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 600;
+        color: $text-light;
+        font-size: 0.85rem;
+    }
+
+    .rv-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        .rv-patient {
+            margin: 0;
+            font-weight: 600;
+            color: $primary-color;
+            font-size: 1.05rem;
+        }
+    }
+
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        
+        &.PENDING { background: #fff3e0; color: $warning-color; border: 1px solid fade-out($warning-color, 0.8); }
+        &.VALIDATED { background: #e8f5e9; color: $success-color; border: 1px solid fade-out($success-color, 0.8); }
+        &.REFUSED { background: #ffebee; color: $danger-color; border: 1px solid fade-out($danger-color, 0.8); }
+    }
+
+    .rv-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed $border-color;
+        
+        button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s;
+            
+            &:active { transform: scale(0.95); }
+        }
+
+        .btn-accept { background: $success-color; color: white; box-shadow: 0 2px 4px rgba($success-color, 0.3); }
+        .btn-reject { background: white; color: $danger-color; border: 1px solid $danger-color; }
+    }
+}
+
+/* Patient List Styling (Simplified) */
+.rv-item-simple {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: $white;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    
+    &:hover {
+        background: #fafafa;
+        border-color: $border-color;
+    }
+
+    .rv-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        
+        .rv-date { font-weight: 700; color: $primary-color; font-size: 0.95rem; }
+        .rv-service { font-size: 0.85rem; color: $text-light; }
+    }
+
+    .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.8);
+        
+        &.PENDING { background-color: $warning-color; }
+        &.VALIDATED { background-color: $success-color; }
+        &.REFUSED { background-color: $danger-color; }
+    }
+}
+
+/* Empty States */
+.empty-list, .empty-list-small {
+    text-align: center;
+    color: $text-light;
+    padding: 2rem;
+    font-style: italic;
+    background: rgba(0,0,0,0.02);
+    border-radius: 8px;
+}
+
+/* Buttons */
+.btn-primary {
+    background: $primary-color;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 6px rgba(26, 50, 81, 0.2);
+    transition: all 0.2s;
+    
+    &:hover { 
+        background: lighten($primary-color, 5%); 
+        box-shadow: 0 6px 8px rgba(26, 50, 81, 0.3);
+    }
+}
+
+.btn-delete {
+    background: transparent;
+    color: $danger-color;
+    border: 1px solid $danger-color;
+    padding: 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    
+    &:hover { background: $danger-color; color: white; }
+}
+
+.btn-appointment-small {
+    background: $accent-color;
+    color: white;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(33, 150, 243, 0.2);
+    
+    &:hover { background: darken($accent-color, 10%); }
+}
+
+.btn-back {
+    background: transparent;
+    color: $text-light;
+    border: 1px solid $border-color;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    
+    &:hover { background: $white; color: $primary-color; border-color: $primary-color; }
+}
+
+/* Service Form (Quick styling for the create form if it pops up) */
+.service-form {
+    background: $white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    
+    input, textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+    }
+    
+    input:focus { border-color: $primary-color; outline: none; }
+    
+    button {
+        grid-column: span 2;
+        background: $success-color;
+        color: white;
+        padding: 1rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+}

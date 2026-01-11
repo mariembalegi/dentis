@@ -439,3 +439,199 @@ body {
     padding: 2rem 1rem;
   }
 }
+/* Search Results Styles */
+.results-section {
+  padding: 4rem 2rem;
+  background-color: var(--gray-100);
+}
+
+.results-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.results-header {
+  margin-bottom: 2rem;
+  h2 {
+    color: var(--dark-blue);
+    font-size: 1.5rem;
+  }
+}
+
+.dentist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.dentist-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  align-items: center;
+  text-align: center;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  }
+
+  .dentist-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    background-color: var(--light-blue);
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .dentist-info {
+    margin-bottom: 1.5rem;
+    
+    h3 {
+      color: var(--dark-blue);
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--gray-600);
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  .btn-book {
+    background-color: var(--orange);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    margin-top: auto;
+
+    &:hover {
+      background-color: #b73e3e; /* darken variable handling in manual css */
+    }
+  }
+}
+
+
+/* Updated Dropdown Styles */
+.search-field {
+  position: relative; /* Anchor for dropdown */
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 130%; /* Make it wider like the example */
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  margin-top: 5px;
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 0;
+
+  /* Scrollbar styling to look modern */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid #f0f0f0;
+  background: white;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: var(--light-blue);
+  }
+
+  &.no-result {
+    color: var(--gray-600);
+    cursor: default;
+    justify-content: center;
+    padding: 1.5rem;
+    font-style: italic;
+    
+    &:hover { background: transparent; }
+  }
+}
+
+.item-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 16px;
+  overflow: hidden;
+  background-color: var(--light-blue);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .item-name {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--dark-blue);
+    
+    .highlight {
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--accent-color, #2196F3); /* Blue highlight for ID */
+    }
+  }
+
+  .item-location {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+  }
+}
+

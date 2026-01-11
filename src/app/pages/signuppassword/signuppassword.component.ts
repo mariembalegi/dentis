@@ -25,7 +25,12 @@ export class SignuppasswordComponent implements OnInit {
   }
 
   onBackClick() {
-    this.router.navigate(['/signup/birthdate']);
+    const role = this.signupService.getRole();
+    if (role === 'DENTISTE') {
+        this.router.navigate(['/signup/details']);
+    } else {
+        this.router.navigate(['/signup/birthdate']);
+    }
   }
 
   togglePasswordVisibility() {
@@ -62,8 +67,11 @@ export class SignuppasswordComponent implements OnInit {
     }
 
     this.passwordError = false;
-    // Continue to dashboard
-    this.router.navigate(['/dashboard']);
+    
+    this.signupService.updateData({ motDePasse: this.password });
+    
+    // Continue to next step
+    this.router.navigate(['/signup/tel']);
   }
 
   onPasswordChange() {

@@ -47,7 +47,18 @@ export class SignupbirthdateComponent implements OnInit {
       return;
     }
 
-    // Continue to next step
+    // Format date: dd / mm / yyyy -> yyyy-mm-dd
+    const parts = this.birthdate.split(' / ');
+    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+    // Map sex: feminin -> F, masculin -> M
+    const mappedSexe = this.sexe === 'feminin' ? 'F' : 'M';
+
+    this.signupService.updateData({
+      dateNaissanceP: formattedDate,
+      sexe: mappedSexe
+    });
+
     console.log('Date is valid, navigating...');
     this.router.navigate(['/signup/password']);
   }

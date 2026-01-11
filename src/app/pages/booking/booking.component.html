@@ -1,0 +1,161 @@
+<main class="main" *ngIf="user">
+  <div class="dashboard-layout">
+    
+    <!-- PATIENT VIEW -->
+    <ng-container *ngIf="user.role === 'PATIENT'">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+             <h3>Mes Rendez-vous</h3>
+             <div class="search-box-small">
+                <input type="text" placeholder="Filtrer..." [(ngModel)]="appointmentSearch">
+             </div>
+        </div>
+        
+        <div class="rv-list-simple" *ngIf="filteredAppointments.length > 0">
+           <div class="rv-item-simple" *ngFor="let rv of filteredAppointments">
+               <div class="rv-info">
+                   <span class="rv-date">{{ rv.dateRv | date:'shortDate' }}</span>
+                   <span class="rv-service">{{ rv.serviceName }}</span>
+               </div>
+               <span class="status-dot" [class]="rv.statutRv" [title]="rv.statutRv"></span>
+           </div>
+        </div>
+        <div *ngIf="filteredAppointments.length === 0 && appointments.length > 0" class="empty-list-small">Aucun résultat.</div>
+      </aside>
+
+      <div class="content-area">
+        
+        <!-- Empty State (Default if no active task) -->
+        <div *ngIf="!showServiceSelection && appointments.length === 0" class="empty-state">
+            <div class="icon-container">
+                <svg width="84" height="84" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M48 16H76C78.2091 16 80 17.7909 80 20V60C80 62.2091 78.2091 64 76 64H48C45.7909 64 44 62.2091 44 60V20C44 17.7909 45.7909 16 48 16Z" fill="#1A3251"/>
+                    <path d="M54 10V22" stroke="#1A3251" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M70 10V22" stroke="#1A3251" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M4 28H44C46.2091 28 48 29.7909 48 32V72C48 74.2091 46.2091 76 44 76H4C1.79086 76 0 74.2091 0 72V32C0 29.7909 1.79086 28 4 28Z" fill="#2196F3"/>
+                    <path d="M0 32C0 29.7909 1.79086 28 4 28H44C46.2091 28 48 29.7909 48 32V40H0V32Z" fill="#1976D2"/>
+                    <circle cx="12" cy="28" r="3" fill="#1A3251"/>
+                    <circle cx="36" cy="28" r="3" fill="#1A3251"/>
+                    <rect x="8" y="46" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
+                    <rect x="21" y="46" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
+                    <rect x="34" y="46" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
+                    <rect x="8" y="58" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
+                    <rect x="21" y="58" width="6" height="6" rx="1" fill="#FFC107"/>
+                    <rect x="34" y="58" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
+                </svg>
+            </div>
+            <h2>Aucun rendez-vous à venir</h2>
+            <p>Prenez votre santé en main. Réservez facilement votre prochain rendez-vous sur Dentis.</p>
+            <button class="btn-appointment" (click)="goToHome()">PRENDRE RENDEZ-VOUS</button>
+        </div>
+
+        <!-- Service Selection View -->
+        <div *ngIf="showServiceSelection || appointments.length > 0">
+            <div *ngIf="!selectedService; else bookingForm" class="services-dashboard">
+                <div class="header-split">
+                    <h2>Services Disponibles</h2>
+                    <div class="controls-row">
+                         <div class="search-box">
+                            <input type="text" placeholder="Rechercher..." [(ngModel)]="serviceSearch">
+                         </div>
+                         <button class="btn-back" *ngIf="appointments.length === 0" (click)="showServiceSelection = false">Retour</button>
+                    </div>
+                </div>
+                
+                <div class="services-grid">
+                    <div class="service-card" *ngFor="let s of filteredServices">
+                        <img [src]="s.image || 'assets/placeholder.png'" alt="Service" style="width:100%; height:150px; object-fit:cover;">
+                        <h3>{{ s.nomSM }}</h3>
+                        <p>{{ s.tarifSM }} TND</p>
+                        <button (click)="initiateBooking(s)" class="btn-appointment-small">Réserver</button>
+                    </div>
+                </div>
+            </div>
+
+            <ng-template #bookingForm>
+                <div class="booking-form">
+                    <h3>Réserver: {{ selectedService?.nomSM }}</h3>
+                    <label>Date: <input type="date" [(ngModel)]="bookingDate"></label>
+                    <label>Heure: <input type="time" [(ngModel)]="bookingTime"></label>
+                    <label>Raison: <textarea [(ngModel)]="bookingReason"></textarea></label>
+                    <div class="actions">
+                        <button (click)="confirmBooking()" class="btn-confirm">Confirmer</button>
+                        <button (click)="selectedService = null" class="btn-cancel">Annuler</button>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+
+      </div>
+    </ng-container>
+
+
+    <!-- DENTIST VIEW -->
+    <ng-container *ngIf="user.role === 'DENTISTE'">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Demandes</h3>
+                <div class="search-box-small">
+                    <input type="text" placeholder="Rechercher..." [(ngModel)]="appointmentSearch">
+                </div>
+            </div>
+
+            <div *ngIf="filteredAppointments.length === 0" class="empty-list">Aucune demande.</div>
+            
+            <div class="rv-list">
+                <div class="rv-card" *ngFor="let rv of filteredAppointments">
+                    <div class="rv-header">
+                        <span class="rv-date">{{ rv.dateRv | date:'shortDate' }}</span>
+                        <span class="rv-time">{{ rv.heureRv }}</span>
+                    </div>
+                    <div class="rv-body">
+                        <p class="rv-patient">{{ rv.patientName }}</p>
+                        <span class="status-badge" [class]="rv.statutRv">{{ rv.statutRv }}</span>
+                    </div>
+                    <div class="rv-actions" *ngIf="rv.statutRv === 'PENDING'">
+                        <button class="btn-accept" (click)="validateRendezvous(rv.idRv!, 'VALIDATED')">✔</button>
+                        <button class="btn-reject" (click)="validateRendezvous(rv.idRv!, 'REFUSED')">✘</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    
+        <div class="content-area">
+            <div class="header-split">
+                <h2>Mes Services</h2>
+                <div class="controls-row">
+                    <div class="search-box">
+                        <input type="text" placeholder="Rechercher un service..." [(ngModel)]="serviceSearch">
+                    </div>
+                    <button class="btn-primary" (click)="toggleCreateService()">
+                        {{ showCreateServiceModule ? 'Fermer' : 'Nouveau Service' }}
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="showCreateServiceModule" class="service-form">
+                <input placeholder="Nom" [(ngModel)]="newService.nomSM">
+                <input placeholder="Type" [(ngModel)]="newService.typeSM">
+                <input placeholder="Description" [(ngModel)]="newService.descriptionSM">
+                <input type="number" placeholder="Tarif" [(ngModel)]="newService.tarifSM">
+                <!-- Image upload logic omitted for brevity, adding a placeholder text -->
+                <p>Upload image (Base64) - Not implemented in UI</p> 
+                <button (click)="submitNewService()">Créer</button>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card" *ngFor="let s of filteredServices">
+                    <div class="card-img" [style.background-image]="'url(' + (s.image || 'assets/images/placeholder.png') + ')'"></div>
+                    <div class="card-content">
+                        <h3>{{ s.nomSM }}</h3>
+                        <p class="service-price">{{ s.tarifSM }} TND</p>
+                        <p class="service-desc" *ngIf="s.descriptionSM">{{ s.descriptionSM }}</p>
+                        <button class="btn-delete" (click)="deleteService(s.numSM!)">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+  </div>
+</main>

@@ -7,9 +7,9 @@
   
   <div class="form-group">
     <label class="form-label">Numéro de téléphone</label>
-    <p class="form-placeholder">Ex : 06 12 34 56 78</p>
-    <input type="text" class="form-input" placeholder="" [(ngModel)]="telephone" (input)="onTelephoneChange()">
-    <p class="error-message" *ngIf="telephoneError">Le numéro de téléphone est requis</p>
+    <p class="form-placeholder">Ex : 20 123 456 (format tunisien)</p>
+    <input type="text" class="form-input" placeholder="" [(ngModel)]="telephone" (input)="onTelephoneChange()" maxlength="11">
+    <p class="error-message" *ngIf="telephoneError">Le numéro de téléphone est requis (format tunisien: 8 chiffres)</p>
   </div>
   
   <button class="btn-continue" (click)="onContinueClick()">CONTINUER</button>

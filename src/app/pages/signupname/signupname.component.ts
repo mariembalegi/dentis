@@ -36,8 +36,14 @@ export class SignupnameComponent implements OnInit {
       return;
     }
 
-    // Continue to next step
-    this.router.navigate(['/signup/birthdate']);
+    this.signupService.updateData({ prenom: this.prenom, nom: this.nom });
+
+    const role = this.signupService.getRole();
+    if (role === 'DENTISTE') {
+       this.router.navigate(['/signup/details']);
+    } else {
+       this.router.navigate(['/signup/birthdate']);
+    }
   }
 
   onPrenomChange() {

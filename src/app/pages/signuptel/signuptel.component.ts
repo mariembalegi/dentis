@@ -27,14 +27,52 @@ export class SignuptelComponent implements OnInit {
   }
 
   onContinueClick() {
-    if (!this.telephone.trim()) {
+    // Validate Tunisian phone number format (8 digits)
+    const cleanedPhone = this.telephone.replace(/\s/g, '');
+    if (!cleanedPhone || cleanedPhone.length !== 8 || !/^\d{8}$/.test(cleanedPhone)) {
       this.telephoneError = true;
       return;
     }
 
     this.telephoneError = false;
-    // Continue to next step
-    this.router.navigate(['/']);
+    
+    // Save phone and defaults
+    this.signupService.updateData({ 
+      tel: parseInt(cleanedPhone, 10)
+    });
+
+    const role = this.signupService.getRole();
+
+    if (role === 'PATIENT') {
+        // Defaults for patient
+        this.signupService.updateData({
+            recouvrementP: 'CNSS', 
+            groupeSanguinP: 'O+'
+        });
+        
+        this.signupService.registerPatient().subscribe({
+          next: (res) => {
+            alert('Inscription Patient réussie !');
+            this.router.navigate(['/login']);
+          },
+          error: (err) => {
+            console.error('Signup error', err);
+            alert('Erreur lors de l\'inscription Patient.');
+          }
+        });
+    } else {
+        // Dentist registration
+        this.signupService.registerDentist().subscribe({
+          next: (res) => {
+            alert('Inscription Dentiste réussie !');
+            this.router.navigate(['/login']);
+          },
+          error: (err) => {
+            console.error('Signup error', err);
+            alert('Erreur lors de l\'inscription Dentiste.');
+          }
+        });
+    }
   }
 
   onTelephoneChange() {

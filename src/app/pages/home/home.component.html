@@ -1,5 +1,8 @@
 <!-- Page d'accueil Dentis - Style Doctolib -->
-<app-header></app-header>
+<app-dashboard-header *ngIf="isPatientConnected; else publicHeader"></app-dashboard-header>
+<ng-template #publicHeader>
+    <app-header></app-header>
+</ng-template>
 
 <main class="main">
   <!-- Section Hero -->
@@ -19,9 +22,33 @@
                 </svg>
                 <input 
                   type="text" 
-                  placeholder="Nom, spécialité, établissement,..."
+                  placeholder="Nom, ville, établissement,..."
                   class="search-input search-what"
+                  [(ngModel)]="searchTerm"
+                  (input)="onSearchInput()"
+                  (focus)="onFocus()"
+                  (blur)="onBlur()"
                 >
+                
+                <!-- DROPDOWN RESULTS -->
+                <div class="search-dropdown" *ngIf="showDropdown && searchResults && searchResults.length > 0">
+                    <div class="dropdown-item" *ngFor="let dentist of searchResults" (click)="selectDentist(dentist)">
+                        <div class="item-avatar">
+                             <img [src]="dentist.photo || defaultAvatar" alt="Dr. {{ dentist.nom }}">
+                        </div>
+                        <div class="item-info">
+                            <span class="item-name">Dr. {{ dentist.prenom }} <span class="highlight">{{ dentist.nom }}</span></span>
+                            <span class="item-location">{{ dentist.ville }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- NO RESULTS DROPDOWN -->
+                 <div class="search-dropdown" *ngIf="showDropdown && searchResults && searchResults.length === 0 && searchTerm">
+                    <div class="dropdown-item no-result">
+                        Aucun résultat trouvé.
+                    </div>
+                 </div>
+
               </div>
               <div class="search-divider"></div>
               <div class="search-field">
@@ -33,10 +60,11 @@
                   type="text" 
                   placeholder="Où ?"
                   class="search-input search-where"
+                  [(ngModel)]="searchLocation"
                 >
               </div>
             </div>
-            <button class="search-btn">
+            <button class="search-btn" (click)="onSearch()">
               Rechercher
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2"/>

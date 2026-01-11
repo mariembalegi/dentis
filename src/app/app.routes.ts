@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -37,6 +38,10 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        loadComponent: () => import('./pages/signup-role/signup-role.component').then(m => m.SignupRoleComponent)
+      },
+      {
+        path: 'email',
         loadComponent: () => import('./pages/signupemail/signupemail.component').then(m => m.SignupemailComponent)
       },
       {
@@ -46,6 +51,10 @@ export const routes: Routes = [
       {
         path: 'birthdate',
         loadComponent: () => import('./pages/signupbirthdate/signupbirthdate.component').then(m => m.SignupbirthdateComponent)
+      },
+      {
+        path: 'details',
+        loadComponent: () => import('./pages/signup-dentist-details/signup-dentist-details.component').then(m => m.SignupDentistDetailsComponent)
       },
       {
         path: 'password',
@@ -59,7 +68,18 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    children: [
+        {
+            path: '',
+            loadComponent: () => import('./pages/booking/booking.component').then(m => m.BookingComponent)
+        },
+        {
+            path: 'booking',
+             loadComponent: () => import('./pages/booking/booking.component').then(m => m.BookingComponent)
+        }
+    ]
   },
   {
     path: '**',

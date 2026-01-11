@@ -101,6 +101,30 @@
 }
 
 .empty-state p {
+  color: var(--gray-800);
+  font-size: 14px;
+  margin-bottom: 2rem;
+  font-family: "Roboto", sans-serif;
+}
+
+.btn-appointment {
+  background-color: var(--blue);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
+  transition: background-color 0.2s;
+}
+
+.btn-appointment:hover {
+  background-color: #1976D2;
+}
+
+.empty-state p {
   color: #354e6b;
   font-size: 15px;
   line-height: 1.5;
