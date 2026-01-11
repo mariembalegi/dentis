@@ -1,0 +1,89 @@
+.header {
+  background: var(--dark-blue);
+  color: var(--white);
+  padding: 0 20px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+}
+
+.logo h1 {
+  font-size: 2rem;
+  font-weight: 200;
+  color: var(--white);
+  margin: 0;
+  font-style: italic;
+  font-family: "Dancing Script", "Brush Script MT", cursive;
+  letter-spacing: 3px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  background: var(--white);
+  color: #87CEEB;
+  text-decoration: none;
+  font-size: 14px;
+  font-family: "Roboto", Arial, sans-serif;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  margin: 0 16px;
+}
+
+.nav-link:hover {
+  background: #f0f0f0;
+  color: #1A3251;
+}
+
+.btn-connect {
+  background: var(--dark-blue);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 0;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 12px;
+  font-family: "Roboto", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.main-text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sub-text {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.btn-connect svg {
+  flex-shrink: 0;
+}
+
+.btn-connect:hover {
+  background: #2A4A6B;
+}

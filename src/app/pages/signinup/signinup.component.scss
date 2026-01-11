@@ -1,0 +1,336 @@
+:host {
+  --dark-blue: #1A3251;
+  --light-blue: #E3F2FD;
+  --orange: #D04747;
+  --white: #FFFFFF;
+  --blue: #2196F3;
+  --gray-100: #F5F5F5;
+  --gray-200: #EEEEEE;
+  --gray-400: #BDBDBD;
+  --gray-600: #757575;
+  --gray-800: #424242;
+  --gray-900: #212121;
+
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-y: hidden;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: inherit;
+  margin: 0;
+}
+
+.main {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #F0F4F8 0%, #E8EFF5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.login-container {
+  max-width: 600px;
+  width: 100%;
+}
+
+.page-title {
+  text-align: left;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--dark-blue);
+  font-family: "Montserrat", Arial, sans-serif;
+  margin: 0 0 1.5rem 0;
+}
+
+.login-content {
+  position: relative;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  color: #000000;
+  text-decoration: none;
+  font-size: 14px;
+  font-family: "Roboto", Arial, sans-serif;
+  transition: all 0.2s ease;
+  width: fit-content;
+  padding: 0.5rem 0.5rem;
+  border-radius: 6px;
+}
+
+.back-link:hover {
+  background: #F5F5F5;
+}
+
+.auth-card {
+  background: var(--white);
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.signup-card {
+  text-align: center;
+}
+
+.signup-section {
+  text-align: center;
+  border: 1px solid #E0E0E0;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.divider {
+  display: none;
+}
+
+.login-section {
+  text-align: center;
+  border: 1px solid #E0E0E0;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+  color: var(--dark-blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  font-weight: 200;
+  margin: 0 auto 0.5rem;
+  font-family: "Dancing Script", "Brush Script MT", cursive;
+  font-style: italic;
+  letter-spacing: 3px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 1.5rem;
+  font-family: "Montserrat", Arial, sans-serif;
+}
+
+.benefits-list {
+  list-style: none;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  color: #000000;
+  font-size: 0.875rem;
+  font-family: "Roboto", Arial, sans-serif;
+  font-weight: 400;
+}
+
+.benefits-list svg {
+  flex-shrink: 0;
+}
+
+.icon-wrapper {
+  width: 40px;
+  height: 40px;
+  background: #F5F5F5;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-signup {
+  width: 100%;
+  background: var(--orange);
+  color: var(--white);
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Roboto", Arial, sans-serif;
+}
+
+.btn-signup:hover {
+  background: var(--dark-blue);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.login-card {
+  text-align: center;
+}
+
+.btn-login {
+  width: 100%;
+  background: transparent;
+  color: var(--orange);
+  border: 2px solid var(--orange);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Roboto", Arial, sans-serif;
+}
+
+.btn-login:hover {
+  background: transparent;
+  color: var(--dark-blue);
+  border-color: var(--dark-blue);
+}
+
+.auth-card.hide {
+  display: none;
+}
+
+.login-form-card {
+  background: var(--white);
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: none;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 600px;
+  width: 100%;
+}
+
+.login-form-card.show {
+  display: flex;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--dark-blue);
+  font-family: "Montserrat", Arial, sans-serif;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  font-family: "Roboto", Arial, sans-serif;
+}
+
+.form-placeholder {
+  font-size: 13px;
+  color: #000000;
+  font-family: "Roboto", Arial, sans-serif;
+  margin: 0;
+  font-weight: 400;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.btn-continue {
+  width: 100%;
+  background: var(--orange);
+  color: var(--white);
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Roboto", Arial, sans-serif;
+}
+
+.btn-continue:hover {
+  background: var(--dark-blue);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+    min-height: calc(100vh - 60px);
+  }
+
+  .login-container {
+    max-width: 100%;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .logo-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  .benefits-list li {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+}

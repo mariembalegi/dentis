@@ -1,0 +1,16 @@
+<h1 class="page-title">S'inscrire</h1>
+
+<a href="#" class="back-link" (click)="onBackClick(); $event.preventDefault()">← Étape précédente</a>
+
+<div class="signup-card">
+  <h2 class="form-title">Inscrivez-vous sur Dentis</h2>
+  
+  <div class="form-group">
+    <label class="form-label">Adresse e-mail</label>
+    <p class="form-placeholder">Ex : nom@email.com</p>
+    <input type="text" class="form-input" placeholder="" [(ngModel)]="email" (input)="onEmailChange()">
+    <p class="error-message" *ngIf="emailError">Saisir une adresse e-mail</p>
+  </div>
+  
+  <button class="btn-continue" (click)="onContinueClick()">CONTINUER</button>
+</div>

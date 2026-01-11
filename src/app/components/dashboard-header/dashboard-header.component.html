@@ -1,0 +1,36 @@
+<header class="dashboard-header">
+  <div class="header-container">
+    <div class="logo">
+      <h1>Dentis</h1>
+    </div>
+    <nav class="nav-links">
+      <a href="#" routerLink="/">Accueil</a>
+    </nav>
+    <div class="right-section">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link-right">Mes rendez-vous</a>
+      <div class="user-section">
+      <button class="user-button" (click)="toggleDropdown()">
+        {{ userName }}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" [class.rotate]="isDropdownOpen">
+          <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="dropdown-menu" *ngIf="isDropdownOpen" (clickOutside)="closeDropdown()">
+        <a href="#" class="dropdown-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+          </svg>
+          <span>Mon compte</span>
+        </a>
+        <hr class="dropdown-divider">
+        <a href="#" class="dropdown-item" (click)="onLogout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 7L15.59 8.41L17.17 10H8V12H17.17L15.59 13.59L17 15L21 11L17 7ZM4 5H11V3H4C2.89 3 2 3.9 2 5V19C2 20.1 2.89 21 4 21H11V19H4V5Z" fill="currentColor"/>
+          </svg>
+          <span>Déconnexion</span>
+        </a>
+      </div>
+      </div>
+    </div>
+  </div>
+</header>
