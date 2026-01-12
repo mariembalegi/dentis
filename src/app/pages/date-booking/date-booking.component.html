@@ -1,0 +1,55 @@
+<div class="booking-flow-container">
+    <div class="left-panel">
+      <h1>Prenez votre rendez-vous en ligne</h1>
+      <p class="subtitle">Renseignez les informations suivantes</p>
+  
+      <div class="booking-step-container">
+        <a class="back-link" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i> Étape précédente
+        </a>
+  
+        <h2>Choisissez la date de consultation</h2>
+  
+        <div class="slots-container">
+            <div class="day-group" *ngFor="let day of availabilityDays">
+                <div class="day-header" [class.expanded]="day.expanded" (click)="toggleDay(day)">
+                    <span>{{ day.date }}</span>
+                    <i class="fas" [class.fa-chevron-up]="day.expanded" [class.fa-chevron-down]="!day.expanded"></i>
+                </div>
+                <div class="day-slots" *ngIf="day.expanded">
+                    <button class="slot-btn" *ngFor="let slot of day.slots" (click)="selectSlot(day, slot)">
+                        {{ slot }}
+                    </button>
+                    <div *ngIf="day.slots.length === 0" style="font-size: 13px; color: #777;">Aucun créneau disponible</div>
+                </div>
+            </div>
+
+            <button class="btn-more-dates">Voir plus de disponibilités</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="right-panel">
+      <div class="practitioner-card">
+        <div class="card-header">
+            <div class="avatar-placeholder">
+                <img *ngIf="dentistPhoto" [src]="dentistPhoto" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">
+                <i *ngIf="!dentistPhoto" class="fas fa-user-md" style="color: #0076bd;"></i>
+            </div>
+            <div class="header-text">
+                <h3>{{ dentistName }}</h3>
+                <p class="specialty">{{ dentistSpecialty }}</p>
+            </div>
+        </div>
+        
+        <div class="appointment-details">
+          <h4>Votre rendez-vous en détail</h4>
+          <ul>
+            <li *ngIf="patientName"><i class="fas fa-check"></i> Pour {{ patientName }}</li>
+            <li><i class="fas fa-check"></i> {{ dentistAddress }}</li>
+            <li *ngIf="selectedCategoryName"><i class="fas fa-check"></i> {{ selectedCategoryName }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>

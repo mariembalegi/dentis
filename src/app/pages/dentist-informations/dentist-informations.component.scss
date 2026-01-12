@@ -1,0 +1,250 @@
+
+/* DOCTOR PROFILE STYLES */
+
+.dentist-informations-page {
+    background-color: #f2f5f8;
+    min-height: 100vh;
+    font-family: 'Roboto', 'Arial', sans-serif;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header Strip */
+.profile-header-strip {
+    background-color: #162c47; /* Dark blue from Doctolib */
+    color: white;
+    padding: 24px 0;
+}
+
+.strip-content {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+    flex-shrink: 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.profile-identity {
+    h1 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 4px 0;
+        color: white;
+    }
+    .profile-specialty {
+        font-size: 16px;
+        opacity: 0.9;
+        margin: 0;
+    }
+}
+
+/* Tabs Strip */
+.profile-tabs-strip {
+    background: white;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.profile-tabs-strip .container {
+    display: flex;
+    gap: 30px;
+}
+
+.tab-link {
+    padding: 16px 0;
+    font-weight: 600;
+    color: #586976;
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+
+    &:hover {
+        color: #162c47;
+    }
+
+    &.active {
+        color: #2e90fa; /* Or the exact blue */
+        border-bottom-color: #2e90fa;
+    }
+}
+
+/* Main Grid */
+.profile-main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    padding-top: 24px;
+    padding-bottom: 40px;
+}
+
+.info-card, .booking-summary-card, .unavailable-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.info-card {
+    padding: 24px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #162c47;
+    }
+
+    span {
+        font-size: 20px;
+    }
+}
+
+.card-body {
+    color: #333;
+}
+
+.tag-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.tag {
+    background: #f0f7ff;
+    color: #162c47;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.divider-light {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 16px 0;
+}
+
+.sub-section {
+    h4 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #162c47;
+        margin: 0 0 8px 0;
+    }
+    p {
+        margin: 0 0 4px 0;
+        font-size: 14px;
+        color: #586976;
+    }
+}
+
+/* Right Column */
+.booking-summary-card {
+    padding: 20px;
+
+    h3 {
+        font-size: 16px;
+        margin: 0;
+        color: #162c47;
+    }
+}
+
+.summary-details {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+
+    .icon-small {
+        color: #999;
+    }
+}
+
+.btn-book-full {
+    width: 100%;
+    background-color: #dbeafe; /* Light blue */
+    color: #1e40af; /* Dark blue text */
+    border: none;
+    padding: 12px;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-transform: uppercase;
+    transition: background 0.2s;
+
+    &:hover {
+        background-color: #bfdbfe;
+    }
+}
+
+.unavailable-card {
+    background-color: #fff8e1; /* Light yellow warning bg */
+    border: 1px solid #ffe082;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    color: #795548;
+    
+    .warning-icon {
+        font-size: 20px;
+    }
+
+    strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #5d4037;
+    }
+    
+    p {
+        margin: 0;
+        font-size: 13px;
+    }
+}
+
+.map-placeholder {
+    height: 150px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #757575;
+    font-size: 14px;
+    margin: 16px 0;
+}
+
+@media (max-width: 768px) {
+    .profile-main-grid {
+        grid-template-columns: 1fr;
+    }
+}

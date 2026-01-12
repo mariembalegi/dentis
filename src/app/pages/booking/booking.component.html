@@ -1,96 +1,151 @@
-<main class="main" *ngIf="user">
-  <div class="dashboard-layout">
+
+
+<main class="main-booking" *ngIf="user">
+  <div class="booking-container" *ngIf="user.role === 'PATIENT'">
     
-    <!-- PATIENT VIEW -->
-    <ng-container *ngIf="user.role === 'PATIENT'">
-      <aside class="sidebar">
-        <div class="sidebar-header">
-             <h3>Mes Rendez-vous</h3>
-             <div class="search-box-small">
-                <input type="text" placeholder="Filtrer..." [(ngModel)]="appointmentSearch">
-             </div>
-        </div>
-        
-        <div class="rv-list-simple" *ngIf="filteredAppointments.length > 0">
-           <div class="rv-item-simple" *ngFor="let rv of filteredAppointments">
-               <div class="rv-info">
-                   <span class="rv-date">{{ rv.dateRv | date:'shortDate' }}</span>
-                   <span class="rv-service">{{ rv.serviceName }}</span>
-               </div>
-               <span class="status-dot" [class]="rv.statutRv" [title]="rv.statutRv"></span>
-           </div>
-        </div>
-        <div *ngIf="filteredAppointments.length === 0 && appointments.length > 0" class="empty-list-small">Aucun résultat.</div>
-      </aside>
-
-      <div class="content-area">
-        
-        <!-- Empty State (Default if no active task) -->
-        <div *ngIf="!showServiceSelection && appointments.length === 0" class="empty-state">
-            <div class="icon-container">
-                <svg width="84" height="84" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M48 16H76C78.2091 16 80 17.7909 80 20V60C80 62.2091 78.2091 64 76 64H48C45.7909 64 44 62.2091 44 60V20C44 17.7909 45.7909 16 48 16Z" fill="#1A3251"/>
-                    <path d="M54 10V22" stroke="#1A3251" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M70 10V22" stroke="#1A3251" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M4 28H44C46.2091 28 48 29.7909 48 32V72C48 74.2091 46.2091 76 44 76H4C1.79086 76 0 74.2091 0 72V32C0 29.7909 1.79086 28 4 28Z" fill="#2196F3"/>
-                    <path d="M0 32C0 29.7909 1.79086 28 4 28H44C46.2091 28 48 29.7909 48 32V40H0V32Z" fill="#1976D2"/>
-                    <circle cx="12" cy="28" r="3" fill="#1A3251"/>
-                    <circle cx="36" cy="28" r="3" fill="#1A3251"/>
-                    <rect x="8" y="46" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
-                    <rect x="21" y="46" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
-                    <rect x="34" y="46" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
-                    <rect x="8" y="58" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
-                    <rect x="21" y="58" width="6" height="6" rx="1" fill="#FFC107"/>
-                    <rect x="34" y="58" width="6" height="6" rx="1" fill="white" fill-opacity="0.9"/>
-                </svg>
+    <!-- LEFT SIDEBAR -->
+    <aside class="appointment-sidebar">
+      
+      <!-- Upcoming Section -->
+      <section class="appointment-section" *ngIf="upcomingApps.length > 0">
+        <h3 class="section-title">Rendez-vous à venir</h3>
+        <div 
+          class="appointment-card upcoming" 
+          *ngFor="let app of upcomingApps"
+          [class.active]="selectedAppointment === app"
+          (click)="selectAppointment(app)">
+          
+          <div class="card-header-strip">
+            <span><i class="far fa-calendar"></i> {{ app.dateRv | date:'EEEE d MMMM' }}</span> 
+            <span><i class="far fa-clock"></i> {{ app.heureRv }}</span>
+          </div>
+          
+          <div class="card-body">
+            <div class="doctor-info-mini">
+              <img [src]="app.dentistPhoto || defaultAvatar" class="avatar-mini" alt="Dr">
+              <div class="text-info">
+                <div class="doc-name">{{ app.dentistName || 'Dr Inconnu' }}</div>
+                <div class="doc-spec">{{ app.dentistSpeciality || 'Dentiste' }}</div>
+              </div>
             </div>
-            <h2>Aucun rendez-vous à venir</h2>
-            <p>Prenez votre santé en main. Réservez facilement votre prochain rendez-vous sur Dentis.</p>
-            <button class="btn-appointment" (click)="goToHome()">PRENDRE RENDEZ-VOUS</button>
+            <div class="service-name">
+              <i class="fas fa-stethoscope"></i> {{ app.serviceName }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Past Section -->
+      <div class="past-section-wrapper" *ngIf="pastApps.length > 0">
+        
+        <!-- Toggle Link (Centered) -->
+        <div *ngIf="!showPastAppointments" class="toggle-past-link" (click)="showPastAppointments = true">
+          Voir mes rendez-vous passés
         </div>
 
-        <!-- Service Selection View -->
-        <div *ngIf="showServiceSelection || appointments.length > 0">
-            <div *ngIf="!selectedService; else bookingForm" class="services-dashboard">
-                <div class="header-split">
-                    <h2>Services Disponibles</h2>
-                    <div class="controls-row">
-                         <div class="search-box">
-                            <input type="text" placeholder="Rechercher..." [(ngModel)]="serviceSearch">
-                         </div>
-                         <button class="btn-back" *ngIf="appointments.length === 0" (click)="showServiceSelection = false">Retour</button>
-                    </div>
-                </div>
-                
-                <div class="services-grid">
-                    <div class="service-card" *ngFor="let s of filteredServices">
-                        <img [src]="s.image || 'assets/placeholder.png'" alt="Service" style="width:100%; height:150px; object-fit:cover;">
-                        <h3>{{ s.nomSM }}</h3>
-                        <p>{{ s.tarifSM }} TND</p>
-                        <button (click)="initiateBooking(s)" class="btn-appointment-small">Réserver</button>
-                    </div>
-                </div>
+        <!-- Expanded Content -->
+        <section class="appointment-section" *ngIf="showPastAppointments">
+          <h3 class="section-title">Rendez-vous passés</h3>
+          <div 
+            class="appointment-card past" 
+            *ngFor="let app of pastApps"
+            [class.active]="selectedAppointment === app"
+            (click)="selectAppointment(app)">
+            
+            <div class="card-date-header">
+              <span><i class="far fa-calendar-alt"></i> {{ app.dateRv | date:'EEEE d MMM yyyy' }}</span>
+              <span><i class="far fa-clock"></i> {{ app.heureRv }}</span>
             </div>
 
-            <ng-template #bookingForm>
-                <div class="booking-form">
-                    <h3>Réserver: {{ selectedService?.nomSM }}</h3>
-                    <label>Date: <input type="date" [(ngModel)]="bookingDate"></label>
-                    <label>Heure: <input type="time" [(ngModel)]="bookingTime"></label>
-                    <label>Raison: <textarea [(ngModel)]="bookingReason"></textarea></label>
-                    <div class="actions">
-                        <button (click)="confirmBooking()" class="btn-confirm">Confirmer</button>
-                        <button (click)="selectedService = null" class="btn-cancel">Annuler</button>
-                    </div>
+            <div class="card-body">
+              <div class="doctor-info-mini">
+                <img [src]="app.dentistPhoto || defaultAvatar" class="avatar-mini" alt="Dr">
+                <div class="text-info">
+                  <div class="doc-name">{{ app.dentistName || 'Dr Inconnu' }}</div>
+                  <div class="doc-spec">{{ app.dentistSpeciality || 'Dentiste' }}</div>
                 </div>
-            </ng-template>
-        </div>
-
+              </div>
+              <div class="service-name">
+                <i class="fas fa-stethoscope"></i> {{ app.serviceName }}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-    </ng-container>
 
+      <div *ngIf="appointments.length === 0" class="no-appointments">
+        Aucun rendez-vous trouvé.
+      </div>
+    </aside>
 
-    <!-- DENTIST VIEW -->
+    <!-- RIGHT DETAILS PANEL -->
+    <section class="details-panel" *ngIf="selectedAppointment">
+      <h2 class="panel-title">Informations du rendez-vous</h2>
+      
+      <div class="detail-card main-detail">
+        <div class="blue-header">
+          <span><i class="far fa-calendar-alt"></i> {{ selectedAppointment.dateRv | date:'EEEE d MMM yyyy' }}</span>
+          <span><i class="far fa-clock"></i> {{ selectedAppointment.heureRv }}</span>
+        </div>
+        
+        <div class="detail-body">
+          <div class="doctor-main-info">
+            <img [src]="selectedAppointment.dentistPhoto || defaultAvatar" class="avatar-large">
+            <div class="info-block">
+              <h3>{{ selectedAppointment.dentistName || 'Dr Inconnu' }}</h3>
+              <p class="speciality">{{ selectedAppointment.dentistSpeciality || 'Dentiste' }}</p>
+            </div>
+          </div>
+          
+          <div class="consultation-line">
+            <i class="fas fa-stethoscope"></i> {{ selectedAppointment.serviceName }}
+          </div>
+          
+          <div class="action-buttons-row" *ngIf="isUpcoming(selectedAppointment.dateRv)">
+            <button class="btn-action outline" (click)="rescheduleBooking(selectedAppointment)">
+              <i class="fas fa-history"></i> Déplacer le RDV
+            </button>
+            <button class="btn-action danger" (click)="cancelBooking(selectedAppointment.idRv!)">
+              <i class="far fa-calendar-times"></i> Annuler le RDV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-list-links">
+        <div class="link-item">
+          <span><i class="fas fa-sync-alt"></i> Réserver de nouveau</span>
+          <i class="fas fa-chevron-right arrow"></i>
+        </div>
+        <div class="link-item" (click)="goToDentistProfile(selectedAppointment.dentistId || 0)">
+          <span><i class="fas fa-id-card-alt"></i> Retourner sur la fiche de {{ selectedAppointment.dentistName }}</span>
+          <i class="fas fa-chevron-right arrow"></i>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Empty State (Selection) -->
+    <div class="details-panel empty" *ngIf="!selectedAppointment && upcomingApps.length > 0">
+      <p>Sélectionnez un rendez-vous pour voir les détails.</p>
+    </div>
+
+    <!-- Empty State (No Interviews) -->
+    <div class="details-panel no-appointments-state" *ngIf="upcomingApps.length === 0 && !selectedAppointment">
+      <div class="empty-content">
+        <div class="calendar-icon-stack">
+           <i class="fas fa-calendar-alt base"></i>
+           <i class="fas fa-calendar-check overlay"></i>
+        </div>
+        <h3>Aucun rendez-vous à venir</h3>
+        <p>Prenez votre santé en main. Réservez facilement votre prochain rendez-vous sur Dentis.</p>
+        <button class="btn-primary-large" (click)="goToHome()">PRENDRE RENDEZ-VOUS</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fallback for Dentist View (Original Content for Dentist) -->
     <ng-container *ngIf="user.role === 'DENTISTE'">
         <aside class="sidebar">
             <div class="sidebar-header">
@@ -138,7 +193,6 @@
                 <input placeholder="Type" [(ngModel)]="newService.typeSM">
                 <input placeholder="Description" [(ngModel)]="newService.descriptionSM">
                 <input type="number" placeholder="Tarif" [(ngModel)]="newService.tarifSM">
-                <!-- Image upload logic omitted for brevity, adding a placeholder text -->
                 <p>Upload image (Base64) - Not implemented in UI</p> 
                 <button (click)="submitNewService()">Créer</button>
             </div>
@@ -157,5 +211,28 @@
         </div>
     </ng-container>
 
+  <!-- Confirm Cancel Modal -->
+  <div class="modal-overlay" *ngIf="showCancelModal">
+    <div class="modal-box">
+      <button class="close-btn" (click)="closeCancelModal()">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div class="illustration-container">
+        <div class="calendar-circle">
+          <i class="fas fa-calendar-check"></i>
+          <div class="mini-squares">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="modal-title">Êtes-vous sûr de vouloir annuler votre rendez-vous ?</h3>
+
+      <div class="modal-actions">
+        <button class="btn-keep" (click)="closeCancelModal()">CONSERVER LE RENDEZ-VOUS</button>
+        <button class="btn-continue" (click)="confirmCancel()">ANNULER</button>
+      </div>
+    </div>
   </div>
 </main>

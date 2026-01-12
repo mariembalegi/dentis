@@ -6,6 +6,13 @@ import { ServiceMedicalService, ServiceMedical } from '../../services/service-me
 import { RendezvousService, Rendezvous } from '../../services/rendezvous.service';
 import { Router } from '@angular/router';
 
+// Extended interface for UI display purposes
+interface RendezvousDisplay extends Rendezvous {
+  dentistPhoto?: string;
+  dentistSpeciality?: string;
+  // Use idRv from base interface
+}
+
 @Component({
   selector: 'app-booking',
   standalone: true,
@@ -16,10 +23,15 @@ import { Router } from '@angular/router';
 export class BookingComponent implements OnInit {
   user: User | null = null;
   services: ServiceMedical[] = [];
-  appointments: Rendezvous[] = [];
+  appointments: RendezvousDisplay[] = [];
   
   // For Patient Booking
   selectedService: ServiceMedical | null = null;
+  selectedAppointment: RendezvousDisplay | null = null;
+  showPastAppointments = false;
+  showCancelModal = false;
+  appointmentToCancelId: number | null = null;
+
   showServiceSelection = false;
   bookingDate: string = '';
   bookingTime: string = '';
@@ -32,6 +44,9 @@ export class BookingComponent implements OnInit {
   // Search Terms
   serviceSearch: string = '';
   appointmentSearch: string = '';
+  
+  defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIiBmaWxsPSJub25lIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFMEUwRTAiLz4KPHBhdGggZD0iTTIwIDEyQzE3Ljc5MDkgMTIgMTYgMTMuNzkwOSAxNiAxNkMxNiAxOC4yMDkxIDE3Ljc5MDkgMjAgMjAgMjBDMjIuMjA5MSAyMCAyNCAxOC4yMDkxIDIzLjE3MTYgMTZDMjQgMTMuNzkwOSAyMi4yMDkxIDEyIDIwIDEybTAtMkMyMy4zMTM3IDEwIDI2IDEyLjY4NjMgMjYgMTZDMjYgMTkuMzEzNyAyMy4zMTM3IDIyIDIwIDIyQzE2LjY4NjMgMjIgMTQgMTkuMzEzNyAxNCAxNkMxNCAxMi42ODYzIDE2LjY4NjMgMTAgMjAgMTBabTAgMjZDMjYuNjI3NCAzNiAzMiAzMC42Mjc0IDMyIDI0SDhDMzIgMzAuNjI3NCA4IDM2IDIwIDM2WiIgZmlsbD0iI0JEQkJEQiIvPgo8L3N2Zz4=';
+
 
   constructor(
     private authService: AuthService,
@@ -49,7 +64,7 @@ export class BookingComponent implements OnInit {
     );
   }
 
-  get filteredAppointments(): Rendezvous[] {
+  get filteredAppointments(): RendezvousDisplay[] {
     if (!this.appointmentSearch.trim()) return this.appointments;
     const term = this.appointmentSearch.toLowerCase();
     return this.appointments.filter(rv => 
@@ -75,8 +90,88 @@ export class BookingComponent implements OnInit {
   }
 
   loadPatientData() {
+    // FORCE MOCK DATA FOR DEMO PURPOSES
+    this.mockAppointments();
+
+    /* 
+    // Backend integration commented out for demo
     this.medicalService.getAllServices().subscribe(res => this.services = res);
-    this.rendezvousService.getMyAppointments().subscribe(res => this.appointments = res);
+    this.rendezvousService.getMyAppointments().subscribe(res => {
+        this.appointments = res;
+        if (this.appointments.length === 0) {
+            this.mockAppointments();
+        }
+        if (this.appointments.length > 0) {
+            this.selectedAppointment = this.appointments[0];
+        }
+    });
+    */
+  }
+
+  mockAppointments() {
+    this.appointments = [
+      {
+        idRv: 101,
+        patientId: 1, // Mock
+        dateRv: '2026-03-09',
+        heureRv: '16:30',
+        statutRv: 'VALIDATED', // Changed to match interface (CONFIRMÉ is not in type)
+        serviceName: 'Consultation de suivi de cardiologie',
+        dentistName: 'Dr Kossi TONYIGA',
+        dentistSpeciality: 'Cardiologue',
+        dentistPhoto: 'assets/images/doc1.jpg',
+        descriptionRv: 'Mock'
+      },
+      {
+        idRv: 102,
+        patientId: 1,
+        dateRv: '2025-12-05',
+        heureRv: '10:00',
+        statutRv: 'VALIDATED', // Was PASSE
+        serviceName: 'Première consultation de médecine générale',
+        dentistName: 'Dr Raouia Ben Ismail',
+        dentistSpeciality: 'Médecin généraliste',
+        dentistPhoto: 'assets/images/doc2.jpg',
+        descriptionRv: 'Mock'
+      },
+      {
+        idRv: 103,
+        patientId: 1,
+        dateRv: '2025-09-12',
+        heureRv: '10:30',
+        statutRv: 'VALIDATED',
+        serviceName: 'Consultation ostéopathie',
+        dentistName: 'M. Florent Meyrial',
+        dentistSpeciality: 'Ostéopathe',
+        dentistPhoto: 'assets/images/doc3.jpg',
+        descriptionRv: 'Mock'
+      }
+    ] as RendezvousDisplay[];
+    this.selectedAppointment = this.appointments[0];
+  }
+
+  get upcomingApps(): RendezvousDisplay[] {
+    const today = new Date().toISOString().split('T')[0];
+    return this.appointments
+      .filter(a => a.dateRv && a.dateRv >= today)
+      .sort((a, b) => new Date(a.dateRv + 'T' + a.heureRv).getTime() - new Date(b.dateRv + 'T' + b.heureRv).getTime());
+  }
+
+  get pastApps(): RendezvousDisplay[] {
+    const today = new Date().toISOString().split('T')[0];
+    return this.appointments
+      .filter(a => a.dateRv && a.dateRv < today)
+      .sort((a, b) => new Date(b.dateRv + 'T' + b.heureRv).getTime() - new Date(a.dateRv + 'T' + a.heureRv).getTime());
+  }
+
+  selectAppointment(rv: RendezvousDisplay) {
+      this.selectedAppointment = rv;
+  }
+
+  isUpcoming(dateRv: string | undefined): boolean {
+    if (!dateRv) return false;
+    const today = new Date().toISOString().split('T')[0];
+    return dateRv >= today;
   }
 
   loadDentistData() {
@@ -86,7 +181,27 @@ export class BookingComponent implements OnInit {
 
   // Patient Actions
   initiateBooking(service: ServiceMedical) {
-    this.selectedService = service;
+    if (service.dentistId) {
+      this.router.navigate(['/dashboard/dentist', service.dentistId]);
+    } else {
+      console.error('Service has no dentist ID');
+    }
+  }
+
+  goToDentistProfile(dentistId: number) {
+      this.router.navigate(['/dashboard/dentist', dentistId]);
+  }
+
+  rescheduleBooking(rv: RendezvousDisplay) {
+    this.router.navigate(['/dashboard/date-booking'], {
+      queryParams: {
+        dentistName: rv.dentistName,
+        dentistSpecialty: rv.dentistSpeciality,
+        dentistAddress: '1 Rue Charles Drot, 92500 Rueil-Malmaison',
+        dentistPhoto: rv.dentistPhoto,
+        serviceName: rv.serviceName
+      }
+    });
   }
 
   confirmBooking() {
@@ -118,8 +233,22 @@ export class BookingComponent implements OnInit {
   }
 
   cancelBooking(id: number) {
-    if(confirm('Annuler ce rendez-vous ?')) {
-      this.rendezvousService.cancelAppointment(id).subscribe(() => this.loadData());
+    this.appointmentToCancelId = id;
+    this.showCancelModal = true;
+  }
+
+  closeCancelModal() {
+    this.showCancelModal = false;
+    this.appointmentToCancelId = null;
+  }
+
+  confirmCancel() {
+    if (this.appointmentToCancelId) {
+      // Remove local appointment manually (don't call loadData to avoid mock reset)
+      this.appointments = this.appointments.filter(a => a.idRv !== this.appointmentToCancelId);
+      
+      this.selectedAppointment = null; // Deselect
+      this.closeCancelModal();
     }
   }
 

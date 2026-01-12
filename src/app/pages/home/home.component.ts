@@ -21,7 +21,14 @@ export class HomeComponent implements OnInit {
   // Search
   searchTerm = '';
   searchLocation = '';
+  
+  // Dropdown Data
+  dropdownServices: string[] = [];
+  dropdownDentists: DentistSearchResult[] = [];
+  
+  // Legacy/Full Search Data
   searchResults: DentistSearchResult[] | null = null;
+  
   isSearching = false;
   searchError: string | null = null;
   showDropdown = false;
@@ -48,19 +55,20 @@ export class HomeComponent implements OnInit {
     
     // Clear results if input is empty
     if (!this.searchTerm) {
-        this.searchResults = null;
+        this.dropdownServices = [];
+        this.dropdownDentists = [];
         this.showDropdown = false;
         return;
     }
     
     this.showDropdown = true;
     this.searchTimeout = setTimeout(() => {
-        this.onSearch();
+        this.fetchDropdown();
     }, 300);
   }
 
   onFocus() {
-    if (this.searchTerm && this.searchResults) {
+    if (this.searchTerm && (this.dropdownServices.length > 0 || this.dropdownDentists.length > 0)) {
       this.showDropdown = true;
     }
   }
@@ -72,32 +80,51 @@ export class HomeComponent implements OnInit {
     }, 200);
   }
 
-  onSearch() {
-    if (!this.searchTerm && !this.searchLocation) {
-        return;
-    }
-    
+  fetchDropdown() {
     this.isSearching = true;
     this.searchError = null;
-    this.showDropdown = true;
 
-    this.dentistService.searchDentists(this.searchTerm, this.searchLocation).subscribe({
-      next: (results) => {
-        this.searchResults = results;
+    this.dentistService.getSearchDropdown(this.searchTerm).subscribe({
+      next: (res) => {
+        this.dropdownServices = res.services || [];
+        this.dropdownDentists = res.dentistes || [];
         this.isSearching = false;
+        // Keep open even if empty? Or close?
+        // if (this.dropdownServices.length === 0 && this.dropdownDentists.length === 0) { }
       },
       error: (err) => {
-        console.error('Search failed', err);
-        // Silent error for dropdown usually, or minimal
+        console.error('Dropdown Search failed', err);
         this.isSearching = false;
       }
     });
   }
 
+  // Called when clicking "Rechercher" button - legacy full search
+  onSearch() {
+    if (!this.searchTerm && !this.searchLocation) {
+        return;
+    }
+    
+    // Logic for full search result page could go here
+    // For now, let's just trigger the dropdown fetch again or do nothing if already fetched
+    if (this.showDropdown) return; 
+    
+    this.fetchDropdown();
+    
+    // Optionally: this.router.navigate(['/search-results'], { queryParams: ... })
+  }
+
+  selectService(serviceName: string) {
+      this.searchTerm = serviceName;
+      this.showDropdown = false;
+      // Maybe filter map by service? or navigate
+      console.log('Selected service:', serviceName);
+  }
+
   selectDentist(dentist: DentistSearchResult) {
       this.searchTerm = `Dr. ${dentist.prenom} ${dentist.nom}`;
       this.showDropdown = false;
-      // Navigate to booking page
-      this.router.navigate(['/booking'], { queryParams: { dentistId: dentist.id } });
+      // Navigate to profile page
+      this.router.navigate(['/dashboard/dentist', dentist.id]);
   }
 }

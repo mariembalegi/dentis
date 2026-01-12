@@ -30,20 +30,42 @@
                   (blur)="onBlur()"
                 >
                 
-                <!-- DROPDOWN RESULTS -->
-                <div class="search-dropdown" *ngIf="showDropdown && searchResults && searchResults.length > 0">
-                    <div class="dropdown-item" *ngFor="let dentist of searchResults" (click)="selectDentist(dentist)">
-                        <div class="item-avatar">
-                             <img [src]="dentist.photo || defaultAvatar" alt="Dr. {{ dentist.nom }}">
-                        </div>
-                        <div class="item-info">
-                            <span class="item-name">Dr. {{ dentist.prenom }} <span class="highlight">{{ dentist.nom }}</span></span>
-                            <span class="item-location">{{ dentist.ville }}</span>
+                <!-- DROPDOWN RESULTS MIXED -->
+                <div class="search-dropdown" *ngIf="showDropdown && (dropdownServices.length > 0 || dropdownDentists.length > 0)">
+                    
+                    <!-- Services Section -->
+                    <div *ngIf="dropdownServices.length > 0">
+                        <!-- <div class="dropdown-section-title" *ngIf="dropdownDentists.length > 0">Actes et soins</div> -->
+                        <div class="dropdown-item service-item" *ngFor="let service of dropdownServices" (click)="selectService(service)">
+                             <div class="service-icon-container">
+                                 <svg class="service-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                 </svg>
+                             </div>
+                             <span class="service-text">{{ service }}</span>
                         </div>
                     </div>
+
+                    <div class="dropdown-divider" *ngIf="dropdownServices.length > 0 && dropdownDentists.length > 0"></div>
+
+                    <!-- Dentists Section -->
+                     <div *ngIf="dropdownDentists.length > 0">
+                        <!-- <div class="dropdown-section-title" *ngIf="dropdownServices.length > 0">Chirurgiens-dentistes</div> -->
+                        <div class="dropdown-item dentist-item" *ngFor="let dentist of dropdownDentists" (click)="selectDentist(dentist)">
+                            <div class="item-avatar">
+                                 <img [src]="dentist.photo || defaultAvatar" alt="Dr. {{ dentist.nom }}">
+                            </div>
+                            <div class="item-info">
+                                <span class="item-name">Dr. {{ dentist.prenom }} <span class="highlight">{{ dentist.nom }}</span></span>
+                                <span class="item-details">Chirurgien-dentiste - {{ dentist.ville }}</span>
+                            </div>
+                        </div>
+                     </div>
                 </div>
-                <!-- NO RESULTS DROPDOWN -->
-                 <div class="search-dropdown" *ngIf="showDropdown && searchResults && searchResults.length === 0 && searchTerm">
+
+                <!-- NO RESULTS -->
+                 <div class="search-dropdown" *ngIf="showDropdown && dropdownServices.length === 0 && dropdownDentists.length === 0 && searchTerm.length > 1">
                     <div class="dropdown-item no-result">
                         Aucun résultat trouvé.
                     </div>

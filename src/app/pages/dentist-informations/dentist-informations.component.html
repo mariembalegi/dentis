@@ -1,0 +1,59 @@
+<!-- DOCTOR PROFILE VIEW (Doctolib style) -->
+<div *ngIf="selectedDentist" class="dentist-informations-page">
+    <div class="profile-header-strip">
+        <div class="container strip-content">
+            <div class="profile-avatar-large">
+                <img [src]="selectedDentist.photo || defaultAvatar" alt="Dr {{selectedDentist.nom}}">
+            </div>
+            <div class="profile-identity">
+                <h1>Dr {{ selectedDentist.prenom }} {{ selectedDentist.nom }}</h1>
+                <p class="profile-specialty">Dentiste</p>
+                <!-- <p class="profile-rpps">RPPS: 1000...</p> -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="container profile-main-grid">
+        <div class="grid-left">
+             <div class="info-card">
+                 <div class="card-header">
+                     <span class="icon-clock">🕒</span>
+                     <h3>Horaires et coordonnées</h3>
+                 </div>
+                 <div class="card-body">
+                     <div style="display: flex; gap: 40px; margin-bottom: 20px;">
+                         <div style="flex: 1;">
+                             <h4>Horaires d'ouverture</h4>
+                             <div style="display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 14px; color: #333;">
+                                 <span>Lundi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
+                                 <span>Mardi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
+                                 <span>Mercredi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
+                                 <span>Jeudi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
+                                 <span>Vendredi :</span> <span>09h00 - 13h00, 14h00 - 17h30</span>
+                             </div>
+                         </div>
+                         <div style="flex: 1;">
+                             <h4>Coordonnées</h4>
+                             <p style="font-size: 14px; font-weight: 500;">{{ selectedDentist.telephone }}</p>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+        </div>
+        
+        <div class="grid-right">
+             <div class="booking-summary-card">
+                 <h3>En résumé</h3>
+                 <hr class="divider-light">
+                 <div class="summary-details">
+                     <div class="icon-small"><i class="fa-solid fa-location-dot"></i></div>
+                     <div>
+                        <strong>Cabinet dentaire</strong>
+                        <p>{{ selectedDentist.ville }}</p>
+                     </div>
+                 </div>
+                 <button class="btn-book-full" (click)="navigateToBooking()">PRENDRE RENDEZ-VOUS</button>
+             </div>
+        </div>
+    </div>
+</div>

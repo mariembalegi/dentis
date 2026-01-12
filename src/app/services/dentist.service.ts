@@ -8,7 +8,13 @@ export interface DentistSearchResult {
   prenom: string;
   ville: string;
   photo?: string;
-  tel?: number;
+  diplome?: string;
+  telephone?: string;
+}
+
+export interface SearchDropdownResponse {
+  services: string[];
+  dentistes: DentistSearchResult[];
 }
 
 @Injectable({
@@ -28,5 +34,16 @@ export class DentistService {
     const url = `/userREST/search/dentist?${queryString}`;
 
     return this.apiService.get<DentistSearchResult[]>(url);
+  }
+
+  getSearchDropdown(keyword: string): Observable<SearchDropdownResponse> {
+    const params = new URLSearchParams();
+    if (keyword) params.append('q', keyword);
+    const url = `/userREST/search/dropdown?${params.toString()}`;
+    return this.apiService.get<SearchDropdownResponse>(url);
+  }
+
+  getDentistById(id: number): Observable<DentistSearchResult> {
+    return this.apiService.get<DentistSearchResult>(`/userREST/dentist/${id}`);
   }
 }

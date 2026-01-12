@@ -78,6 +78,22 @@ export const routes: Routes = [
         {
             path: 'booking',
              loadComponent: () => import('./pages/booking/booking.component').then(m => m.BookingComponent)
+        },
+        {
+            path: 'dentist/:id',
+            loadComponent: () => import('./pages/dentist-informations/dentist-informations.component').then(m => m.DentistInformationsComponent)
+        },
+        {
+          path: 'service-categories-booking',
+          loadComponent: () => import('./pages/service-categories-booking/service-categories-booking.component').then(m => m.ServiceCategoriesBookingComponent)
+        },
+        {
+          path: 'date-booking',
+          loadComponent: () => import('./pages/date-booking/date-booking.component').then(m => m.DateBookingComponent)
+        },
+        {
+          path: 'booking-confirmation',
+          loadComponent: () => import('./pages/booking-confirmation/booking-confirmation.component').then(m => m.BookingConfirmationComponent)
         }
     ]
   },
