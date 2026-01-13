@@ -17,7 +17,7 @@
 .profile-header-strip {
     background-color: #162c47; /* Dark blue from Doctolib */
     color: white;
-    padding: 24px 0;
+    padding: 60px 0;
 }
 
 .strip-content {
@@ -191,19 +191,21 @@
 
 .btn-book-full {
     width: 100%;
-    background-color: #dbeafe; /* Light blue */
-    color: #1e40af; /* Dark blue text */
+    background: var(--orange);
+    color: var(--white);
     border: none;
-    padding: 12px;
-    font-weight: 700;
-    border-radius: 4px;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
     cursor: pointer;
-    font-size: 14px;
+    transition: all 0.2s ease;
+    font-family: "Roboto", Arial, sans-serif;
     text-transform: uppercase;
-    transition: background 0.2s;
 
     &:hover {
-        background-color: #bfdbfe;
+        background: var(--dark-blue);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
     }
 }
 

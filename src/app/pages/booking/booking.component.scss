@@ -37,9 +37,24 @@ $primary-color: #1A3251; // Keeping for compatibility
 .appointment-sidebar {
     width: 320px;
     flex-shrink: 0;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
+    padding-right: 15px; /* Increase padding to accommodate arrow indicator */
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 4px;
+    }
     
     @media (max-width: 768px) {
         width: 100%;
+        max-height: none;
+        overflow-y: visible;
+        overflow-x: visible;
     }
 }
 

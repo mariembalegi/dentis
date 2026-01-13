@@ -111,27 +111,15 @@ export class BookingComponent implements OnInit {
   mockAppointments() {
     this.appointments = [
       {
-        idRv: 101,
-        patientId: 1, // Mock
-        dateRv: '2026-03-09',
-        heureRv: '16:30',
-        statutRv: 'VALIDATED', // Changed to match interface (CONFIRMÉ is not in type)
-        serviceName: 'Consultation de suivi de cardiologie',
-        dentistName: 'Dr Kossi TONYIGA',
-        dentistSpeciality: 'Cardiologue',
-        dentistPhoto: 'assets/images/doc1.jpg',
-        descriptionRv: 'Mock'
-      },
-      {
         idRv: 102,
         patientId: 1,
         dateRv: '2025-12-05',
         heureRv: '10:00',
         statutRv: 'VALIDATED', // Was PASSE
-        serviceName: 'Première consultation de médecine générale',
+        serviceName: 'Première consultation dentaire',
         dentistName: 'Dr Raouia Ben Ismail',
-        dentistSpeciality: 'Médecin généraliste',
-        dentistPhoto: 'assets/images/doc2.jpg',
+        dentistSpeciality: 'Chirurgien-dentiste',
+        dentistPhoto: undefined, // No image, use default
         descriptionRv: 'Mock'
       },
       {
@@ -140,14 +128,74 @@ export class BookingComponent implements OnInit {
         dateRv: '2025-09-12',
         heureRv: '10:30',
         statutRv: 'VALIDATED',
-        serviceName: 'Consultation ostéopathie',
-        dentistName: 'M. Florent Meyrial',
-        dentistSpeciality: 'Ostéopathe',
-        dentistPhoto: 'assets/images/doc3.jpg',
+        serviceName: 'Détartrage complet',
+        dentistName: 'Dr. Florent Meyrial',
+        dentistSpeciality: 'Chirurgien-dentiste',
+        dentistPhoto: undefined, // No image, use default
+        descriptionRv: 'Mock'
+      },
+      {
+        idRv: 104,
+        patientId: 1,
+        dateRv: '2025-08-20',
+        heureRv: '14:00',
+        statutRv: 'VALIDATED',
+        serviceName: 'Consultation de suivi',
+        dentistName: 'Dr. Sarah Connor',
+        dentistSpeciality: 'Orthodontiste',
+        dentistPhoto: undefined,
+        descriptionRv: 'Mock'
+      },
+      {
+        idRv: 105,
+        patientId: 1,
+        dateRv: '2025-07-15',
+        heureRv: '09:15',
+        statutRv: 'VALIDATED',
+        serviceName: 'Urgence dentaire',
+        dentistName: 'Dr. John Doe',
+        dentistSpeciality: 'Chirurgien-dentiste',
+        dentistPhoto: undefined,
+        descriptionRv: 'Mock'
+      },
+      {
+        idRv: 106,
+        patientId: 1,
+        dateRv: '2025-05-30',
+        heureRv: '11:45',
+        statutRv: 'VALIDATED',
+        serviceName: 'Blanchiment des dents',
+        dentistName: 'Dr. Emily Blunt',
+        dentistSpeciality: 'Chirurgien-dentiste',
+        dentistPhoto: undefined,
+        descriptionRv: 'Mock'
+      },
+      {
+        idRv: 107,
+        patientId: 1,
+        dateRv: '2025-03-22',
+        heureRv: '16:00',
+        statutRv: 'VALIDATED',
+        serviceName: 'Pose de couronne',
+        dentistName: 'Dr. Gregory House',
+        dentistSpeciality: 'Chirurgien-dentiste',
+        dentistPhoto: undefined,
+        descriptionRv: 'Mock'
+      },
+      {
+        idRv: 108,
+        patientId: 1,
+        dateRv: '2025-01-10',
+        heureRv: '08:30',
+        statutRv: 'VALIDATED',
+        serviceName: 'Contrôle annuel',
+        dentistName: 'Dr. Lisa Cuddy',
+        dentistSpeciality: 'Pédodontiste',
+        dentistPhoto: undefined,
         descriptionRv: 'Mock'
       }
     ] as RendezvousDisplay[];
-    this.selectedAppointment = this.appointments[0];
+    // this.selectedAppointment = this.appointments[0]; // Don't auto-select to show default empty state
   }
 
   get upcomingApps(): RendezvousDisplay[] {

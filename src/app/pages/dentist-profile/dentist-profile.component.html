@@ -1,5 +1,5 @@
 <!-- DOCTOR PROFILE VIEW (Doctolib style) -->
-<div *ngIf="selectedDentist" class="dentist-informations-page">
+<div *ngIf="selectedDentist" class="dentist-profile-page">
     <div class="profile-header-strip">
         <div class="container strip-content">
             <div class="profile-avatar-large">
@@ -52,7 +52,7 @@
                         <p>{{ selectedDentist.ville }}</p>
                      </div>
                  </div>
-                 <button class="btn-book-full" (click)="navigateToBooking()">PRENDRE RENDEZ-VOUS</button>
+                 <button class="btn-book-full">PRENDRE RENDEZ-VOUS</button>
              </div>
         </div>
     </div>

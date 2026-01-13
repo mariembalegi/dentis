@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
 import { DashboardHeaderComponent } from '../../components/dashboard-header/dashboard-header.component';
 import { InfoCardComponent } from '../../components/info-card/info-card.component';
@@ -11,7 +11,7 @@ import { DentistService, DentistSearchResult } from '../../services/dentist.serv
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent, DashboardHeaderComponent, InfoCardComponent],
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, DashboardHeaderComponent, InfoCardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
