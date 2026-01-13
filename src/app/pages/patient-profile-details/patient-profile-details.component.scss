@@ -1,0 +1,213 @@
+.details-container {
+  max-width: 960px; /* Reduced to match previous centered layout usually */
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Roboto', Arial, sans-serif;
+  color: #0e3048; /* Dark blue text */
+}
+
+.breadcrumb {
+  margin-bottom: 20px;
+  
+  .back-link {
+    display: flex;
+    align-items: center;
+    color: #000000;
+    text-decoration: none;
+    font-size: 14px;
+    font-family: "Roboto", Arial, sans-serif;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    width: fit-content;
+    padding: 0.5rem 0.5rem;
+    border-radius: 6px;
+    gap: 8px;
+
+    &:hover {
+      background: #F5F5F5;
+    }
+
+    i {
+      font-size: 12px;
+    }
+  }
+}
+
+.page-title {
+  font-family: 'Montserrat', sans-serif; /* Assuming Montserrat for titles */
+  font-size: 24px;
+  font-weight: 700;
+  color: #0e3048;
+  margin-bottom: 30px;
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* LEFT CARD */
+.info-card {
+  width: fit-content;
+  min-width: 300px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  background-color: #D04747; /* Teal color */
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.btn-edit {
+  background: transparent;
+  border: none;
+  color: #D04747;
+  padding: 6px 16px;
+  border-radius: 4px; /* Rounded corners */
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #fcebeb; /* Light reddish hover */
+  }
+  
+  i {
+      font-size: 14px;
+      color: #D04747;
+  }
+}
+
+.card-body {
+    .user-name {
+        font-family: 'Montserrat', Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #0e3048;
+    }
+
+    .maiden-name {
+        font-weight: 400;
+    }
+
+    .user-details {
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #0e3048;
+        
+        p {
+            margin: 0 0 8px 0;
+            
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        .label {
+            font-weight: 400;
+        }
+    }
+}
+
+/* RIGHT CARD */
+.promo-card {
+  width: 320px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden; /* For image radius */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+      width: 100%;
+  }
+}
+
+.promo-image {
+    height: 140px;
+    background-color: #e3f2fd; /* Light blue placeholder */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .img-placeholder {
+        /* If no image */
+        width: 100px;
+        height: 100px;
+        /* Replace with actual image asset if available */
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%230076bd"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'); 
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.5;
+    }
+}
+
+.promo-content {
+    padding: 24px;
+    text-align: center;
+
+    h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #0e3048;
+    }
+
+    p {
+        font-size: 14px;
+        color: #0e3048;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    .promo-link {
+        color: #0076bd;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

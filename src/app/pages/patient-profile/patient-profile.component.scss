@@ -1,0 +1,184 @@
+.account-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Roboto', Arial, sans-serif;
+  color: #1a3251;
+}
+
+.page-title {
+  font-size: 24px;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #0e3048;
+}
+
+/* Privacy Banner */
+.privacy-banner {
+  background-color: #eaf6ff;
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-content {
+  flex: 1;
+  max-width: 60%;
+  z-index: 1;
+}
+
+.banner-content h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: #0e3048;
+}
+
+.banner-content p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #354e68;
+  margin: 0 0 24px 0;
+}
+
+.btn-discover {
+  background-color: #0076bd; /* Doctolib Blue */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-discover:hover {
+  background-color: #005a91;
+}
+
+.banner-image {
+  position: relative;
+  width: 150px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shield-icon {
+    font-size: 100px;
+    color: #4fc3f7; /* Light Blue Shield */
+    opacity: 0.8;
+}
+
+.lock-icon {
+    font-size: 40px;
+    color: #ffa726; /* Orange Lock */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+/* Section Groups */
+.section-group {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 700;
+  color: #4B739B;
+  margin-bottom: 16px;
+  text-transform: uppercase; /* Unsure if uppercase in screenshot, assuming label style */
+}
+
+/* Menu Item */
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  border-top: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:last-child {
+      border-bottom: 1px solid #e0e0e0;
+  }
+
+  &:hover {
+      background-color: #f9fbfc;
+  }
+}
+
+.item-icon-wrapper {
+  width: 24px;
+  display: flex;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 20px;
+}
+
+.blue-icon {
+    color: #0076bd;
+}
+
+.red-icon {
+    color: #d91d37;
+}
+
+.item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-label {
+  font-weight: 700;
+  font-size: 16px;
+  color: #1a3251;
+  margin-bottom: 4px;
+}
+
+.red-text {
+    color: #d91d37;
+}
+
+.item-value {
+  font-size: 14px;
+  color: #586976;
+}
+
+.verified-badge {
+    background-color: #eafbf3;
+    color: #008751;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 16px;
+}
+
+.arrow-icon {
+    color: #586976;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .banner-content {
+        max-width: 100%;
+    }
+    .banner-image {
+        display: none;
+    }
+}
+

@@ -94,6 +94,14 @@ export const routes: Routes = [
         {
           path: 'booking-confirmation',
           loadComponent: () => import('./pages/booking-confirmation/booking-confirmation.component').then(m => m.BookingConfirmationComponent)
+        },
+        {
+          path: 'profile',
+          loadComponent: () => import('./pages/patient-profile/patient-profile.component').then(m => m.PatientProfileComponent)
+        },
+        {
+          path: 'profile-details',
+          loadComponent: () => import('./pages/patient-profile-details/patient-profile-details.component').then(m => m.PatientProfileDetailsComponent)
         }
     ]
   },

@@ -1,0 +1,17 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Modifier le téléphone</h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <label class="input-label">Nouveau téléphone</label>
+      <input type="text" class="form-control" [(ngModel)]="newPhone">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-save" (click)="onSave()">ENREGISTRER</button>
+    </div>
+  </div>
+</div>

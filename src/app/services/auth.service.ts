@@ -12,6 +12,7 @@ export interface User {
   token?: string;
   dateNaissanceP?: string; // For Patient
   photo?: string;
+  sexe?: string;
 }
 
 export interface LoginResponse {
@@ -74,7 +75,7 @@ export class AuthService {
   private clearUser() {
     this.userSubject.next(null);
     sessionStorage.removeItem(this.USER_KEY);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/home']);
   }
 
   getUser(): User | null {

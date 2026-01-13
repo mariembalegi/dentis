@@ -1,0 +1,92 @@
+<div class="modal-overlay">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Title Section -->
+    <div class="modal-header">
+      <h2 class="modal-title">Modifier mon profil</h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Content Section -->
+    <div class="modal-scroll-content">
+
+      <form (ngSubmit)="onSubmit()">
+        <!-- Gender -->
+        <div class="form-group">
+          <label class="field-label">Sexe sur la pièce d'identité</label>
+          <div class="radio-cards">
+            <label class="radio-card" [class.selected]="formData.gender === 'Féminin'">
+              <input type="radio" name="gender" [(ngModel)]="formData.gender" value="Féminin">
+              <span class="radio-circle"></span>
+              <span class="radio-label">Féminin</span>
+            </label>
+            <label class="radio-card" [class.selected]="formData.gender === 'Masculin'">
+              <input type="radio" name="gender" [(ngModel)]="formData.gender" value="Masculin">
+              <span class="radio-circle"></span>
+              <span class="radio-label">Masculin</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- First Name -->
+        <div class="form-group">
+          <label for="firstName" class="field-label">Prénom sur la pièce d'identité</label>
+          <input type="text" id="firstName" name="firstName" [(ngModel)]="formData.firstName" class="form-input">
+        </div>
+
+        <!-- Last Name -->
+        <div class="form-group">
+          <label for="lastName" class="field-label">Nom de famille sur la pièce d'identité</label>
+          <input type="text" id="lastName" name="lastName" [(ngModel)]="formData.lastName" class="form-input">
+        </div>
+
+        <!-- Birth Date -->
+        <div class="form-group">
+          <label for="birthDate" class="field-label">Date de naissance</label>
+          <p class="field-helper">Format : jj/mm/aaaa</p>
+          <input type="text" id="birthDate" name="birthDate" [(ngModel)]="formData.birthDate" class="form-input" placeholder="jj/mm/aaaa">
+        </div>
+
+        <!-- Row: Recouvrement & Groupe Sanguin -->
+        <div class="form-row">
+            <!-- Recouvrement -->
+            <div class="form-group">
+              <label for="recoveryType" class="field-label">Recouvrement</label>
+              <div class="select-wrapper">
+                 <select id="recoveryType" name="recoveryType" [(ngModel)]="formData.recoveryType" class="form-input">
+                    <option value="" disabled selected>Sélectionner une option</option>
+                    <option value="Médecin de famille">Médecin de famille</option>
+                    <option value="Remboursement">Remboursement</option>
+                    <option value="Santé publique">Santé publique</option>
+                 </select>
+                  <i class="fas fa-caret-down select-icon"></i>
+              </div>
+            </div>
+
+            <!-- Groupe Sanguin -->
+            <div class="form-group">
+              <label for="bloodGroup" class="field-label">Groupe sanguin</label>
+               <div class="select-wrapper">
+                 <select id="bloodGroup" name="bloodGroup" [(ngModel)]="formData.bloodGroup" class="form-input">
+                    <option value="" disabled selected>Sélectionner un groupe</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="O">O</option>
+                    <option value="AB">AB</option>
+                 </select>
+                  <i class="fas fa-caret-down select-icon"></i>
+              </div>
+            </div>
+        </div>
+
+        <!-- Footer Actions (Standard submit button usually at bottom) -->
+        <div class="form-actions">
+            <button type="button" class="btn-cancel" (click)="onClose()">Annuler</button>
+            <button type="submit" class="btn-submit">Enregistrer</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

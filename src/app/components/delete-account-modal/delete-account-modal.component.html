@@ -1,0 +1,21 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Supprimer mon compte</h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <p>
+        Vous avez la possibilité de supprimer votre compte Dentis et les données associées. Cette action n’aura pas automatiquement pour effet de supprimer vos données personnelles des bases de données des soignants avec lesquels vous avez pris rendez-vous et/ou que vous avez consulté. Les soignants peuvent avoir un intérêt légitime à les conserver.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="onClose()">ANNULER</button>
+      <button class="btn-confirm" (click)="onConfirm()">SUPPRIMER MON COMPTE</button>
+    </div>
+  </div>
+</div>

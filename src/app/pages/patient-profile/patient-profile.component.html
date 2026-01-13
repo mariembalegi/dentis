@@ -1,0 +1,111 @@
+<div class="account-container">
+  <h1 class="page-title">Mon compte</h1>
+
+  <!-- Identity Section -->
+  <div class="section-group">
+    <h3 class="section-title">Identité</h3>
+    
+    <div class="menu-item" [routerLink]="['/dashboard/profile-details']">
+      <div class="item-icon-wrapper blue-icon">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div class="item-content">
+        <span class="item-label">Mon profil</span>
+        <span class="item-value">{{ patientName }}</span>
+      </div>
+      <i class="fas fa-chevron-right arrow-icon"></i>
+    </div>
+
+
+  </div>
+
+  <!-- Connection Section -->
+  <div class="section-group">
+    <h3 class="section-title">Connexion</h3>
+    
+    <div class="menu-item" (click)="openPhoneModal()">
+      <div class="item-icon-wrapper blue-icon">
+        <i class="fas fa-phone-alt"></i>
+      </div>
+      <div class="item-content">
+        <span class="item-label">Téléphone</span>
+        <span class="item-value">{{ patientPhone }}</span>
+      </div>
+      <i class="fas fa-chevron-right arrow-icon"></i>
+    </div>
+
+    <div class="menu-item" (click)="openEmailModal()">
+      <div class="item-icon-wrapper blue-icon">
+        <i class="fas fa-envelope"></i>
+      </div>
+      <div class="item-content">
+        <span class="item-label">E-mail</span>
+        <span class="item-value">{{ patientEmail }}</span>
+      </div>
+      <i class="fas fa-chevron-right arrow-icon"></i>
+    </div>
+
+    <div class="menu-item" (click)="openPasswordModal()">
+      <div class="item-icon-wrapper blue-icon">
+        <i class="fas fa-lock"></i>
+      </div>
+      <div class="item-content">
+        <span class="item-label">Mot de passe</span>
+        <span class="item-value">••••••••••••••••</span>
+      </div>
+      <i class="fas fa-chevron-right arrow-icon"></i>
+    </div>
+  </div>
+
+  <!-- Confidentialite Section -->
+  <div class="section-group">
+    <h3 class="section-title">Confidentialité</h3>
+
+    <div class="menu-item" (click)="openDeleteModal()">
+      <div class="item-content">
+        <span class="item-label">Supprimer mon compte</span>
+      </div>
+      <i class="fas fa-chevron-right arrow-icon"></i>
+    </div>
+
+    <div class="menu-item" (click)="logout()">
+      <div class="item-icon-wrapper red-icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </div>
+      <div class="item-content">
+        <span class="item-label red-text">Déconnexion</span>
+      </div>
+      <i class="fas fa-chevron-right arrow-icon"></i>
+    </div>
+  </div>
+
+</div>
+
+<!-- Phone Edit Modal -->
+<app-phone-edit-modal
+  *ngIf="showPhoneModal"
+  [currentPhone]="patientPhone"
+  (close)="closePhoneModal()"
+  (save)="savePhone($event)">
+</app-phone-edit-modal>
+
+<!-- Email Edit Modal -->
+<app-email-edit-modal
+  *ngIf="showEmailModal"
+  [currentEmail]="patientEmail"
+  (close)="closeEmailModal()"
+  (save)="saveEmail($event)">
+</app-email-edit-modal>
+
+<!-- Password Edit Modal -->
+<app-password-edit-modal
+  *ngIf="showPasswordModal"
+  (close)="closePasswordModal()"
+  (save)="savePassword($event)">
+</app-password-edit-modal>
+
+<!-- Delete Account Modal -->
+<app-delete-account-modal
+  *ngIf="showDeleteModal"
+  (close)="closeDeleteModal()">
+</app-delete-account-modal>

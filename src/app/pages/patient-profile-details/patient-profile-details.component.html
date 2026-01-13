@@ -1,0 +1,44 @@
+<div class="details-container">
+  <div class="breadcrumb">
+    <a routerLink="/patient-profile" class="back-link">
+      <i class="fas fa-chevron-left"></i> Mon compte
+    </a>
+  </div>
+
+  <h1 class="page-title">Mon profil</h1>
+
+  <div class="content-wrapper">
+    <!-- Left Card: Personal Info -->
+    <div class="info-card">
+      <div class="card-header">
+        <div class="avatar-circle">
+          {{ initials }}
+        </div>
+        <button class="btn-edit" (click)="openEditModal()">
+          <i class="fas fa-edit"></i> Modifier
+        </button>
+      </div>
+
+      <div class="card-body">
+        <h2 class="user-name">
+          {{ user.firstName }} {{ user.lastName }}
+        </h2>
+        
+        <div class="user-details">
+          <p>Né(e) le {{ user.birthDate }} ({{ user.age }} ans)</p>
+          <p><span class="label">Recouvrement :</span> {{ user.recoveryType }}</p>
+          <p><span class="label">Groupe Sanguin :</span> {{ user.bloodGroup }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Card: Promo/Info (Optional based on screenshot) -->
+  </div>
+    
+  <app-patient-details-edit
+    *ngIf="showEditModal"
+    [userDetails]="user"
+    (close)="closeEditModal()"
+    (save)="saveDetails($event)">
+  </app-patient-details-edit>
+</div>
