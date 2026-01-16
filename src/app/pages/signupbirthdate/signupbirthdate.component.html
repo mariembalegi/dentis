@@ -1,31 +1,58 @@
-<h1 class="page-title">S'inscrire</h1>
-
-<a href="#" class="back-link" (click)="onBackClick(); $event.preventDefault()">← Étape précédente</a>
-
-<div class="signup-card">
-  <h2 class="form-title">Ajoutez les informations suivantes</h2>
-  <p class="email-display">{{ email }}</p>
+<div class="content-container">
+  <h1 class="page-title">S'inscrire</h1>
   
-  <div class="form-group">
-    <label class="form-label">Date de naissance <span class="required">(requis)</span></label>
-    <p class="form-placeholder">Format: jour / mois / année</p>
-    <input type="text" class="form-input" placeholder="jj / mm / aaaa" [(ngModel)]="birthdate" (input)="onBirthdateChange()" appDateMask>
-    <p class="error-message" *ngIf="birthdateError">La date de naissance est requise</p>
-  </div>
+  <div class="signup-card">
+    <a href="#" class="back-link" (click)="onBackClick(); $event.preventDefault()">← Étape précédente</a>
 
-  <div class="form-group">
-    <label class="form-label">Sexe <span class="required">(requis)</span></label>
-    <div class="radio-group">
-      <label class="radio-option">
-        <input type="radio" name="sexe" value="feminin" [(ngModel)]="sexe">
-        <span class="radio-label">Féminin</span>
-      </label>
-      <label class="radio-option">
-        <input type="radio" name="sexe" value="masculin" [(ngModel)]="sexe">
-        <span class="radio-label">Masculin</span>
-      </label>
+    <h2 class="form-title">Ajoutez les informations suivantes</h2>
+    <p class="email-display">{{ email }}</p>
+    
+    <div class="form-group">
+      <label class="form-label">Date de naissance <span class="required">(requis)</span></label>
+      <p class="form-placeholder">Format: jour / mois / année</p>
+      <input type="text" class="form-input" placeholder="jj / mm / aaaa" [(ngModel)]="birthdate" (input)="onBirthdateChange()" appDateMask>
+      <p class="error-message" *ngIf="birthdateError">La date de naissance est requise</p>
     </div>
+
+    <div class="form-group">
+      <label class="form-label">Sexe <span class="required">(requis)</span></label>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" name="sexe" value="feminin" [(ngModel)]="sexe">
+          <span class="radio-label">Féminin</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="sexe" value="masculin" [(ngModel)]="sexe">
+          <span class="radio-label">Masculin</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Recouvrement social <span class="required">(requis)</span></label>
+        <select class="form-input" [(ngModel)]="recouvrement" (change)="onRecouvrementChange()">
+          <option value="" disabled selected>Sélectionner</option>
+          <option value="Médecin de la famille">Médecin de la famille</option>
+          <option value="Remboursement">Remboursement</option>
+          <option value="Santé publique">Santé publique</option>
+        </select>
+        <p class="error-message" *ngIf="recouvrementError">Ce champ est requis</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Groupe sanguin <span class="required">(requis)</span></label>
+        <select class="form-input" [(ngModel)]="bloodGroup" (change)="onBloodGroupChange()">
+          <option value="" disabled selected>Sélectionner</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="AB">AB</option>
+          <option value="O">O</option>
+        </select>
+        <p class="error-message" *ngIf="bloodGroupError">Ce champ est requis</p>
+      </div>
+    </div>
+    
+    <button class="btn-continue" (click)="onContinueClick()">CONTINUER</button>
   </div>
-  
-  <button class="btn-continue" (click)="onContinueClick()">CONTINUER</button>
 </div>

@@ -1,0 +1,25 @@
+<div class="services-page">
+  <div class="page-header">
+    <h2>Mes Services</h2>
+    <div class="actions">
+        <button class="add-btn" (click)="openAddModal()" title="Ajouter un service">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+  </div>
+
+  <div class="services-grid">
+    <app-service-card *ngFor="let service of services" [service]="service"></app-service-card>
+
+    <div class="empty-state" *ngIf="services.length === 0">
+        <i class="fas fa-notes-medical"></i>
+        <p>Vous n'avez ajouté aucun service pour le moment.</p>
+    </div>
+  </div>
+
+  <app-add-service-modal
+    *ngIf="showAddModal"
+    (close)="closeAddModal()"
+    (add)="onAddService($event)">
+  </app-add-service-modal>
+</div>

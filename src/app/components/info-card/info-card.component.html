@@ -3,7 +3,7 @@
     <div class="info-card">
       <div class="card-content">
         <h3>{{ title }}</h3>
-        <button class="discover-btn">{{ buttonText }}</button>
+        <button class="discover-btn" [routerLink]="link">{{ buttonText }}</button>
       </div>
       <div class="card-image">
         <img [src]="imageSrc" [alt]="imageAlt" class="card-img">

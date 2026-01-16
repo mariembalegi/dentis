@@ -1,7 +1,7 @@
 <div class="details-container">
   <div class="breadcrumb">
     <a routerLink="/patient-profile" class="back-link">
-      <i class="fas fa-chevron-left"></i> Mon compte
+      ← Mon compte
     </a>
   </div>
 
@@ -15,7 +15,7 @@
           {{ initials }}
         </div>
         <button class="btn-edit" (click)="openEditModal()">
-          <i class="fas fa-edit"></i> Modifier
+          <i class="fas fa-edit"></i>
         </button>
       </div>
 
@@ -25,20 +25,54 @@
         </h2>
         
         <div class="user-details">
-          <p>Né(e) le {{ user.birthDate }} ({{ user.age }} ans)</p>
-          <p><span class="label">Recouvrement :</span> {{ user.recoveryType }}</p>
-          <p><span class="label">Groupe Sanguin :</span> {{ user.bloodGroup }}</p>
+          <ng-container *ngIf="!isDentist">
+            <p>Né(e) le {{ user.birthDate }} ({{ user.age }} ans)</p>
+            <p><span class="label">Recouvrement :</span> {{ user.recoveryType }}</p>
+            <p><span class="label">Groupe Sanguin :</span> {{ user.bloodGroup }}</p>
+          </ng-container>
+          
+          <ng-container *ngIf="isDentist">
+             <p>{{ user.speciality || 'Non renseigné' }}</p>
+             <p>
+               {{ user.address }}<span *ngIf="user.delegation">, {{ user.delegation }}</span><span *ngIf="user.city">, {{ user.city }}</span>
+             </p>
+          </ng-container>
         </div>
       </div>
     </div>
 
     <!-- Right Card: Promo/Info (Optional based on screenshot) -->
-  </div>
     
+    <!-- Working Hours Card (Dentist Only) -->
+    <div class="hours-card" *ngIf="isDentist">
+        <div class="card-header">
+            <h3>Horaires de travail</h3>
+            <button class="btn-edit" (click)="openHoursEditModal()" title="Modifier les horaires">
+                <i class="fas fa-edit"></i>
+            </button>
+        </div>
+        
+        <div class="hours-grid">
+            <div class="day-row" *ngFor="let slot of workingHours">
+                <span class="day-name">{{ slot.day }}</span>
+                <span class="hours" [class.closed]="slot.isClosed">{{ formatSchedule(slot) }}</span>
+            </div>
+        </div>
+    </div>
+  </div>
+
   <app-patient-details-edit
     *ngIf="showEditModal"
     [userDetails]="user"
+    [isDentist]="isDentist"
     (close)="closeEditModal()"
     (save)="saveDetails($event)">
   </app-patient-details-edit>
+
+  <app-working-hours-edit-modal
+    *ngIf="showHoursEditModal"
+    [schedule]="workingHours"
+    (close)="closeHoursEditModal()"
+    (save)="saveHours($event)">
+  </app-working-hours-edit-modal>
 </div>

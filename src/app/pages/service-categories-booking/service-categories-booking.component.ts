@@ -19,13 +19,15 @@ export class ServiceCategoriesBookingComponent implements OnInit {
   // Removed step property as it's no longer needed for navigation logic within this component
 
   categories = [
-    { id: 1, name: 'Consultation de suivi dentaire' },
-    { id: 2, name: 'Première consultation dentaire' },
-    { id: 3, name: 'Urgence dentaire' },
-    { id: 4, name: 'Détartrage' },
-    { id: 5, name: 'Devis prothèse' },
-    { id: 6, name: 'Blanchiment des dents' }
+    { id: 1, name: 'Consultation de suivi dentaire', price: 60 },
+    { id: 2, name: 'Première consultation dentaire', price: 80 },
+    { id: 3, name: 'Urgence dentaire', price: 90 },
+    { id: 4, name: 'Détartrage', price: 120 },
+    { id: 5, name: 'Devis prothèse', price: 80 },
+    { id: 6, name: 'Blanchiment des dents', price: 400 }
   ];
+
+  selectedCategories: any[] = [];
 
   constructor(
     private router: Router, 
@@ -55,14 +57,33 @@ export class ServiceCategoriesBookingComponent implements OnInit {
       this.router.navigate(['../dentist/1'], { relativeTo: this.route }); // Assuming ID 1 or get from params
   }
 
-  selectCategory(category: any) {
+  toggleCategory(category: any) {
+    const index = this.selectedCategories.findIndex(c => c.id === category.id);
+    if (index > -1) {
+      this.selectedCategories.splice(index, 1);
+    } else {
+      this.selectedCategories.push(category);
+    }
+  }
+
+  isSelected(category: any): boolean {
+    return this.selectedCategories.some(c => c.id === category.id);
+  }
+
+  continueBooking() {
+    if (this.selectedCategories.length === 0) return;
+
+    const names = this.selectedCategories.map(c => c.name).join(', ');
+    const totalPrice = this.selectedCategories.reduce((sum, c) => sum + c.price, 0);
+
     this.router.navigate(['/dashboard/date-booking'], {
       queryParams: {
         dentistName: this.dentistName,
         dentistSpecialty: this.dentistSpecialty,
         dentistAddress: this.dentistAddress,
         dentistPhoto: this.dentistPhoto,
-        serviceName: category.name
+        serviceName: names,
+        servicePrice: totalPrice
       }
     });
   }

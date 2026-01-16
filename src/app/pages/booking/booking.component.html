@@ -146,70 +146,154 @@
   </div>
 
   <!-- Fallback for Dentist View (Original Content for Dentist) -->
-    <ng-container *ngIf="user.role === 'DENTISTE'">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h3>Demandes</h3>
-                <div class="search-box-small">
-                    <input type="text" placeholder="Rechercher..." [(ngModel)]="appointmentSearch">
+    <div class="booking-container dentist-view" *ngIf="user.role === 'DENTISTE'">
+        
+        <!-- HEADER TOOLBAR -->
+        <div class="calendar-toolbar">
+            <div class="toolbar-left">
+                <div class="nav-arrows">
+                    <button class="btn-icon" (click)="prevWeek()"><i class="fas fa-chevron-left"></i></button>
+                    <button class="btn-icon" (click)="nextWeek()"><i class="fas fa-chevron-right"></i></button>
                 </div>
-            </div>
-
-            <div *ngIf="filteredAppointments.length === 0" class="empty-list">Aucune demande.</div>
-            
-            <div class="rv-list">
-                <div class="rv-card" *ngFor="let rv of filteredAppointments">
-                    <div class="rv-header">
-                        <span class="rv-date">{{ rv.dateRv | date:'shortDate' }}</span>
-                        <span class="rv-time">{{ rv.heureRv }}</span>
-                    </div>
-                    <div class="rv-body">
-                        <p class="rv-patient">{{ rv.patientName }}</p>
-                        <span class="status-badge" [class]="rv.statutRv">{{ rv.statutRv }}</span>
-                    </div>
-                    <div class="rv-actions" *ngIf="rv.statutRv === 'PENDING'">
-                        <button class="btn-accept" (click)="validateRendezvous(rv.idRv!, 'VALIDATED')">✔</button>
-                        <button class="btn-reject" (click)="validateRendezvous(rv.idRv!, 'REFUSED')">✘</button>
-                    </div>
-                </div>
-            </div>
-        </aside>
-    
-        <div class="content-area">
-            <div class="header-split">
-                <h2>Mes Services</h2>
-                <div class="controls-row">
-                    <div class="search-box">
-                        <input type="text" placeholder="Rechercher un service..." [(ngModel)]="serviceSearch">
-                    </div>
-                    <button class="btn-primary" (click)="toggleCreateService()">
-                        {{ showCreateServiceModule ? 'Fermer' : 'Nouveau Service' }}
-                    </button>
-                </div>
-            </div>
-
-            <div *ngIf="showCreateServiceModule" class="service-form">
-                <input placeholder="Nom" [(ngModel)]="newService.nomSM">
-                <input placeholder="Type" [(ngModel)]="newService.typeSM">
-                <input placeholder="Description" [(ngModel)]="newService.descriptionSM">
-                <input type="number" placeholder="Tarif" [(ngModel)]="newService.tarifSM">
-                <p>Upload image (Base64) - Not implemented in UI</p> 
-                <button (click)="submitNewService()">Créer</button>
+                <!-- Calculate range label -->
+                 <span class="date-range-label" *ngIf="weekDays.length > 0">
+                     {{ weekDays[0] | date:'d' }} - {{ weekDays[weekDays.length-1] | date:'d MMMM yyyy' }}
+                 </span>
             </div>
             
-            <div class="services-grid">
-                <div class="service-card" *ngFor="let s of filteredServices">
-                    <div class="card-img" [style.background-image]="'url(' + (s.image || 'assets/images/placeholder.png') + ')'"></div>
-                    <div class="card-content">
-                        <h3>{{ s.nomSM }}</h3>
-                        <p class="service-price">{{ s.tarifSM }} TND</p>
-                        <p class="service-desc" *ngIf="s.descriptionSM">{{ s.descriptionSM }}</p>
-                        <button class="btn-delete" (click)="deleteService(s.numSM!)">Supprimer</button>
+            <div class="toolbar-right">
+            </div>
+        </div>
+
+        <div class="calendar-layout">
+            <!-- LEFT SIDEBAR -->
+            <aside class="calendar-sidebar">
+                
+                <!-- Mini Calendar Placeholder -->
+                <div class="mini-calendar">
+                    <div class="mini-cal-header">
+                        <i class="fas fa-chevron-left" (click)="prevMonth()"></i>
+                        <span>{{ currentWeekStart | date:'MMMM yyyy' }}</span>
+                        <i class="fas fa-chevron-right" (click)="nextMonth()"></i>
+                    </div>
+                    <div class="mini-cal-grid">
+                        <!-- Standard 7x5 grid mock -->
+                        <div class="row header"><span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span></div>
+                        
+                         <div class="row" *ngFor="let row of miniCalRows">
+                             <span *ngFor="let d of row" 
+                                   (click)="goToWeek(d)"
+                                   [class.active-week]="isInCurrentWeek(d)"
+                                   [style.opacity]="isCurrentMonth(d) ? 1 : 0.4">
+                                   {{ d | date:'d' }}
+                             </span>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Selected Appointment Detail Card -->
+                <div class="side-detail-card red-theme" *ngIf="selectedCalendarEvent; else noEventSelected" [style.border-left-color]="selectedCalendarEvent.color">
+                    <div class="card-title">{{ selectedCalendarEvent.serviceName || 'Consultation' }}</div>
+                    <div class="card-info-row" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <div class="card-date">{{ selectedCalendarEvent.start | date:'EEEE d MMMM' }}</div>
+                            <div class="card-time">{{ selectedCalendarEvent.start | date:'HH:mm' }} → {{ getEndTime(selectedCalendarEvent) }}</div>
+                        </div>
+                        <div class="card-price" *ngIf="selectedCalendarEvent.totalPrice">
+                            {{ selectedCalendarEvent.totalPrice }} <span style="font-size: 0.8em; font-weight: normal;">TND</span>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #noEventSelected>
+                     <div class="side-detail-card" style="background:#f9f9f9; color:#999; border-left: 4px solid #ddd;">
+                        <div class="card-title">Sélectionnez un RDV</div>
+                        <div class="card-date">pour voir les détails</div>
+                    </div>
+                </ng-template>
+                
+                <div class="side-patient-info" *ngIf="selectedCalendarEvent">
+                    <div class="p-header">
+                        <i class="fas" 
+                           *ngIf="selectedCalendarEvent.patient !== '(Sans patient)'"
+                           [class.fa-venus]="selectedCalendarEvent.gender === 'F'" 
+                           [class.fa-mars]="selectedCalendarEvent.gender !== 'F'"
+                           [style.color]="selectedCalendarEvent.gender === 'F' ? '#E91E63' : '#4A90E2'"></i>
+                        <span [style.margin-left]="selectedCalendarEvent.patient !== '(Sans patient)' ? '5px' : '0'"><strong>{{ selectedCalendarEvent.patient }}</strong></span>
+                        <span class="badge-new" *ngIf="selectedCalendarEvent.isNew">Nouveau</span>
+                    </div>
+                    <div class="p-details">
+                        <p>{{ selectedCalendarEvent.phone }}</p>
+                        <p>{{ selectedCalendarEvent.birthDate | date:'dd/MM/yyyy' }} {{ getAge(selectedCalendarEvent.birthDate) }}</p>
+                        <div class="small-meta" style="margin-top:5px; padding-top:5px; border-top:1px dashed #eee; font-size:12px; color:#888;">
+                           Groupe: <strong style="color:#333;">{{ selectedCalendarEvent.bloodGroup }}</strong> <br>
+                           Recouvrement: <span style="background:#eef; padding:1px 4px; border-radius:3px; color:#446;">{{ selectedCalendarEvent.coverageType }}</span>
+                        </div>
+                        
+                        <button class="btn-reject" (click)="rejectAppointment(selectedCalendarEvent)">
+                            <i class="fas fa-ban" style="margin-right: 5px;"></i> Rejeter le RDV
+                        </button>
+                    </div>
+                </div>
+
+            </aside>
+        
+            <!-- MAIN CALENDAR GRID -->
+            <div class="calendar-wrapper">
+                
+                <!-- Day Header Row -->
+                <div class="cal-header-row">
+                    <div class="time-gutter-header"></div>
+                    <div class="day-header" *ngFor="let day of weekDays">
+                        <div class="day-name">{{ day | date:'EEE.' }} {{ day | date:'d' }}</div>
+                        <div class="day-options" (click)="openAddAppointmentModal(day)">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scrollable Body -->
+                <div class="cal-body">
+                    <!-- Time Gutter -->
+                    <div class="time-gutter">
+                        <div class="time-slot" *ngFor="let h of hours">
+                            <span>{{ h }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Day Columns -->
+                    <div class="day-column" *ngFor="let day of weekDays">
+                        <!-- Grid Lines -->
+                        <div class="grid-line" *ngFor="let h of hours"></div>
+
+                        <!-- Events -->
+                         <ng-container *ngFor="let event of getEventsForDaySimple(day)">
+                             <div class="cal-event" 
+                                  (click)="selectCalendarEvent(event)"
+                                  (contextmenu)="onRightClickEvent($event, event)"
+                                  [style.top.px]="getEventTop(event)"
+                                  [style.height.px]="getEventHeight(event)"
+                                  [style.background-color]="event.color"
+                                  [class.selected]="selectedCalendarEvent === event"
+                                  [class.has-duration]="true">
+                                  
+                                  <div class="event-time">{{ event.start | date:'H:mm' }}</div>
+                                  <div class="event-title"><strong>{{ event.patient }}</strong></div>
+                                  <div class="event-desc" *ngIf="event.id === 20">Adresse</div><!-- Mock for Formation -->
+                                  
+                                  <div class="event-status-icon" *ngIf="selectedCalendarEvent === event">
+                                      <i class="fas fa-user"></i>
+                                  </div>
+                             </div>
+                         </ng-container>
+                         
+                         <!-- Demo "Current Time" Line (only on 'today') -->
+                         <!-- <div class="current-time-line" style="top: 450px;"></div> -->
                     </div>
                 </div>
             </div>
         </div>
-    </ng-container>
+    
+    </div>
 
   <!-- Confirm Cancel Modal -->
   <div class="modal-overlay" *ngIf="showCancelModal">
@@ -235,4 +319,73 @@
       </div>
     </div>
   </div>
+
+  <!-- Add Appointment Modal -->
+  <div class="modal-overlay" *ngIf="showAddAppointmentModal">
+    <div class="modal-box appointment-modal">
+        <div class="modal-header">
+            <h3>Nouveau Rendez-vous</h3>
+            <button class="close-btn" (click)="closeAddAppointmentModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body form-layout">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="text" [value]="newAppointmentDate | date:'EEEE d MMMM yyyy'" disabled class="form-control disabled">
+                </div>
+
+                <div class="form-group">
+                    <label>Heure <span class="required">*</span></label>
+                    <input type="time" [(ngModel)]="newAppointmentTime" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Patient</label>
+                <select [(ngModel)]="newAppointmentPatientName" class="form-control">
+                    <option value="" disabled selected>Sélectionner un patient</option>
+                    <option *ngFor="let p of mockPatientsList" [value]="p.name">{{ p.name }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Services Médicaux (sélection multiple) (facultatif)</label>
+                <select multiple [(ngModel)]="newAppointmentServices" class="form-control" style="height: 120px;">
+                    <option *ngFor="let s of availableServices" [value]="s">{{ s }}</option>
+                </select>
+                <small style="color: #888; font-size: 11px;">Maintenez Ctrl (Windows) ou Cmd (Mac) pour sélectionner plusieurs services.</small>
+            </div>
+            
+            <div class="form-group">
+                 <label>Notes (facultatif)</label>
+                 <textarea [(ngModel)]="newAppointmentNote" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="closeAddAppointmentModal()">Annuler</button>
+            <button class="btn-save" (click)="saveNewAppointment()" [disabled]="!newAppointmentTime">Enregistrer</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- Context Menu for Events -->
+  <div class="context-menu-dropdown" 
+       *ngIf="showContextMenu" 
+       [style.top.px]="contextMenuPosition.y" 
+       [style.left.px]="contextMenuPosition.x"
+       (click)="$event.stopPropagation()">
+      <ul>
+          <li (click)="editEvent(contextMenuEvent)">
+              <i class="fas fa-edit"></i> Modifier
+          </li>
+          <li (click)="deleteEvent(contextMenuEvent)" class="delete">
+              <i class="fas fa-trash-alt"></i> Supprimer
+          </li>
+      </ul>
+  </div>
+
 </main>

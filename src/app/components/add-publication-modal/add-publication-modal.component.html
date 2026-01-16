@@ -1,0 +1,73 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Ajouter une publication</h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #pubForm="ngForm">
+      <div class="modal-body">
+        
+        <!-- Titre/Nom -->
+        <div class="form-group">
+          <label for="title" class="field-label">Titre de la publication *</label>
+          <input type="text" id="title" name="title" [(ngModel)]="formData.title" required class="form-input" placeholder="Titre...">
+        </div>
+
+        <!-- Type -->
+        <div class="form-group">
+          <label for="type" class="field-label">Catégorie *</label>
+           <div class="select-wrapper">
+             <select id="type" name="type" [(ngModel)]="formData.category" required class="form-input">
+                <option value="" disabled selected>Sélectionner une catégorie</option>
+                <option value="Article scientifique">Article scientifique</option>
+                <option value="Étude de cas">Étude de cas</option>
+                <option value="Lancement produit">Lancement produit</option>
+                <option value="Actualités">Actualités</option>
+             </select>
+              <i class="fas fa-caret-down select-icon"></i>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description" class="field-label">Description *</label>
+          <textarea id="description" name="description" [(ngModel)]="formData.description" required class="form-input" rows="4" placeholder="Description..."></textarea>
+        </div>
+
+        <!-- Files Row -->
+        <div class="form-row">
+            <!-- Image -->
+            <div class="form-group half">
+                <label class="field-label">Affiche (JPG, JPEG, PNG) *</label>
+                <div class="file-upload-box" [class.uploaded]="!!imageFileName" (click)="imageInput.click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span *ngIf="!imageFileName">Choisir une image</span>
+                    <span *ngIf="imageFileName" class="file-name">{{ imageFileName }}</span>
+                    <input #imageInput type="file" accept="image/*" (change)="onFileSelected($event, 'image')" style="display: none">
+                </div>
+            </div>
+
+            <!-- PDF -->
+            <div class="form-group half">
+                <label class="field-label">Document (PDF) *</label>
+                 <div class="file-upload-box" [class.uploaded]="!!pdfFileName" (click)="pdfInput.click()">
+                    <i class="fas fa-file-pdf"></i>
+                    <span *ngIf="!pdfFileName">Choisir un PDF</span>
+                    <span *ngIf="pdfFileName" class="file-name">{{ pdfFileName }}</span>
+                    <input #pdfInput type="file" accept=".pdf" (change)="onFileSelected($event, 'pdf')" style="display: none">
+                </div>
+            </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="onClose()">Annuler</button>
+        <button type="submit" class="btn-submit" [disabled]="!pubForm.form.valid || !imageFileName || !pdfFileName">Publier</button>
+      </div>
+    </form>
+  </div>
+</div>

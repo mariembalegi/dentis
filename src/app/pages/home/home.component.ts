@@ -7,6 +7,7 @@ import { DashboardHeaderComponent } from '../../components/dashboard-header/dash
 import { InfoCardComponent } from '../../components/info-card/info-card.component';
 import { AuthService } from '../../services/auth.service';
 import { DentistService, DentistSearchResult } from '../../services/dentist.service';
+import { PublicationService, Article } from '../../services/publication.service'; // Import service
 
 @Component({
   selector: 'app-home',
@@ -17,6 +18,8 @@ import { DentistService, DentistSearchResult } from '../../services/dentist.serv
 })
 export class HomeComponent implements OnInit {
   isPatientConnected = false;
+  isDentistConnected = false;
+  latestArticles: Article[] = []; // Store articles
   
   // Search
   searchTerm = '';
@@ -40,14 +43,19 @@ export class HomeComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private dentistService: DentistService,
-    private router: Router
+    private router: Router,
+    private publicationService: PublicationService
   ) {}
 
   ngOnInit() {
     this.authService.user$.subscribe(user => {
         // Adjust condition as needed - e.g. check if user exists and is a PATIENT
         this.isPatientConnected = !!user && user.role === 'PATIENT';
+        this.isDentistConnected = !!user && user.role === 'DENTISTE';
     });
+
+    // Get 3 latest articles
+    this.latestArticles = this.publicationService.getArticles().slice(0, 3);
   }
 
   onSearchInput() {
@@ -105,13 +113,38 @@ export class HomeComponent implements OnInit {
         return;
     }
     
-    // Logic for full search result page could go here
+    // Offline user redirection logic
+    if (!this.isPatientConnected && !this.isDentistConnected) {
+        // Fetch results and redirect to the first dentist found
+        this.isSearching = true;
+        // Use searchDentists to include location support
+        this.dentistService.searchDentists(this.searchTerm, this.searchLocation).subscribe({
+            next: (results) => {
+                this.isSearching = false;
+                if (results && results.length > 0) {
+                    // Navigate to public page of the first dentist
+                    this.router.navigate(['/dentist-informations', results[0].id]);
+                } else {
+                   // Fallback: indicate no results
+                   this.showDropdown = true;
+                   this.dropdownServices = [];
+                   this.dropdownDentists = [];
+                   // Show no results message in dropdown or UI
+                }
+            },
+            error: (err) => {
+                this.isSearching = false;
+                console.error('Search failed', err);
+            }
+        });
+        return;
+    }
+
+    // Logic for connected user (or general flow if not redirected)
     // For now, let's just trigger the dropdown fetch again or do nothing if already fetched
     if (this.showDropdown) return; 
     
     this.fetchDropdown();
-    
-    // Optionally: this.router.navigate(['/search-results'], { queryParams: ... })
   }
 
   selectService(serviceName: string) {
@@ -124,7 +157,12 @@ export class HomeComponent implements OnInit {
   selectDentist(dentist: DentistSearchResult) {
       this.searchTerm = `Dr. ${dentist.prenom} ${dentist.nom}`;
       this.showDropdown = false;
-      // Navigate to profile page
-      this.router.navigate(['/dashboard/dentist', dentist.id]);
+      
+      if (!this.isPatientConnected && !this.isDentistConnected) {
+          this.router.navigate(['/dentist-informations', dentist.id]);
+      } else {
+          // Navigate to dashboard profile page
+          this.router.navigate(['/dashboard/dentist', dentist.id]);
+      }
   }
 }

@@ -1,0 +1,46 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Modifier les horaires</h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #hoursForm="ngForm">
+      <div class="modal-body">
+        <div class="hours-grid-header">
+            <div class="col-day">Jours</div>
+            <div class="col-session">Matin</div>
+            <div class="col-session">Après-midi</div>
+            <div class="col-closed">Fermé</div>
+        </div>
+
+        <div class="day-row" *ngFor="let day of schedule; let i = index">
+            <div class="day-name">{{ day.day }}</div>
+            
+            <div class="session-inputs" [class.disabled]="day.isClosed">
+                <input type="time" [(ngModel)]="day.morning.start" name="m_start_{{i}}" [disabled]="day.isClosed">
+                <span>-</span>
+                <input type="time" [(ngModel)]="day.morning.end" name="m_end_{{i}}" [disabled]="day.isClosed">
+            </div>
+
+            <div class="session-inputs" [class.disabled]="day.isClosed">
+                <input type="time" [(ngModel)]="day.afternoon.start" name="a_start_{{i}}" [disabled]="day.isClosed">
+                <span>-</span>
+                <input type="time" [(ngModel)]="day.afternoon.end" name="a_end_{{i}}" [disabled]="day.isClosed">
+            </div>
+
+            <div class="closed-toggle">
+                <input type="checkbox" [(ngModel)]="day.isClosed" name="closed_{{i}}">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="onClose()">Annuler</button>
+        <button type="submit" class="btn-submit">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>

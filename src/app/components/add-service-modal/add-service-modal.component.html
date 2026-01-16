@@ -1,0 +1,55 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Ajouter un service</h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #serviceForm="ngForm">
+      <div class="modal-body">
+        
+        <!-- Nom -->
+        <div class="form-group">
+          <label for="nomSM" class="field-label">Nom du service *</label>
+          <input type="text" id="nomSM" name="nomSM" [(ngModel)]="formData.nomSM" required class="form-input" placeholder="Ex: Blanchiment dentaire...">
+        </div>
+
+        <!-- Type -->
+        <div class="form-group">
+          <label for="typeSM" class="field-label">Type de service médical *</label>
+           <div class="select-wrapper">
+             <select id="typeSM" name="typeSM" [(ngModel)]="formData.typeSM" required class="form-input">
+                <option value="" disabled selected>Sélectionner un type</option>
+                <optgroup *ngFor="let group of serviceTypesGroups" [label]="group.name">
+                  <option *ngFor="let type of group.types" [value]="type">{{ type }}</option>
+                </optgroup>
+             </select>
+              <i class="fas fa-caret-down select-icon"></i>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="descriptionSM" class="field-label">Description *</label>
+          <textarea id="descriptionSM" name="descriptionSM" [(ngModel)]="formData.descriptionSM" required class="form-input" rows="4" placeholder="Décrivez le service..."></textarea>
+        </div>
+
+        <!-- Tarif -->
+        <div class="form-group">
+          <label for="tarifSM" class="field-label">Tarif (DT) *</label>
+          <input type="number" id="tarifSM" name="tarifSM" [(ngModel)]="formData.tarifSM" required min="0" class="form-input" placeholder="0.00">
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="onClose()">Annuler</button>
+        <button type="submit" class="btn-submit" [disabled]="!serviceForm.valid">
+            <i class="fas fa-plus-circle"></i> Ajouter
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

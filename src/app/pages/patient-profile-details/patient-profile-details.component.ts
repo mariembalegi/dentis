@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PatientDetailsEditComponent } from '../../components/patient-details-edit/patient-details-edit.component';
 import { AuthService, User } from '../../services/auth.service';
+import { WorkingHoursEditModalComponent, DaySchedule } from '../../components/working-hours-edit-modal/working-hours-edit-modal.component';
 
 @Component({
   selector: 'app-patient-profile-details',
   standalone: true,
-  imports: [CommonModule, RouterLink, PatientDetailsEditComponent],
+  imports: [CommonModule, RouterLink, PatientDetailsEditComponent, WorkingHoursEditModalComponent],
   templateUrl: './patient-profile-details.component.html',
   styleUrls: ['./patient-profile-details.component.scss']
 })
@@ -20,19 +21,35 @@ export class PatientProfileDetailsComponent implements OnInit {
     birthPlace: "l'étranger (Tunisie)",
     birthDate: '14/12/1996',
     age: 29,
-    address: "16 Rue etienne jules marey , bois d'Arcy , 78390 BOIS D ARCY",
+    address: "16 Rue etienne jules marey , bois d'Arcy , 78390 BOIS D ARCY, Tunis",
     recoveryType: 'Remboursement',
     bloodGroup: 'A',
-    gender: 'Masculin'
+    gender: 'Masculin',
+    speciality: 'Chirurgien Dentiste',
+    city: 'Tunis'
   };
 
   showEditModal = false;
+  showHoursEditModal = false;
+  isDentist = false;
+
+  workingHours: DaySchedule[] = [
+    { day: 'Lundi', morning: { start: '09:00', end: '13:00' }, afternoon: { start: '14:00', end: '18:00' }, isClosed: false },
+    { day: 'Mardi', morning: { start: '09:00', end: '13:00' }, afternoon: { start: '14:00', end: '18:00' }, isClosed: false },
+    { day: 'Mercredi', morning: { start: '09:00', end: '13:00' }, afternoon: { start: '14:00', end: '18:00' }, isClosed: false },
+    { day: 'Jeudi', morning: { start: '09:00', end: '13:00' }, afternoon: { start: '14:00', end: '18:00' }, isClosed: false },
+    { day: 'Vendredi', morning: { start: '09:00', end: '13:00' }, afternoon: { start: '14:00', end: '17:00' }, isClosed: false },
+    { day: 'Samedi', morning: { start: '09:00', end: '13:00' }, afternoon: { start: '', end: '' }, isClosed: false },
+    { day: 'Dimanche', morning: { start: '', end: '' }, afternoon: { start: '', end: '' }, isClosed: true }
+  ];
 
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
     this.authService.user$.subscribe(currentUser => {
       if (currentUser) {
+        this.isDentist = currentUser.role === 'DENTISTE';
+
         // Map AuthService user to local user structure
         this.user.firstName = currentUser.prenom || this.user.firstName;
         this.user.lastName = currentUser.nom || this.user.lastName;
@@ -95,6 +112,23 @@ export class PatientProfileDetailsComponent implements OnInit {
     return (this.user.firstName.charAt(0) + this.user.lastName.charAt(0)).toUpperCase();
   }
 
+  formatSchedule(schedule: DaySchedule): string {
+    if (schedule.isClosed) return 'Fermé';
+    
+    let morning = '';
+    if (schedule.morning.start && schedule.morning.end) {
+        morning = `${schedule.morning.start} - ${schedule.morning.end}`;
+    }
+
+    let afternoon = '';
+    if (schedule.afternoon.start && schedule.afternoon.end) {
+        afternoon = `${schedule.afternoon.start} - ${schedule.afternoon.end}`;
+    }
+
+    if (morning && afternoon) return `${morning} / ${afternoon}`;
+    return morning || afternoon || 'Fermé';
+  }
+
   openEditModal() {
     this.showEditModal = true;
   }
@@ -113,7 +147,30 @@ export class PatientProfileDetailsComponent implements OnInit {
         this.user.lastName = updatedData.lastName;
         this.user.birthDate = updatedData.birthDate;
         this.user.birthPlace = updatedData.birthPlace;
+        this.user.recoveryType = updatedData.recoveryType;
+        this.user.bloodGroup = updatedData.bloodGroup;
+        this.user.gender = updatedData.gender;
+        this.user.speciality = updatedData.speciality;
+        this.user.city = updatedData.city;
+        this.user.delegation = updatedData.delegation;
+        this.user.address = updatedData.address;
+
+        // Recalculate age if birthdate changed
+        this.user.age = this.calculateAge(this.user.birthDate);
     }
     this.closeEditModal();
+  }
+
+  openHoursEditModal() {
+    this.showHoursEditModal = true; 
+  }
+
+  closeHoursEditModal() {
+      this.showHoursEditModal = false;
+  }
+
+  saveHours(updatedHours: DaySchedule[]) {
+      this.workingHours = updatedHours;
+      this.closeHoursEditModal();
   }
 }

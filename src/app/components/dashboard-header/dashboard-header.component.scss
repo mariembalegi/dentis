@@ -1,6 +1,6 @@
 .dashboard-header {
-  background: var(--dark-blue);
-  color: var(--white);
+  background: #1A3251;
+  color: white;
   padding: 0 20px;
   /* Removed box-shadow to match header component */
 }
@@ -20,7 +20,7 @@
 .logo h1 {
   font-size: 2rem;
   font-weight: 200;
-  color: var(--white);
+  color: white;
   margin: 0;
   font-style: italic;
   font-family: "Dancing Script", "Brush Script MT", cursive;
@@ -35,7 +35,7 @@
 }
 
 .nav-links a {
-  color: var(--white);
+  color: white;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -57,7 +57,7 @@
 }
 
 .nav-link-right {
-  color: var(--white);
+  color: white;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -81,8 +81,8 @@
 }
 
 .user-button {
-  background: var(--dark-blue);
-  color: var(--white);
+  background: #1A3251;
+  color: white;
   border: none;
   font-size: 14px;
   font-weight: 500;
@@ -115,7 +115,7 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  background: var(--white);
+  background: white;
   border: 1px solid #E0E0E0;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -147,7 +147,7 @@
   font-weight: 500;
   font-family: "Roboto", Arial, sans-serif;
   transition: background 0.2s ease, color 0.2s ease;
-  background: var(--white);
+  background: white;
   width: 100%;
   box-sizing: border-box;
 }
@@ -161,12 +161,12 @@
 }
 
 .dropdown-menu a:hover {
-  background: #E3F2FD;
-  color: #0077BE;
+  background: #FFF3E0;
+  color: #D04747;
 }
 
 .dropdown-menu a:hover svg {
-  color: #0077BE;
+  color: #D04747;
 }
 
 .dropdown-divider {

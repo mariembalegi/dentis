@@ -19,7 +19,7 @@
             </div>
             <div class="detail-item">
                 <i class="fas fa-stethoscope"></i>
-                <span>{{ serviceName }}</span>
+                <span class="service-text">{{ serviceName }} <span *ngIf="servicePrice" class="price-confirmed"> - {{ servicePrice }} TND</span></span>
             </div>
         </div>
 

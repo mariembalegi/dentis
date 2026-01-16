@@ -7,11 +7,31 @@
         <a class="back-link" (click)="goBack()">← Étape précédente</a>
   
         <h2>Sélectionnez le motif de consultation</h2>
+        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Vous pouvez sélectionner plusieurs services.</p>
   
         <div class="reasons-list">
-          <div class="reason-item" *ngFor="let category of categories" (click)="selectCategory(category)">
-            {{ category.name }}
+          <div class="reason-item" *ngFor="let category of categories" 
+               (click)="toggleCategory(category)"
+               [class.selected]="isSelected(category)">
+            
+             <div class="left-content" style="display: flex; align-items: center; gap: 10px;">
+                <div class="checkbox-mock">
+                    <i class="far fa-square" *ngIf="!isSelected(category)" style="color: #ccc; font-size: 16px;"></i>
+                    <i class="fas fa-check-square" *ngIf="isSelected(category)" style="color: #D04747; font-size: 16px;"></i>
+                </div>
+                <span class="reason-name">{{ category.name }}</span>
+             </div>
+            
+            <span class="reason-price">{{ category.price }} TND</span>
           </div>
+        </div>
+
+        <div class="actions-footer" style="margin-top: 24px; display: flex; justify-content: flex-end;">
+            <button class="btn-continue" 
+                    [disabled]="selectedCategories.length === 0"
+                    (click)="continueBooking()">
+                CONTINUER
+            </button>
         </div>
       </div>
     </div>

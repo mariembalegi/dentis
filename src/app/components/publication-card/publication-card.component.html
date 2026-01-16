@@ -1,0 +1,11 @@
+<div class="article-card" [routerLink]="['/publication', 'article', article.id]">
+  <div class="card-image" [style.backgroundImage]="'url(' + article.image + ')'"></div>
+  <div class="card-content">
+    <h3 class="card-title">{{ article.title }}</h3>
+    <div class="card-meta">
+      <span>{{ article.date }}</span>
+      <span class="meta-separator">|</span>
+      <span>{{ article.author }}</span>
+    </div>
+  </div>
+</div>

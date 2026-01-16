@@ -19,7 +19,11 @@ export interface SignupData {
 
   // Dentist specific
   ville?: string;
+  adresse?: string;
+  specialite?: string;
   diplome?: string; // base64
+  delegation?: string;
+  localite?: string;
 }
 
 @Injectable({

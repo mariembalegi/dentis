@@ -1,5 +1,5 @@
 <!-- Page d'accueil Dentis - Style Doctolib -->
-<app-dashboard-header *ngIf="isPatientConnected; else publicHeader"></app-dashboard-header>
+<app-dashboard-header *ngIf="isPatientConnected || isDentistConnected; else publicHeader"></app-dashboard-header>
 <ng-template #publicHeader>
     <app-header></app-header>
 </ng-template>
@@ -12,7 +12,7 @@
         <h2 class="hero-title">Votre sourire,<span class="hero-title-accent"> notre priorité</span></h2>
         
         <!-- Barre de recherche -->
-        <div class="search-container">
+        <div class="search-container" *ngIf="!isDentistConnected">
           <div class="search-bar">
             <div class="search-input-group">
               <div class="search-field">
@@ -106,28 +106,8 @@
     title="Quelle est la différence entre un aide-soignant et une infirmière ?"
     buttonText="Découvrir"
     imageSrc="image.png"
-    imageAlt="Soignants">
+    imageAlt="Soignants"
+    link="/publication/article/1">
   </app-info-card>
 
-  <!-- Section Soignants -->
-  <section class="soignants-section">
-    <div class="soignants-container">
-      <div class="soignants-image">
-        <img src="Dentiste.png" alt="Vous êtes dentiste">
-      </div>
-      <div class="soignants-content">
-        <h2 class="soignants-title">Vous êtes dentiste ?</h2>
-        <p class="soignants-description">Découvrez Dentis et améliorez votre quotidien professionnel.</p>
-        
-        <ul class="soignants-list">
-          <li>Offrez des soins dentaires de qualité à vos patients</li>
-          <li>Gagnez du temps dans la gestion de vos rendez-vous</li>
-          <li>Améliorez votre organisation et votre confort de travail</li>
-          <li>Développez votre activité en toute sérénité</li>
-        </ul>
-
-        <button class="soignants-btn" routerLink="/signup/email">En savoir plus</button>
-      </div>
-    </div>
-  </section>
 </main>

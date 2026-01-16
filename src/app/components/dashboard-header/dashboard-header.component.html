@@ -1,15 +1,22 @@
-<header class="dashboard-header">
+<header class="dashboard-header" [style.background-color]="customBackgroundColor || ''" [style.color]="textColor || ''">
   <div class="header-container">
     <div class="logo" routerLink="/">
-      <h1>Dentis</h1>
+      <h1 [style.color]="textColor || ''">Dentis</h1>
     </div>
     <nav class="nav-links">
-      <a *ngIf="showAccueil" routerLink="/" routerLinkActive="active">Accueil</a>
     </nav>
     <div class="right-section">
-      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link-right">Mes rendez-vous</a>
+      <a routerLink="/publication-category" routerLinkActive="active" class="nav-link-right" [style.color]="textColor || ''">Publications</a>
+      
+      <!-- Only show Mes rendez-vous if NOT admin -->
+      <a *ngIf="!isAdmin" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link-right" [style.color]="textColor || ''">Mes rendez-vous</a>
+      
+      <!-- Show Users if Admin -->
+      <a *ngIf="isAdmin" routerLink="/dashboard/users-management" routerLinkActive="active" class="nav-link-right" [style.color]="textColor || ''">Utilisateurs</a>
+
+      <a *ngIf="isDentist" routerLink="/dashboard/services" routerLinkActive="active" class="nav-link-right" [style.color]="textColor || ''">Mes Services</a>
       <div class="user-section">
-      <button class="user-button" (click)="toggleDropdown()">
+      <button class="user-button" (click)="toggleDropdown()" [style.color]="textColor || ''">
         {{ userName }}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" [class.rotate]="isDropdownOpen">
           <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

@@ -1,0 +1,15 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Connexion requise</h2>
+      <button class="close-btn" (click)="close()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>Vous devez être connecté pour prendre un rendez-vous.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-login" (click)="navigateToLogin()">Se connecter</button>
+      <button class="btn-signup" (click)="navigateToSignup()">S'inscrire</button>
+    </div>
+  </div>
+</div>

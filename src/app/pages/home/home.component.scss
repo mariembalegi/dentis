@@ -296,149 +296,7 @@ body {
   }
 }
 
-/* Section Soignants */
-.soignants-section {
-  background: transparent;
-  color: var(--white);
-  padding: 2.5rem 2rem;
-}
 
-.soignants-container {
-  max-width: 1320px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 4rem;
-  background: var(--dark-blue);
-  padding: 2rem;
-  border-radius: 20px;
-}
-
-.soignants-image {
-  flex: 0 0 45%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.soignants-image::before {
-  content: '';
-  position: absolute;
-  width: 400px;
-  height: 300px;
-  background: rgba(200, 220, 240, 0.4);
-  border-radius: 55% 45% 55% 45% / 45% 55% 45% 55%;
-  z-index: 0;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.soignants-image img {
-  width: 85%;
-  height: auto;
-  border-radius: 100% 65% 60% 70% / 98% 67% 62% 68%;
-  object-fit: cover;
-  position: relative;
-  z-index: 1;
-}
-
-.soignants-content {
-  flex: 1;
-}
-
-.soignants-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-  font-family: "Montserrat", Arial, sans-serif;
-}
-
-.soignants-description {
-  font-size: 14px;
-  margin-bottom: 2rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-family: "Roboto", Arial, sans-serif;
-}
-
-.soignants-list {
-  list-style: none;
-  margin-bottom: 2rem;
-  font-family: "Roboto", Arial, sans-serif;
-}
-
-.soignants-list li {
-  font-size: 14px;
-  margin-bottom: 1.2rem;
-  padding-left: 2rem;
-  position: relative;
-  line-height: 1.5;
-  font-weight: 400;
-}
-
-.soignants-list li::before {
-  content: '→';
-  position: absolute;
-  left: 0;
-  color: var(--orange);
-  font-weight: 700;
-}
-
-.soignants-btn {
-  background: #2196F3;
-  color: var(--white);
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: "Montserrat", Arial, sans-serif;
-}
-
-.soignants-btn:hover {
-  background: #1976D2;
-  transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-  .soignants-container {
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .soignants-image {
-    flex: 1;
-    width: 100%;
-  }
-
-  .soignants-image::before {
-    width: 200px;
-    height: 200px;
-    top: -20px;
-    left: -20px;
-  }
-
-  .soignants-title {
-    font-size: 1.8rem;
-  }
-
-  .soignants-description {
-    font-size: 1rem;
-  }
-
-  .soignants-list li {
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
-  }
-
-  .soignants-section {
-    padding: 2rem 1rem;
-  }
-}
 /* Search Results Styles */
 .results-section {
   padding: 4rem 2rem;
@@ -681,4 +539,62 @@ body {
     color: #666;
     margin-bottom: 2px;
 }
+
+
+/* Types Section */
+.types-section {
+  padding: 60px 20px;
+  background-color: #ffffff;
+}
+
+.types-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.types-title {
+  text-align: center;
+  color: #1A3251;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.types-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.type-card {
+  background-color: white;
+  color: #D04747;
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 1px solid #D04747;
+}
+
+.type-card i {
+    color: #D04747;
+}
+
+.type-card:hover {
+  background-color: #fce4e4; /* Light orange/red tint on hover */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+
+
+
+
+
 

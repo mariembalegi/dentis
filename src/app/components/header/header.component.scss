@@ -1,4 +1,6 @@
 .header {
+  --dark-blue: #1A3251;
+  --white: #ffffff;
   background: var(--dark-blue);
   color: var(--white);
   padding: 0 20px;
@@ -28,25 +30,24 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .nav-link {
   background: var(--white);
-  color: #87CEEB;
+  color: var(--dark-blue);
   text-decoration: none;
   font-size: 14px;
   font-family: "Roboto", Arial, sans-serif;
-  padding: 8px 16px;
-  border-radius: 10px;
-  transition: all 0.2s ease;
   font-weight: 600;
-  margin: 0 16px;
+  transition: all 0.2s ease;
+  padding: 10px 20px;
+  border-radius: 8px;
+  display: inline-block;
 }
 
 .nav-link:hover {
   background: #f0f0f0;
-  color: #1A3251;
 }
 
 .btn-connect {

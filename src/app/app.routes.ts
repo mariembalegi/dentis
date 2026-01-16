@@ -11,6 +11,22 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
   },
   {
+    path: 'publication',
+    loadComponent: () => import('./pages/publication/publication.component').then(m => m.PublicationComponent)
+  },
+  {
+    path: 'publication/article/:id',
+    loadComponent: () => import('./pages/publication/publication.component').then(m => m.PublicationComponent)
+  },
+  {
+    path: 'publication/:category',
+    loadComponent: () => import('./pages/publication-category/publication-category.component').then(m => m.PublicationCategoryComponent)
+  },
+  {
+    path: 'publication-category',
+    loadComponent: () => import('./pages/publication-category/publication-category.component').then(m => m.PublicationCategoryComponent)
+  },
+  {
     path: 'login',
     loadComponent: () => import('./pages/signinup/signinup.component').then(m => m.SigninupComponent)
   },
@@ -67,6 +83,10 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'dentist-informations/:id',
+    loadComponent: () => import('./pages/dentist-informations/dentist-informations.component').then(m => m.DentistInformationsComponent)
+  },
+  {
     path: 'dashboard',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
@@ -78,6 +98,12 @@ export const routes: Routes = [
         {
             path: 'booking',
              loadComponent: () => import('./pages/booking/booking.component').then(m => m.BookingComponent)
+        },
+        {             path: 'users-management',
+             loadComponent: () => import('./pages/users-management/users-management.component').then(m => m.UsersManagementComponent)
+        },
+        {          path: 'services',
+          loadComponent: () => import('./pages/dentist-services/dentist-services.component').then(m => m.DentistServicesComponent)
         },
         {
             path: 'dentist/:id',

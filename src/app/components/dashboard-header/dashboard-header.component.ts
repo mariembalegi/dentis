@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -11,9 +11,14 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./dashboard-header.component.scss']
 })
 export class DashboardHeaderComponent implements OnInit {
+  @Input() customBackgroundColor: string = '';
+  @Input() textColor: string = '';
+  
   userName = 'Utilisateur';
   isDropdownOpen = false;
   showAccueil = true;
+  isDentist = false;
+  isAdmin = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -21,10 +26,14 @@ export class DashboardHeaderComponent implements OnInit {
     this.authService.user$.subscribe(user => {
       if (user) {
         this.userName = `${user.prenom} ${user.nom}`;
+        this.isDentist = user.role === 'DENTISTE';
+        this.isAdmin = user.role === 'ADMIN';
         // Hide 'Accueil' if patient and on home
         this.showAccueil = !(user.role === 'PATIENT' && this.router.url === '/');
       } else {
         this.showAccueil = true;
+        this.isDentist = false;
+        this.isAdmin = false;
       }
     });
     // Also listen to route changes
@@ -32,8 +41,12 @@ export class DashboardHeaderComponent implements OnInit {
       const user = this.authService.getUser();
       if (user) {
         this.showAccueil = !(user.role === 'PATIENT' && this.router.url === '/');
+        this.isDentist = user.role === 'DENTISTE';
+        this.isAdmin = user.role === 'ADMIN';
       } else {
         this.showAccueil = true;
+        this.isDentist = false;
+        this.isAdmin = false;
       }
     });
   }

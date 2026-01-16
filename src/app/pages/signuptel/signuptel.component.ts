@@ -44,12 +44,7 @@ export class SignuptelComponent implements OnInit {
     const role = this.signupService.getRole();
 
     if (role === 'PATIENT') {
-        // Defaults for patient
-        this.signupService.updateData({
-            recouvrementP: 'CNSS', 
-            groupeSanguinP: 'O+'
-        });
-        
+        // Patient registration
         this.signupService.registerPatient().subscribe({
           next: (res) => {
             alert('Inscription Patient réussie !');

@@ -81,6 +81,11 @@
     color: #0e3048;
     background: white;
     transition: background-color 0.2s;
+    
+    // Flex layout for name and price
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   
     &:last-child {
       border-bottom: none;
@@ -89,6 +94,46 @@
     &:hover {
       background-color: #f2f5f8;
     }
+
+    .reason-name {
+        font-weight: 600;
+    }
+
+    .reason-price {
+        font-weight: 700;
+        color: #333;
+    }
+
+    &.selected {
+        background-color: #fff8f7; // Very light red/orange tint
+        border-left: 4px solid #D04747;
+        
+        .reason-name {
+            color: #D04747;
+        }
+    }
+  }
+
+  .btn-continue {
+      background-color: #D04747;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 32px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-transform: uppercase;
+      
+      &:hover {
+          background-color: darken(#D04747, 5%);
+      }
+      
+      &:disabled {
+          background-color: #ccc;
+          cursor: not-allowed;
+      }
   }
 
   /* Date selection styles */

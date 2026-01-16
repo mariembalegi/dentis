@@ -57,3 +57,8 @@
         </div>
     </div>
 </div>
+
+<app-login-required-modal 
+  *ngIf="showLoginModal" 
+  (closeModal)="showLoginModal = false">
+</app-login-required-modal>

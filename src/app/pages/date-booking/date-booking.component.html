@@ -45,7 +45,9 @@
           <ul>
             <li *ngIf="patientName"><i class="fas fa-check"></i> Pour {{ patientName }}</li>
             <li><i class="fas fa-check"></i> {{ dentistAddress }}</li>
-            <li *ngIf="selectedCategoryName"><i class="fas fa-check"></i> {{ selectedCategoryName }}</li>
+            <li *ngIf="selectedCategoryName"><i class="fas fa-check"></i> {{ selectedCategoryName }} 
+                <span *ngIf="selectedCategoryPrice" style="font-weight: bold;"> - {{ selectedCategoryPrice }} TND</span>
+            </li>
           </ul>
         </div>
       </div>

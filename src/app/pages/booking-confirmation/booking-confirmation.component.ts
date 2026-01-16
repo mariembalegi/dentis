@@ -19,6 +19,7 @@ export class BookingConfirmationComponent implements OnInit {
   serviceName = '';
   appointmentDate = '';
   appointmentTime = '';
+  servicePrice: number | null = null;
   
   hasConsulted: boolean | null = null;
 
@@ -46,6 +47,7 @@ export class BookingConfirmationComponent implements OnInit {
        this.dentistAddress = params['dentistAddress'] || '';
        this.dentistPhoto = params['dentistPhoto'] || null;
        this.serviceName = params['serviceName'] || 'Consultation';
+       this.servicePrice = params['servicePrice'] || null;
        this.appointmentDate = params['date'] || '';
        this.appointmentTime = params['time'] || '';
     });

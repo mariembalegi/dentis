@@ -16,7 +16,11 @@ export class SignupbirthdateComponent implements OnInit {
   email = '';
   birthdate = '';
   sexe = 'feminin';
+  recouvrement = '';
+  bloodGroup = '';
   birthdateError = false;
+  recouvrementError = false;
+  bloodGroupError = false;
 
   constructor(private router: Router, private signupService: SignupService) {}
 
@@ -41,9 +45,11 @@ export class SignupbirthdateComponent implements OnInit {
     console.log('Pattern:', datePattern);
     
     this.birthdateError = !isValidDate;
+    this.recouvrementError = !this.recouvrement;
+    this.bloodGroupError = !this.bloodGroup;
 
-    if (this.birthdateError) {
-      console.log('Date is invalid, showing error');
+    if (this.birthdateError || this.recouvrementError || this.bloodGroupError) {
+      console.log('Validation failed');
       return;
     }
 
@@ -56,7 +62,9 @@ export class SignupbirthdateComponent implements OnInit {
 
     this.signupService.updateData({
       dateNaissanceP: formattedDate,
-      sexe: mappedSexe
+      sexe: mappedSexe,
+      recouvrementP: this.recouvrement, 
+      groupeSanguinP: this.bloodGroup
     });
 
     console.log('Date is valid, navigating...');
@@ -65,5 +73,13 @@ export class SignupbirthdateComponent implements OnInit {
 
   onBirthdateChange() {
     this.birthdateError = false;
+  }
+
+  onRecouvrementChange() {
+    this.recouvrementError = false;
+  }
+
+  onBloodGroupChange() {
+    this.bloodGroupError = false;
   }
 }

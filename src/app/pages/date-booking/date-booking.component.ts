@@ -17,6 +17,7 @@ export class DateBookingComponent implements OnInit {
   dentistPhoto: string | null = null;
   patientName = '';
   selectedCategoryName: string = '';
+  selectedCategoryPrice: number | null = null;
 
   availabilityDays = [
     { date: 'Lundi 9 mars 2026', slots: ['13:45', '16:30'], expanded: true },
@@ -45,6 +46,7 @@ export class DateBookingComponent implements OnInit {
         if (params['dentistAddress']) this.dentistAddress = params['dentistAddress'];
         if (params['dentistPhoto']) this.dentistPhoto = params['dentistPhoto'];
         if (params['serviceName']) this.selectedCategoryName = params['serviceName'];
+        if (params['servicePrice']) this.selectedCategoryPrice = params['servicePrice'];
     });
   }
 
@@ -67,6 +69,7 @@ export class DateBookingComponent implements OnInit {
               dentistAddress: this.dentistAddress,
               dentistPhoto: this.dentistPhoto,
               serviceName: this.selectedCategoryName,
+              servicePrice: this.selectedCategoryPrice,
               date: day.date,
               time: slot
           }

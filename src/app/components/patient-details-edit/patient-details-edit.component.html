@@ -41,15 +41,15 @@
           <input type="text" id="lastName" name="lastName" [(ngModel)]="formData.lastName" class="form-input">
         </div>
 
-        <!-- Birth Date -->
-        <div class="form-group">
+        <!-- Birth Date (Patient Only) -->
+        <div class="form-group" *ngIf="!isDentist">
           <label for="birthDate" class="field-label">Date de naissance</label>
           <p class="field-helper">Format : jj/mm/aaaa</p>
           <input type="text" id="birthDate" name="birthDate" [(ngModel)]="formData.birthDate" class="form-input" placeholder="jj/mm/aaaa">
         </div>
 
-        <!-- Row: Recouvrement & Groupe Sanguin -->
-        <div class="form-row">
+        <!-- Row: Recouvrement & Groupe Sanguin (Patient Only) -->
+        <div class="form-row" *ngIf="!isDentist">
             <!-- Recouvrement -->
             <div class="form-group">
               <label for="recoveryType" class="field-label">Recouvrement</label>
@@ -79,6 +79,65 @@
               </div>
             </div>
         </div>
+
+        <!-- Dentist Fields: Speciality, Address -->
+        <ng-container *ngIf="isDentist">
+            <div class="form-group">
+                <label for="speciality" class="field-label">Spécialité</label>
+                <input type="text" id="speciality" name="speciality" [(ngModel)]="formData.speciality" class="form-input" placeholder="Ex: Orthodontie">
+            </div>
+
+             <div class="form-row">
+                 <div class="form-group">
+                    <label for="city" class="field-label">Gouvernorat</label>
+                    <div class="select-wrapper">
+                         <select id="city" name="city" [(ngModel)]="formData.city" class="form-input" (change)="onGouvernoratChange()">
+                             <option value="" disabled>Sélectionner</option>
+                             <option value="Tunis">Tunis</option>
+                             <option value="Ariana">Ariana</option>
+                             <option value="Ben Arous">Ben Arous</option>
+                             <option value="Manouba">Manouba</option>
+                             <option value="Nabeul">Nabeul</option>
+                             <option value="Zaghouan">Zaghouan</option>
+                             <option value="Bizerte">Bizerte</option>
+                             <option value="Béja">Béja</option>
+                             <option value="Jendouba">Jendouba</option>
+                             <option value="Le Kef">Le Kef</option>
+                             <option value="Siliana">Siliana</option>
+                             <option value="Sousse">Sousse</option>
+                             <option value="Monastir">Monastir</option>
+                             <option value="Mahdia">Mahdia</option>
+                             <option value="Sfax">Sfax</option>
+                             <option value="Kairouan">Kairouan</option>
+                             <option value="Kasserine">Kasserine</option>
+                             <option value="Sidi Bouzid">Sidi Bouzid</option>
+                             <option value="Gabès">Gabès</option>
+                             <option value="Médenine">Médenine</option>
+                             <option value="Tataouine">Tataouine</option>
+                             <option value="Gafsa">Gafsa</option>
+                             <option value="Tozeur">Tozeur</option>
+                             <option value="Kébili">Kébili</option>
+                         </select>
+                         <i class="fas fa-caret-down select-icon"></i>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="delegation" class="field-label">Délégation</label>
+                    <div class="select-wrapper">
+                        <select id="delegation" name="delegation" [(ngModel)]="formData.delegation" class="form-input" [disabled]="!formData.city">
+                            <option value="" disabled selected>Sélectionner</option>
+                            <option *ngFor="let del of delegationsOptions" [value]="del">{{ del }}</option>
+                        </select>
+                        <i class="fas fa-caret-down select-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="address" class="field-label">Adresse</label>
+                <input type="text" id="address" name="address" [(ngModel)]="formData.address" class="form-input">
+            </div>
+        </ng-container>
 
         <!-- Footer Actions (Standard submit button usually at bottom) -->
         <div class="form-actions">
