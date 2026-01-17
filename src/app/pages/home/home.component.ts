@@ -25,6 +25,13 @@ export class HomeComponent implements OnInit {
   searchTerm = '';
   searchLocation = '';
   
+  gouvernorats: string[] = [
+    'Tunis', 'Ariana', 'Ben Arous', 'Manouba', 'Nabeul', 'Zaghouan',
+    'Bizerte', 'Béja', 'Jendouba', 'Le Kef', 'Siliana', 'Sousse',
+    'Monastir', 'Mahdia', 'Sfax', 'Kairouan', 'Kasserine', 'Sidi Bouzid',
+    'Gabès', 'Médenine', 'Tataouine', 'Gafsa', 'Tozeur', 'Kébili'
+  ];
+
   // Dropdown Data
   dropdownServices: string[] = [];
   dropdownDentists: DentistSearchResult[] = [];
@@ -112,44 +119,25 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // Called when clicking "Rechercher" button - legacy full search
+  // Called when clicking "Rechercher" button
   onSearch() {
     if (!this.searchTerm && !this.searchLocation) {
         return;
     }
     
-    // Offline user redirection logic
-    if (!this.isPatientConnected && !this.isDentistConnected) {
-        // Fetch results and redirect to the first dentist found
-        this.isSearching = true;
-        // Use searchDentists to include location support
-        this.dentistService.searchDentists(this.searchTerm, this.searchLocation).subscribe({
-            next: (results) => {
-                this.isSearching = false;
-                if (results && results.length > 0) {
-                    // Navigate to public page of the first dentist
-                    this.router.navigate(['/dentist-informations', results[0].id]);
-                } else {
-                   // Fallback: indicate no results
-                   this.showDropdown = true;
-                   this.dropdownServices = [];
-                   this.dropdownDentists = [];
-                   // Show no results message in dropdown or UI
-                }
-            },
-            error: (err) => {
-                this.isSearching = false;
-                console.error('Search failed', err);
-            }
-        });
-        return;
-    }
-
-    // Logic for connected user (or general flow if not redirected)
-    // For now, let's just trigger the dropdown fetch again or do nothing if already fetched
-    if (this.showDropdown) return; 
-    
-    this.fetchDropdown();
+    this.isSearching = true;
+    this.dentistService.searchDentists(this.searchTerm, this.searchLocation).subscribe({
+        next: (results) => {
+            this.isSearching = false;
+            this.searchResults = results || [];
+            this.showDropdown = false; // Hide dropdown
+        },
+        error: (err) => {
+            this.isSearching = false;
+            console.error('Search failed', err);
+            this.searchResults = [];
+        }
+    });
   }
 
   selectService(serviceName: string) {

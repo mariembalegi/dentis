@@ -130,6 +130,10 @@ export const routes: Routes = [
           loadComponent: () => import('./pages/patient-profile/patient-profile.component').then(m => m.PatientProfileComponent)
         },
         {
+          path: 'dentist-profile',
+          loadComponent: () => import('./pages/dentist-profile/dentist-profile.component').then(m => m.DentistProfileComponent)
+        },
+        {
           path: 'profile-details',
           loadComponent: () => import('./pages/patient-profile-details/patient-profile-details.component').then(m => m.PatientProfileDetailsComponent)
         }

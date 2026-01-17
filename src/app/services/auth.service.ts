@@ -94,7 +94,7 @@ export class AuthService {
     sessionStorage.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
-  private clearUser() {
+  public clearUser() {
     this.userSubject.next(null);
     sessionStorage.removeItem(this.USER_KEY);
     this.router.navigate(['/home']);

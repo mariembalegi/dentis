@@ -22,6 +22,132 @@
   width: 100%;
 }
 
+/* SEARCH RESULTS STYLES */
+.search-results-section {
+  padding: 40px 0;
+  background-color: var(--gray-100);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.results-container {
+  width: 90%;
+  max-width: 1200px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--dark-blue);
+  margin-bottom: 24px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+  gap: 20px;
+}
+
+.dentist-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+}
+
+.card-header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dentist-photo {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--gray-200);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.dentist-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dentist-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.dentist-speciality {
+  font-size: 14px;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.dentist-address, .dentist-location {
+  font-size: 13px;
+  color: var(--gray-800);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: auto; /* Push to bottom */
+}
+
+.btn-profile, .btn-book {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.btn-profile {
+  background-color: var(--light-blue);
+  color: var(--dark-blue);
+
+  &:hover {
+    background-color: #d0e8fc;
+  }
+}
+
+.btn-book {
+  background-color: var(--orange);
+  color: white;
+
+  &:hover {
+    background-color: #c03d3d;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;

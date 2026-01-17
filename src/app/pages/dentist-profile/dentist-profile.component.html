@@ -1,59 +1,132 @@
-<!-- DOCTOR PROFILE VIEW (Doctolib style) -->
-<div *ngIf="selectedDentist" class="dentist-profile-page">
-    <div class="profile-header-strip">
-        <div class="container strip-content">
-            <div class="profile-avatar-large">
-                <img [src]="selectedDentist.photo || defaultAvatar" alt="Dr {{selectedDentist.nom}}">
+<div class="details-container" *ngIf="dentist">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a routerLink="/dashboard" class="back-link">
+      ← Mon compte
+    </a>
+  </div>
+
+  <h1 class="page-title">Mon profil</h1>
+
+  <div class="content-wrapper">
+    <!-- Left Card: Personal Info -->
+    <div class="info-card">
+      <div class="card-header">
+        <ng-container *ngIf="dentist.photo; else initialsBlock">
+            <img [src]="dentist.photo" class="img-avatar" alt="Photo">
+        </ng-container>
+        <ng-template #initialsBlock>
+            <div class="avatar-circle">
+                {{ initials }}
             </div>
-            <div class="profile-identity">
-                <h1>Dr {{ selectedDentist.prenom }} {{ selectedDentist.nom }}</h1>
-                <p class="profile-specialty">Dentiste</p>
-                <!-- <p class="profile-rpps">RPPS: 1000...</p> -->
-            </div>
+        </ng-template>
+
+        <button class="btn-edit" (click)="openProfileEdit()">
+          <i class="fas fa-edit"></i> Modifier
+        </button>
+      </div>
+
+      <div class="card-body">
+        <h2 class="user-name">
+          {{ dentist.prenom }} {{ dentist.nom }}
+        </h2>
+
+        <p class="role-label">{{ dentist.specialite || 'Chirurgien Dentiste' }}</p>
+        
+        <div class="user-details">
+            <p><strong>Téléphone :</strong> {{ dentist.telephone || 'Non renseigné' }}</p>
+            <p><strong>Adresse :</strong> 
+                <ng-container *ngIf="dentist.adresse">{{ dentist.adresse }}</ng-container>
+                <ng-container *ngIf="dentist.delegation">, {{ dentist.delegation }}</ng-container>
+                <ng-container *ngIf="dentist.gouvernorat">, {{ dentist.gouvernorat }}</ng-container>
+            </p>
+            
+            <p><strong>Diplôme :</strong> 
+                <span *ngIf="!dentist.diplome" class="text-muted">Non renseigné</span>
+                <!-- Check if big string or clean text -->
+                <ng-container *ngIf="dentist.diplome">
+                    <span *ngIf="!isBase64(dentist.diplome)">{{ dentist.diplome }}</span>
+                    <a *ngIf="isBase64(dentist.diplome)" (click)="downloadDiplome()" style="cursor: pointer; color: #0076bd; text-decoration: underline;">
+                        <i class="fas fa-file-download"></i> Voir le document
+                    </a>
+                </ng-container>
+            </p>
         </div>
+      </div>
     </div>
-    
-    <div class="container profile-main-grid">
-        <div class="grid-left">
-             <div class="info-card">
-                 <div class="card-header">
-                     <i class="far fa-clock icon-clock"></i>
-                     <h3>Horaires et coordonnées</h3>
-                 </div>
-                 <div class="card-body">
-                     <div style="display: flex; gap: 40px; margin-bottom: 20px;">
-                         <div style="flex: 1;">
-                             <h4>Horaires d'ouverture</h4>
-                             <div style="display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 14px; color: #333;">
-                                 <span>Lundi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
-                                 <span>Mardi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
-                                 <span>Mercredi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
-                                 <span>Jeudi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
-                                 <span>Vendredi :</span> <span>09h00 - 13h00, 14h00 - 17h30</span>
-                             </div>
-                         </div>
-                         <div style="flex: 1;">
-                             <h4>Coordonnées</h4>
-                             <p style="font-size: 14px; font-weight: 500;">{{ selectedDentist.telephone }}</p>
-                         </div>
-                     </div>
-                 </div>
-             </div>
+
+    <!-- Right Card: Working Hours -->
+    <div class="hours-card">
+        <div class="card-header">
+            <h3>Horaires de travail</h3>
+            <button class="btn-edit" (click)="openHorairesEdit()" title="Modifier les horaires">
+                <i class="fas fa-edit"></i> Modifier
+            </button>
         </div>
         
-        <div class="grid-right">
-             <div class="booking-summary-card">
-                 <h3>En résumé</h3>
-                 <hr class="divider-light">
-                 <div class="summary-details">
-                     <div class="icon-small"><i class="fa-solid fa-location-dot"></i></div>
-                     <div>
-                        <strong>Cabinet dentaire</strong>
-                        <p>{{ selectedDentist.ville }}</p>
-                     </div>
-                 </div>
-                 <button class="btn-book-full">PRENDRE RENDEZ-VOUS</button>
-             </div>
+        <div class="hours-grid">
+            <div class="day-row" *ngFor="let h of horaires">
+                <span class="day-name">{{ h.jourSemaine | lowercase }}</span>
+                <span class="hours" [class.closed]="h.estFerme">
+                    {{ getScheduleForDay(h.jourSemaine) }}
+                </span>
+            </div>
         </div>
     </div>
+  </div>
 </div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-overlay" *ngIf="showProfileEditModal" (click)="closeProfileEdit()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2>Modifier mon profil</h2>
+        <form (ngSubmit)="saveProfile()">
+            <div class="form-group">
+                <label>Nom</label>
+                <input [(ngModel)]="editProfileData.nom" name="nom" required>
+            </div>
+            <div class="form-group">
+                <label>Prénom</label>
+                <input [(ngModel)]="editProfileData.prenom" name="prenom" required>
+            </div>
+             <div class="form-group">
+                <label>Téléphone</label>
+                <input [(ngModel)]="editProfileData.telephone" name="telephone">
+            </div>
+            <div class="form-group">
+                <label>Adresse</label>
+                <input [(ngModel)]="editProfileData.adresse" name="adresse">
+            </div>
+            <div class="form-group">
+                <label>Délégation</label>
+                <input [(ngModel)]="editProfileData.delegation" name="delegation">
+            </div>
+            <div class="form-group">
+                <label>Gouvernorat</label>
+                <input [(ngModel)]="editProfileData.gouvernorat" name="gouvernorat">
+            </div>
+            <div class="form-group">
+                <label>Spécialité</label>
+                <input [(ngModel)]="editProfileData.specialite" name="specialite">
+            </div>
+            <!-- Diplome is likely readonly or uploadable, simple input for now -->
+            <div class="form-group">
+                <label>Diplôme (Nom)</label>
+                <input [(ngModel)]="editProfileData.diplome" name="diplome" placeholder="Ex: Doctorat en chirurgie dentaire">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" (click)="closeProfileEdit()">Annuler</button>
+                <button type="submit" class="btn-save">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Horaires Modal (Same as before) -->
+<app-working-hours-edit-modal
+    *ngIf="showHorairesEditModal"
+    [schedule]="editHorairesData"
+    (close)="closeHorairesEdit()"
+    (save)="saveHoraires($event)">
+</app-working-hours-edit-modal>
