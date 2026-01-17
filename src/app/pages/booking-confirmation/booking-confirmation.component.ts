@@ -13,15 +13,10 @@ import { AuthService } from '../../services/auth.service';
 export class BookingConfirmationComponent implements OnInit {
   patientName = '';
   dentistName = '';
-  dentistSpecialty = 'Dentiste';
   dentistAddress = '';
-  dentistPhoto: string | null = null;
   serviceName = '';
   appointmentDate = '';
   appointmentTime = '';
-  servicePrice: number | null = null;
-  
-  hasConsulted: boolean | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,32 +30,25 @@ export class BookingConfirmationComponent implements OnInit {
         if (user) {
           this.patientName = `${user.prenom} ${user.nom}`; 
         } else {
-            // Placeholder if not logged in
             this.patientName = 'Moi';
         }
     });
 
-    // Get booking info from valid query params
+    // Get booking info from query params
     this.route.queryParams.subscribe(params => {
        this.dentistName = params['dentistName'] || 'Dr Inconnu';
-       this.dentistSpecialty = params['dentistSpecialty'] || 'Dentiste';
        this.dentistAddress = params['dentistAddress'] || '';
-       this.dentistPhoto = params['dentistPhoto'] || null;
        this.serviceName = params['serviceName'] || 'Consultation';
-       this.servicePrice = params['servicePrice'] || null;
        this.appointmentDate = params['date'] || '';
        this.appointmentTime = params['time'] || '';
     });
   }
 
-  setHasConsulted(value: boolean) {
-    this.hasConsulted = value;
+  goToAppointments() {
+    this.router.navigate(['/dashboard/patient-profile']);
   }
 
-  confirmBooking() {
-      // Implement actual booking logic here (call service)
-      console.log('Booking confirmed!');
-      alert('Rendez-vous confirmé !');
-      this.router.navigate(['/']); // Redirect to home or appointments list
+  goHome() {
+    this.router.navigate(['/dashboard/home']);
   }
 }

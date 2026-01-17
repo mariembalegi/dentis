@@ -11,18 +11,31 @@
         <div class="slots-container">
             <div class="day-group" *ngFor="let day of availabilityDays">
                 <div class="day-header" [class.expanded]="day.expanded" (click)="toggleDay(day)">
-                    <span>{{ day.date }}</span>
+                    <span>{{ day.dateDisplay }}</span>
                     <i class="fas" [class.fa-chevron-up]="day.expanded" [class.fa-chevron-down]="!day.expanded"></i>
                 </div>
                 <div class="day-slots" *ngIf="day.expanded">
-                    <button class="slot-btn" *ngFor="let slot of day.slots" (click)="selectSlot(day, slot)">
+                    <button class="slot-btn" 
+                            *ngFor="let slot of day.slots" 
+                            [class.selected]="isSlotSelected(day.dateRaw, slot)"
+                            (click)="selectSlot(day, slot)">
                         {{ slot }}
                     </button>
                     <div *ngIf="day.slots.length === 0" style="font-size: 13px; color: #777;">Aucun créneau disponible</div>
                 </div>
             </div>
 
-            <button class="btn-more-dates">Voir plus de disponibilités</button>
+            <div *ngIf="availabilityDays.length === 0" style="padding: 20px; text-align: center; color: #777;">
+                Aucune disponibilité trouvée
+            </div>
+        </div>
+
+        <div class="actions-footer" style="margin-top: 24px; display: flex; justify-content: flex-end;">
+            <button class="btn-confirm" 
+                    [disabled]="!selectedSlot"
+                    (click)="confirmBooking()">
+                CONFIRMER LE RENDEZ-VOUS
+            </button>
         </div>
       </div>
     </div>
@@ -48,6 +61,7 @@
             <li *ngIf="selectedCategoryName"><i class="fas fa-check"></i> {{ selectedCategoryName }} 
                 <span *ngIf="selectedCategoryPrice" style="font-weight: bold;"> - {{ selectedCategoryPrice }} TND</span>
             </li>
+            <li *ngIf="selectedSlot"><i class="fas fa-check"></i> {{ selectedSlot.date }} à {{ selectedSlot.time }}</li>
           </ul>
         </div>
       </div>

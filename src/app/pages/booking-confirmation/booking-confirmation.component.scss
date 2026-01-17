@@ -1,32 +1,38 @@
 .confirmation-container {
     display: flex;
-    max-width: 1200px;
+    justify-content: center;
+    max-width: 800px;
     margin: 0 auto;
     padding: 40px 20px;
-    gap: 40px;
     font-family: 'Roboto', sans-serif;
     color: #333;
 }
 
-.left-panel {
-    flex: 2;
+.success-panel {
+    text-align: center;
+    width: 100%;
 }
 
-.right-panel {
-    flex: 1;
+.success-icon {
+    margin-bottom: 20px;
+    
+    i {
+        font-size: 64px;
+        color: #4CAF50;
+    }
 }
 
 h1 {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
     color: #0e3048;
     margin-bottom: 8px;
 }
 
 .subtitle {
-    font-size: 14px;
+    font-size: 16px;
     color: #555;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
 .card {
@@ -36,6 +42,7 @@ h1 {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     padding: 24px;
     border: 1px solid #e0e0e0;
+    text-align: left;
 }
 
 .details-card {
@@ -65,105 +72,42 @@ h1 {
     }
 }
 
-.question-card {
-    h3 {
-        font-size: 15px;
-        font-weight: 700;
-        margin-bottom: 16px;
-        color: #0e3048;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 16px;
-    }
-
-    .btn-option {
-        flex: 1;
-        padding: 10px;
-        background: white;
-        border: 1px solid #c7dbe8;
-        border-radius: 4px;
-        color: #0e3048;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s;
-
-        &:hover {
-            background-color: #fff9f5; // Pastel orange
-            border-color: #D04747;
-            color: #D04747;
-        }
-
-        &.selected {
-            background-color: #fff2e9; // Deeper pastel orange
-            border-color: #D04747;
-            color: #D04747;
-            font-weight: 700;
-        }
-    }
+.actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
 }
 
-.btn-confirm {
-    width: 100%;
-    padding: 16px;
-    background-color: #D04747; /* Matches signin button color */
+.btn-primary {
+    background-color: #D04747;
     color: white;
     border: none;
     border-radius: 4px;
-    font-size: 16px;
+    padding: 14px 32px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background 0.2s;
+    text-transform: uppercase;
 
     &:hover {
         background-color: darken(#D04747, 5%);
     }
 }
 
-/* Right Panel Card */
-.practitioner-card {
-    background: white;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-}
-
-.card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.avatar-placeholder {
-    width: 48px;
-    height: 48px;
-    background-color: #e6f4f1;
+.btn-secondary {
+    background-color: white;
+    color: #0e3048;
+    border: 1px solid #c7dbe8;
     border-radius: 4px;
-    flex-shrink: 0;
-    /* You could add a logo image or icon here */
-}
+    padding: 14px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
 
-.header-text {
-    h3 {
-        font-size: 15px;
-        font-weight: 700;
-        color: #0e3048;
-        margin: 0 0 4px 0;
+    &:hover {
+        background-color: #f5f5f5;
     }
-    .specialty {
-        font-size: 13px;
-        color: #555;
-        margin: 0 0 4px 0;
-    }
-    .convention {
-        font-size: 12px;
-        color: #757575;
-        margin: 0;
-    }
-}
-
-.price-confirmed {
-    font-weight: 700;
-    color: #333;
 }

@@ -24,17 +24,22 @@
                      <div style="display: flex; gap: 40px; margin-bottom: 20px;">
                          <div style="flex: 1;">
                              <h4>Horaires d'ouverture</h4>
-                             <div style="display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 14px; color: #333;">
-                                 <span>Lundi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
-                                 <span>Mardi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
-                                 <span>Mercredi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
-                                 <span>Jeudi :</span> <span>09h00 - 13h00, 14h00 - 19h00</span>
-                                 <span>Vendredi :</span> <span>09h00 - 13h00, 14h00 - 17h30</span>
+                             <div style="display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 14px; color: #333;" *ngIf="horaires.length > 0">
+                                 <ng-container *ngFor="let h of horaires">
+                                     <span>{{ getDayLabel(h.jourSemaine) }} :</span> <span>{{ getScheduleString(h) }}</span>
+                                 </ng-container>
+                             </div>
+                             <div *ngIf="horaires.length === 0" style="font-size: 14px; color: #666; font-style: italic;">
+                                 Horaires non disponibles
                              </div>
                          </div>
                          <div style="flex: 1;">
                              <h4>Coordonnées</h4>
-                             <p style="font-size: 14px; font-weight: 500;">{{ selectedDentist.tel }}</p>
+                             <p style="font-size: 14px; font-weight: 500;" *ngIf="selectedDentist.adresse">{{ selectedDentist.adresse }}</p>
+                             <p style="font-size: 14px; font-weight: 500;" *ngIf="selectedDentist.delegation || selectedDentist.ville">
+                                 {{ selectedDentist.delegation ? selectedDentist.delegation + ', ' : '' }}{{ selectedDentist.ville }}
+                             </p>
+                             <p style="font-size: 14px; font-weight: 500;">Tél: {{ selectedDentist.tel }}</p>
                          </div>
                      </div>
                  </div>
@@ -49,7 +54,7 @@
                      <div class="icon-small"><i class="fa-solid fa-location-dot"></i></div>
                      <div>
                         <strong>Cabinet dentaire</strong>
-                        <p>{{ selectedDentist.ville }}</p>
+                        <p>{{ selectedDentist.adresse ? selectedDentist.adresse + ', ' : '' }}{{ selectedDentist.ville }}</p>
                      </div>
                  </div>
                  <button class="btn-book-full" (click)="navigateToBooking()">PRENDRE RENDEZ-VOUS</button>

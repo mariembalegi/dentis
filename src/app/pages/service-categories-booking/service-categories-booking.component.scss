@@ -189,6 +189,11 @@
       &:hover {
           background-color: #cce9e5;
       }
+
+      &.selected {
+          background-color: #D04747;
+          color: white;
+      }
   }
   
   .btn-more-dates {

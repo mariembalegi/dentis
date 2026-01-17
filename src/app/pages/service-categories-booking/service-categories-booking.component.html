@@ -26,12 +26,37 @@
           </div>
         </div>
 
-        <div class="actions-footer" style="margin-top: 24px; display: flex; justify-content: flex-end;">
-            <button class="btn-continue" 
-                    [disabled]="selectedCategories.length === 0"
-                    (click)="continueBooking()">
-                CONTINUER
-            </button>
+        <div class="actions-footer">
+           <!-- Removed standalone continue button, will integrate with booking flow -->
+        </div>
+
+        <div class="booking-section-separator" style="margin: 30px 0; border-top: 1px solid #eee;"></div>
+
+        <h2>Choisissez la date de consultation</h2>
+        <div class="slots-container">
+            <div class="day-group" *ngFor="let day of availableSlots">
+                <div class="day-header" [class.expanded]="day.expanded" (click)="toggleDay(day)">
+                    <span>{{ day.dateDisplay }}</span>
+                    <i class="fas" [class.fa-chevron-up]="day.expanded" [class.fa-chevron-down]="!day.expanded"></i>
+                </div>
+                <div class="day-slots" *ngIf="day.expanded">
+                    <button class="slot-btn" 
+                            *ngFor="let time of day.times" 
+                            [class.selected]="isSlotSelected(day.dateRaw, time)"
+                            (click)="selectSlot(day.dateRaw, time)">
+                        {{ time }}
+                    </button>
+                    <div *ngIf="day.times.length === 0" style="font-size: 13px; color: #777; padding: 10px;">Aucun créneau disponible</div>
+                </div>
+            </div>
+            
+            <div class="actions-footer" style="margin-top: 24px; display: flex; justify-content: flex-end;">
+                <button class="btn-continue" 
+                        [disabled]="selectedCategories.length === 0 || !selectedSlot"
+                        (click)="confirmBooking()">
+                    CONFIRMER LE RENDEZ-VOUS
+                </button>
+            </div>
         </div>
       </div>
     </div>

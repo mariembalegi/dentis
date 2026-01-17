@@ -6,8 +6,14 @@
     <!-- LEFT SIDEBAR -->
     <aside class="appointment-sidebar">
       
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Chargement de vos rendez-vous...</span>
+      </div>
+
       <!-- Upcoming Section -->
-      <section class="appointment-section" *ngIf="upcomingApps.length > 0">
+      <section class="appointment-section" *ngIf="!loading && upcomingApps.length > 0">
         <h3 class="section-title">Rendez-vous à venir</h3>
         <div 
           class="appointment-card upcoming" 
@@ -31,12 +37,15 @@
             <div class="service-name">
               <i class="fas fa-tooth"></i> {{ app.serviceName }}
             </div>
+            <div class="status-badge" [ngClass]="app.statutRv === 'DISPONIBLE' ? 'available' : 'booked'">
+              {{ app.statutRv === 'DISPONIBLE' ? 'Disponible' : 'Confirmé' }}
+            </div>
           </div>
         </div>
       </section>
 
       <!-- Past Section -->
-      <div class="past-section-wrapper" *ngIf="pastApps.length > 0">
+      <div class="past-section-wrapper" *ngIf="!loading && pastApps.length > 0">
         
         <!-- Toggle Link (Centered) -->
         <div *ngIf="!showPastAppointments" class="toggle-past-link" (click)="showPastAppointments = true">
@@ -73,8 +82,9 @@
         </section>
       </div>
 
-      <div *ngIf="appointments.length === 0" class="no-appointments">
-        Aucun rendez-vous trouvé.
+      <div *ngIf="!loading && appointments.length === 0" class="no-appointments">
+        <i class="far fa-calendar-times" style="font-size: 32px; color: #ccc; margin-bottom: 12px;"></i>
+        <p>Aucun rendez-vous trouvé.</p>
       </div>
     </aside>
 

@@ -24,6 +24,90 @@ export class DentistProfileComponent implements OnInit {
   // Form data
   editProfileData: any = {};
   editHorairesData: DaySchedule[] = [];
+  
+  delegationsOptions: string[] = [];
+  // Use a list to preserve order if needed, or just keys.
+  gouvernoratList: string[] = [
+    "Tunis", "Ariana", "Ben Arous", "Manouba", "Nabeul", "Zaghouan", 
+    "Bizerte", "Béja", "Jendouba", "Le Kef", "Siliana", "Sousse", 
+    "Monastir", "Mahdia", "Sfax", "Kairouan", "Kasserine", 
+    "Sidi Bouzid", "Gabès", "Médenine", "Tataouine", "Gafsa", 
+    "Tozeur", "Kébili"
+  ];
+
+  tunisiaData: any = {
+    "Tunis": {
+      "Carthage": ["Carthage", "Amilcar", "Carthage Byrsa", "Carthage Plage"],
+      "La Marsa": ["La Marsa", "Gammarth", "Sidi Daoud", "Marsa Ville"],
+      "Le Bardo": ["Le Bardo", "Bardo Nord", "Ksar Said"],
+      "Sidi Bou Said": ["Sidi Bou Said"],
+      "Centre Ville": ["Lafayette", "Montplaisir", "Avenue Habib Bourguiba"],
+      "El Menzah": ["El Menzah 1", "El Menzah 4", "El Menzah 9", "Mutuelleville"],
+    },
+    "Ariana": {
+      "Ariana Ville": ["Ariana", "Nouvelle Ariana", "Ariana Supérieure", "Menzah 8"],
+      "La Soukra": ["La Soukra", "Chotrana 1", "Chotrana 2", "Chotrana 3", "Sidi Frej"],
+      "Raoued": ["Raoued", "Riadh Andalous", "Ghazela"],
+      "Ettadhamen": ["Ettadhamen", "Cité El Bassatine"],
+      "Mnihla": ["Mnihla", "Cité El Refaha"]
+    },
+    "Ben Arous": {
+      "Hammam Lif": ["Hammam Lif", "Bou Kornine"],
+      "Radès": ["Radès", "Radès Méliane", "Radès Forêt"],
+      "Ezzahra": ["Ezzahra", "Borj Cedria"],
+      "Megrine": ["Megrine Coteaux", "Megrine Chaker", "Sidi Rezig"],
+      "Mourouj": ["Mourouj 1", "Mourouj 3", "Mourouj 5", "Mourouj 6"]
+    },
+    "Manouba": {
+        "Manouba": ["Manouba", "Denden"],
+        "Oued Ellil": ["Oued Ellil", "Cité El Ward"],
+        "Tebourba": ["Tebourba"],
+        "Mornaguia": ["Mornaguia"]
+    },
+    "Nabeul": {
+        "Nabeul": ["Nabeul", "Les Deux Oueds"],
+        "Hammamet": ["Hammamet Nord", "Hammamet Sud", "Yasmine Hammamet"],
+        "Dar Chaabane": ["Dar Chaabane El Fehri"],
+        "Kelibia": ["Kelibia"],
+        "Grombalia": ["Grombalia"]
+    },
+    "Zaghouan": { "Zaghouan": ["Zaghouan Ville"] },
+    "Bizerte": { "Bizerte Nord": ["Bizerte"], "Zarzouna": ["Zarzouna"] },
+    "Béja": { "Béja Nord": ["Béja"] },
+    "Jendouba": { "Jendouba Nord": ["Jendouba"] },
+    "Le Kef": { "Kef Ouest": ["Le Kef"] },
+    "Siliana": { "Siliana Nord": ["Siliana"] },
+    "Sousse": {
+      "Sousse Ville": ["Sousse", "Boujaffar", "Khezama", "Sahloul"],
+      "Hammam Sousse": ["Hammam Sousse", "El Kantaoui"],
+      "Msaken": ["Msaken", "Beni Kalthoum"],
+      "Kalaa Kebira": ["Kalaa Kebira"],
+      "Akouda": ["Akouda"]
+    },
+    "Monastir": {
+        "Monastir": ["Monastir", "Skanes"],
+        "Moknine": ["Moknine"],
+        "Jammel": ["Jammel"],
+        "Ksar Hellal": ["Ksar Hellal"]
+    },
+    "Mahdia": { "Mahdia": ["Mahdia Ville", "Hiboun"] },
+    "Sfax": {
+      "Sfax Ville": ["Sfax", "Bab Bhar", "Sfax El Jadida"],
+      "Sakiet Ezzit": ["Sakiet Ezzit", "Sidi Saleh"],
+      "Sakiet Eddaier": ["Sakiet Eddaier"],
+      "Thyna": ["Thyna"],
+      "El Hencha": ["El Hencha"]
+    },
+    "Kairouan": { "Kairouan Nord": ["Kairouan"] },
+    "Kasserine": { "Kasserine Nord": ["Kasserine"] },
+    "Sidi Bouzid": { "Sidi Bouzid Ouest": ["Sidi Bouzid"] },
+    "Gabès": { "Gabès Médina": ["Gabès"] },
+    "Médenine": { "Médenine Nord": ["Médenine"], "Djerba Houmt Souk": ["Houmt Souk"] },
+    "Tataouine": { "Tataouine Nord": ["Tataouine"] },
+    "Gafsa": { "Gafsa Nord": ["Gafsa"] },
+    "Tozeur": { "Tozeur": ["Tozeur Ville"] },
+    "Kébili": { "Kébili Nord": ["Kébili"] }
+  };
 
   constructor(
     private dentistService: DentistService,
@@ -84,9 +168,35 @@ export class DentistProfileComponent implements OnInit {
       return `${fmt(h.matinDebut)} - ${fmt(h.matinFin)}, ${fmt(h.apresMidiDebut)} - ${fmt(h.apresMidiFin)}`;
   }
 
+  // Helper to load delegation options without clearing existing value
+  updateDelegationOptions() {
+      if (this.editProfileData.gouvernorat && this.tunisiaData[this.editProfileData.gouvernorat]) {
+          this.delegationsOptions = Object.keys(this.tunisiaData[this.editProfileData.gouvernorat]);
+      } else {
+          this.delegationsOptions = [];
+      }
+  }
+
+  onGouvernoratChange() {
+      this.editProfileData.delegation = '';
+      this.updateDelegationOptions();
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+         this.editProfileData.diplome = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+ }
+
   openProfileEdit() {
     if (!this.dentist) return;
     this.editProfileData = { ...this.dentist };
+    this.updateDelegationOptions();
     this.showProfileEditModal = true;
   }
   

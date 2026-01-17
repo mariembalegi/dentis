@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DentistService, DentistSearchResult } from '../../services/dentist.service';
+import { DentistService, DentistSearchResult, Horaire } from '../../services/dentist.service';
 import { AuthService } from '../../services/auth.service';
 import { LoginRequiredModalComponent } from '../../components/login-required-modal/login-required-modal.component';
 
@@ -14,6 +14,7 @@ import { LoginRequiredModalComponent } from '../../components/login-required-mod
 })
 export class DentistInformationsComponent implements OnInit {
   selectedDentist: DentistSearchResult | null = null;
+  horaires: Horaire[] = [];
   loadingDentist = false;
   showLoginModal = false;
   isPatientConnected = false;
@@ -67,22 +68,44 @@ export class DentistInformationsComponent implements OnInit {
       this.dentistService.getDentistById(id).subscribe({
           next: (dentist) => {
               this.selectedDentist = dentist;
+              this.loadHoraires(id);
               this.loadingDentist = false;
           },
           error: (err) => {
               console.error('Failed to load dentist details', err);
               this.loadingDentist = false;
-              // MOCK DATA FOR DESIGN PREVIEW
-              this.selectedDentist = {
-                id: id,
-                nom: 'Dupont',
-                prenom: 'Jean',
-                ville: 'Tunis',
-                tel: 71123456,
-                photo: '', // Will use default
-                diplome: 'Chirurgien Dentiste - Diplômé de la Faculté de Médecine Dentaire de Monastir'
-              };
           }
       });
+  }
+
+  loadHoraires(id: number) {
+    this.dentistService.getHoraires(id).subscribe({
+      next: (data) => {
+        const order = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'];
+        this.horaires = data.sort((a, b) => order.indexOf(a.jourSemaine) - order.indexOf(b.jourSemaine));
+      },
+      error: (err) => console.error('Failed to load horaires', err)
+    });
+  }
+
+  formatTime(time?: string): string {
+    return time ? time.substring(0, 5) : '';
+  }
+
+  getDayLabel(day: string): string {
+    return day.charAt(0) + day.slice(1).toLowerCase();
+  }
+
+  getScheduleString(h: Horaire): string {
+    if (h.estFerme) return 'Fermé';
+    let schedule = '';
+    if (h.matinDebut && h.matinFin) {
+      schedule += `${this.formatTime(h.matinDebut)} - ${this.formatTime(h.matinFin)}`;
+    }
+    if (h.apresMidiDebut && h.apresMidiFin) {
+      if (schedule) schedule += ', ';
+      schedule += `${this.formatTime(h.apresMidiDebut)} - ${this.formatTime(h.apresMidiFin)}`;
+    }
+    return schedule || 'Fermé';
   }
 }

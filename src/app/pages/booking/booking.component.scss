@@ -170,6 +170,53 @@ $primary-color: #1A3251; // Keeping for compatibility
     i { color: #5E7182; } // Icon color
 }
 
+/* Loading State */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: $text-grey;
+    gap: 12px;
+    
+    i {
+        font-size: 24px;
+        color: $primary-blue;
+    }
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    
+    &.booked {
+        background-color: #E8F5E9;
+        color: #2E7D32;
+    }
+    
+    &.available {
+        background-color: #E3F2FD;
+        color: #1565C0;
+    }
+    
+    &.pending {
+        background-color: #FFF3E0;
+        color: #E65100;
+    }
+    
+    &.cancelled {
+        background-color: #FFEBEE;
+        color: #C62828;
+    }
+}
+
 /* DETAILS PANEL STYLES */
 .details-panel {
     flex-grow: 1;

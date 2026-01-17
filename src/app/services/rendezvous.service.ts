@@ -27,6 +27,10 @@ export class RendezvousService {
     return this.apiService.post<Rendezvous>('/rendezvous/', rendezvous);
   }
 
+  bookAppointmentREST(rendezvous: Rendezvous): Observable<Rendezvous> {
+    return this.apiService.post<Rendezvous>('/rendezvousREST/book', rendezvous);
+  }
+
   getMyAppointments(): Observable<Rendezvous[]> {
     return this.apiService.get<Rendezvous[]>('/rendezvousREST/my');
   }

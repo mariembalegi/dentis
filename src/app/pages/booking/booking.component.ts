@@ -28,6 +28,7 @@ export class BookingComponent implements OnInit {
   appointments: RendezvousDisplay[] = [];
   upcomingApps: RendezvousDisplay[] = [];
   pastApps: RendezvousDisplay[] = [];
+  loading = false;
   
   // For Patient Booking
   selectedService: ServiceMedical | null = null;
@@ -540,8 +541,32 @@ export class BookingComponent implements OnInit {
   }
 
   loadPatientData() {
-    // FORCE MOCK DATA FOR DEMO PURPOSES
-    this.mockAppointments();
+    // Load appointments from API
+    this.loading = true;
+    this.rendezvousService.getMyAppointments().subscribe({
+      next: (appointments) => {
+        this.appointments = appointments.map(rv => ({
+          ...rv,
+          dentistName: rv.dentistName || 'Dr Inconnu',
+          dentistSpeciality: 'Dentiste',
+          dentistPhoto: undefined,
+          serviceName: rv.serviceName || rv.descriptionRv || 'Consultation'
+        }));
+        this.updateFilteredLists();
+        if (this.upcomingApps.length > 0) {
+          this.selectedAppointment = this.upcomingApps[0];
+        } else if (this.pastApps.length > 0) {
+          this.selectedAppointment = this.pastApps[0];
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load appointments', err);
+        this.appointments = [];
+        this.updateFilteredLists();
+        this.loading = false;
+      }
+    });
   }
   
   loadDentistData() {

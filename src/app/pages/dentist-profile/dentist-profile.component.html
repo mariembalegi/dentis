@@ -98,21 +98,31 @@
                 <input [(ngModel)]="editProfileData.adresse" name="adresse">
             </div>
             <div class="form-group">
-                <label>Délégation</label>
-                <input [(ngModel)]="editProfileData.delegation" name="delegation">
+                <label>Gouvernorat</label>
+                <select [(ngModel)]="editProfileData.gouvernorat" name="gouvernorat" (change)="onGouvernoratChange()">
+                   <option value="" disabled>Sélectionner</option>
+                   <option *ngFor="let g of gouvernoratList" [value]="g">{{ g }}</option>
+                </select>
             </div>
             <div class="form-group">
-                <label>Gouvernorat</label>
-                <input [(ngModel)]="editProfileData.gouvernorat" name="gouvernorat">
+                <label>Délégation</label>
+                <select [(ngModel)]="editProfileData.delegation" name="delegation" [disabled]="!editProfileData.gouvernorat">
+                  <option value="" disabled>Sélectionner</option>
+                  <option *ngFor="let del of delegationsOptions" [value]="del">{{ del }}</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Spécialité</label>
                 <input [(ngModel)]="editProfileData.specialite" name="specialite">
             </div>
-            <!-- Diplome is likely readonly or uploadable, simple input for now -->
+            <!-- Diplome file upload and preview -->
             <div class="form-group">
-                <label>Diplôme (Nom)</label>
-                <input [(ngModel)]="editProfileData.diplome" name="diplome" placeholder="Ex: Doctorat en chirurgie dentaire">
+                <label>Diplôme</label>
+                <input type="file" (change)="onFileSelected($event)" accept=".pdf, image/*">
+                <div *ngIf="editProfileData.diplome" class="diplome-preview" style="margin-top: 10px;">
+                    <img *ngIf="editProfileData.diplome.startsWith('data:image')" [src]="editProfileData.diplome" alt="Diplôme" style="max-width: 100%; max-height: 200px; border: 1px solid #ccc; padding: 4px;">
+                    <p *ngIf="!editProfileData.diplome.startsWith('data:image')" style="font-size: 0.9rem; color: #666;">Fichier chargé ({{ editProfileData.diplome.substring(0, 30) }}...)</p>
+                </div>
             </div>
             
             <div class="modal-actions">
