@@ -24,6 +24,8 @@ export interface DentistSearchResult {
   diplome?: string;
   specialite?: string;
   tel?: number;
+  services?: any[];
+  availableRendezvous?: any[];
 }
 
 export interface SearchDropdownResponse {
