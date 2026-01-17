@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PublicationService, Article } from '../../services/publication.service';
+import { PublicationService, PublicationDTO } from '../../services/publication.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -39,8 +39,8 @@ export class AdminDashboardComponent implements OnInit {
   currentPageUsers = 1;
   pageSize = 20;
 
-  publications: Article[] = [];
-  filteredPublications: Article[] = [];
+  publications: PublicationDTO[] = [];
+  filteredPublications: PublicationDTO[] = [];
   publicationSearchQuery = '';
   publicationFilter = 'ALL'; // ALL, VALIDATED, PENDING
 
@@ -51,7 +51,7 @@ export class AdminDashboardComponent implements OnInit {
   selectedUser: any = null;
   showUserModal = false;
 
-  selectedPublication: Article | null = null;
+  selectedPublication: PublicationDTO | null = null;
   showPublicationModal = false;
 
   constructor(private publicationService: PublicationService, private router: Router) {
@@ -76,14 +76,13 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   refreshData() {
-    // Publications
-    this.publications = this.publicationService.getArticles();
-    // Default some to PENDING if not set (for demo)
-    this.publications.forEach(p => {
-        if (!p.status) p.status = 'VALIDATED';
+    // Load ALL publications (Valid + Pending)
+    this.publicationService.getAllValidPublications().subscribe(valid => {
+        this.publicationService.getPendingPublications().subscribe(pending => {
+            this.publications = [...valid, ...pending];
+            this.filterPublications();
+        });
     });
-    
-    this.filterPublications();
 
     // Users
     this.filterUsers();
@@ -222,15 +221,15 @@ export class AdminDashboardComponent implements OnInit {
     if (this.publicationSearchQuery) {
         const q = this.publicationSearchQuery.toLowerCase();
         temp = temp.filter(p => 
-            p.title.toLowerCase().includes(q) ||
-            p.author.toLowerCase().includes(q)
+            p.titrePub.toLowerCase().includes(q) ||
+            (p.dentistName && p.dentistName.toLowerCase().includes(q))
         );
     }
 
     // Sort: Pending First
     this.filteredPublications = temp.sort((a, b) => {
-        if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
-        if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+        if (!a.valide && b.valide) return -1;
+        if (a.valide && !b.valide) return 1;
         return 0;
     });
 
@@ -241,7 +240,7 @@ export class AdminDashboardComponent implements OnInit {
     this.filterPublications();
   }
 
-  openPublicationModal(pub: Article) {
+  openPublicationModal(pub: PublicationDTO) {
     this.selectedPublication = pub;
     this.showPublicationModal = true;
   }
@@ -251,17 +250,21 @@ export class AdminDashboardComponent implements OnInit {
     this.showPublicationModal = false;
   }
 
-  deletePublication(pub: Article) {
+  deletePublication(pub: PublicationDTO) {
      if(confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
-        this.publicationService.deleteArticle(pub.id);
+        // Implement delete API
+        alert('Supression API non implémentée');
+        // this.publicationService.deleteArticle(pub.idPub);
         this.refreshData(); // get fresh list
         this.closePublicationModal();
      }
   }
 
-  validatePublication(pub: Article) {
-      this.publicationService.validateArticle(pub.id);
-      pub.status = 'VALIDATED'; // Optimistic update
+  validatePublication(pub: PublicationDTO) {
+      // Implement validate API
+      alert('Validation API non implémentée');
+      // this.publicationService.validateArticle(pub.idPub);
+      pub.valide = true; // Optimistic update
       this.refreshData();
   }
 }

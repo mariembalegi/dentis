@@ -15,7 +15,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/publication/publication.component').then(m => m.PublicationComponent)
   },
   {
-    path: 'publication/article/:id',
+    path: 'publication/publication/:id',
     loadComponent: () => import('./pages/publication/publication.component').then(m => m.PublicationComponent)
   },
   {

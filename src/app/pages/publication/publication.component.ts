@@ -5,7 +5,7 @@ import { HeaderComponent } from '../../components/header/header.component';
 import { DashboardHeaderComponent } from '../../components/dashboard-header/dashboard-header.component';
 import { PublicationCardComponent } from '../../components/publication-card/publication-card.component'; // Import
 import { AuthService } from '../../services/auth.service';
-import { PublicationService, Article } from '../../services/publication.service';
+import { PublicationService, PublicationDTO } from '../../services/publication.service';
 
 @Component({
   selector: 'app-publication',
@@ -17,28 +17,28 @@ import { PublicationService, Article } from '../../services/publication.service'
       <app-header backgroundColor="#1A3251"></app-header>
     </ng-template>
 
-    <div class="publication-page" *ngIf="currentArticle">
+    <div class="publication-page" *ngIf="currentPublication">
       <!-- Hero Section -->
       <section class="hero-section">
         <div class="hero-container">
           <div class="hero-content">
             <h1 class="hero-title">
-              {{ currentArticle.title }}
+              {{ currentPublication.titrePub }}
             </h1>
             <p class="hero-description">
-              {{ currentArticle.description || "Sur prescription médicale, l'infirmier réalise les soins de pansement nécessaires à la bonne cicatrisation en suivant le protocole établi par le médecin, en veillant à ce que la plaie reste propre, protégée et à ce que la guérison se déroule dans les meilleures conditions possibles." }}
+              {{ currentPublication.description || "Description non disponible." }}
             </p>
             <div class="hero-author">
-              Auteur: <span class="author-name">{{ currentArticle.author }}</span>
-              <div class="hero-date">Publié le {{ currentArticle.date }}</div>
+              Auteur: <span class="author-name">{{ currentPublication.dentistName }}</span>
+              <div class="hero-date">Publié le {{ currentPublication.datePub | date }}</div>
             </div>
-            <a href="assets/publication.pdf" download class="pdf-download-link">
+            <a *ngIf="currentPublication.fichierPub" [href]="currentPublication.fichierPub" download="publication.pdf" class="pdf-download-link">
               <i class="fas fa-file-pdf"></i> En savoir plus
             </a>
           </div>
           <div class="hero-image-wrapper">
-             <!-- Use article image -->
-             <img [src]="currentArticle.image" [alt]="currentArticle.title" class="hero-image" />
+             <!-- Use publication image -->
+             <img [src]="currentPublication.affichePub || 'assets/images/placeholder_dental.jpg'" [alt]="currentPublication.titrePub" class="hero-image" />
           </div>
         </div>
       </section>
@@ -237,8 +237,8 @@ import { PublicationService, Article } from '../../services/publication.service'
 })
 export class PublicationComponent implements OnInit {
   isLoggedIn = false;
-  currentArticle: Article | undefined;
-  latestArticles: Article[] = []; // Store latest articles
+  currentPublication: PublicationDTO | undefined;
+  latestPublications: PublicationDTO[] = []; // Store latest publications
 
   constructor(
     private authService: AuthService,
@@ -251,19 +251,23 @@ export class PublicationComponent implements OnInit {
       this.isLoggedIn = !!user;
     });
     
-    // Fetch latest articles (first 3 for now, or whatever logic)
-    this.latestArticles = this.publicationService.getArticles().slice(0, 3);
-
-    this.route.params.subscribe(params => {
-        if (params['id']) {
-            const id = +params['id'];
-            this.currentArticle = this.publicationService.getArticleById(id);
-        }
-
-        // Fallback or default
-        if (!this.currentArticle) {
-             this.currentArticle = this.publicationService.getArticles()[0]; 
-        }
+    // Load data
+    this.publicationService.getAllValidPublications().subscribe(data => {
+        // Latest = last 3 (assuming sorted by ID or date, but array order serves for now)
+        this.latestPublications = data.slice(0, 3);
+        
+        // Find current
+        this.route.params.subscribe(params => {
+            if (params['id']) {
+                const id = +params['id'];
+                this.currentPublication = data.find(p => p.idPub === id);
+            }
+    
+            // Fallback or default
+            if (!this.currentPublication && data.length > 0) {
+                 this.currentPublication = data[0]; 
+            }
+        });
     });
   }
 }

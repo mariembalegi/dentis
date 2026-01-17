@@ -1,11 +1,11 @@
-<div class="article-card" [routerLink]="['/publication', 'article', article.id]">
-  <div class="card-image" [style.backgroundImage]="'url(' + article.image + ')'"></div>
+<div class="article-card" [routerLink]="['/publication', 'publication', publication.idPub]">
+  <div class="card-image" [style.backgroundImage]="'url(' + (publication.affichePub || 'assets/images/placeholder_dental.jpg') + ')'"></div>
   <div class="card-content">
-    <h3 class="card-title">{{ article.title }}</h3>
+    <h3 class="card-title">{{ publication.titrePub }}</h3>
     <div class="card-meta">
-      <span>{{ article.date }}</span>
+      <span>{{ publication.datePub | date }}</span>
       <span class="meta-separator">|</span>
-      <span>{{ article.author }}</span>
+      <span>{{ publication.dentistName }}</span>
     </div>
   </div>
 </div>

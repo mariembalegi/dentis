@@ -7,7 +7,7 @@ import { DashboardHeaderComponent } from '../../components/dashboard-header/dash
 import { InfoCardComponent } from '../../components/info-card/info-card.component';
 import { AuthService } from '../../services/auth.service';
 import { DentistService, DentistSearchResult } from '../../services/dentist.service';
-import { PublicationService, Article } from '../../services/publication.service'; // Import service
+import { PublicationService, PublicationDTO } from '../../services/publication.service'; // Import service
 
 @Component({
   selector: 'app-home',
@@ -19,7 +19,7 @@ import { PublicationService, Article } from '../../services/publication.service'
 export class HomeComponent implements OnInit {
   isPatientConnected = false;
   isDentistConnected = false;
-  latestArticles: Article[] = []; // Store articles
+  latestPublications: PublicationDTO[] = []; // Store publications
   
   // Search
   searchTerm = '';
@@ -54,8 +54,13 @@ export class HomeComponent implements OnInit {
         this.isDentistConnected = !!user && user.role === 'DENTISTE';
     });
 
-    // Get 3 latest articles
-    this.latestArticles = this.publicationService.getArticles().slice(0, 3);
+    // Get 3 latest publications
+    this.publicationService.getAllValidPublications().subscribe({
+      next: (data) => {
+        this.latestPublications = data.slice(0, 3);
+      },
+      error: (err) => console.error('Failed to load home publications', err)
+    });
   }
 
   onSearchInput() {

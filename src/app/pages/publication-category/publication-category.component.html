@@ -1,0 +1,121 @@
+    <app-dashboard-header *ngIf="isLoggedIn; else publicHeader" customBackgroundColor="#1A3251" textColor="white"></app-dashboard-header>
+    <ng-template #publicHeader>
+      <app-header backgroundColor="#1A3251"></app-header>
+    </ng-template>
+
+    <div class="category-page">
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="hero-shape shape-1"></div>
+        <div class="hero-shape shape-2"></div>
+        <div class="hero-shape shape-3"></div>
+        
+        <div class="hero-container">
+          <h1 class="hero-title">{{ categoryName }}</h1>
+
+          <div class="hero-nav-pills">
+            <a [routerLink]="['/publication', 'Article scientifique']" class="nav-pill" [class.active]="categoryName === 'Article scientifique'">
+                <i class="fas fa-microscope"></i> Article scientifique
+            </a>
+            <a [routerLink]="['/publication', 'Étude de cas']" class="nav-pill" [class.active]="categoryName === 'Étude de cas'">
+                <i class="fas fa-file-medical-alt"></i> Étude de cas
+            </a>
+            <a [routerLink]="['/publication', 'Lancement produit']" class="nav-pill" [class.active]="categoryName === 'Lancement d\'un produit ou service'">
+                <i class="fas fa-rocket"></i> Lancement d'un produit ou service
+            </a>
+            <a [routerLink]="['/publication', 'Actualités']" class="nav-pill" [class.active]="categoryName === 'Actualités/innovation'">
+                <i class="far fa-lightbulb"></i> Actualités/innovation
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Add Button Bar -->
+      <div class="add-btn-container" *ngIf="isDentist">
+          <button class="btn-filter" (click)="toggleFilter()" [class.active]="showMyPublicationsOnly" 
+                  title="{{ showMyPublicationsOnly ? 'Voir toutes les publications' : 'Filtrer mes publications' }}">
+              <i class="fas fa-filter"></i>
+          </button>
+          
+          <button class="btn-add-pub" (click)="openAddModal()" title="Ajouter une publication">
+              <i class="fas fa-plus"></i>
+          </button>
+      </div>
+
+      <!-- Admin Validation Section -->
+      <section class="validation-section" *ngIf="isAdmin && filteredPendingPublications.length > 0">
+        <div class="articles-container">  
+           <h2 class="pending-section-title">
+               <i class="fas fa-tasks"></i> Publications en attente de validation
+           </h2>
+           <div class="articles-grid">
+               <!-- Card mimics app-publication-card structure -->
+               <div class="article-card pending-card" 
+                    *ngFor="let publication of filteredPendingPublications"
+                    [routerLink]="['/publication', 'publication', publication.idPub]">
+                    <div class="card-image" [style.backgroundImage]="'url(' + (publication.affichePub || 'assets/images/placeholder_dental.jpg') + ')'">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">{{ publication.titrePub }}</h3>
+                        <div class="card-meta">
+                            <span class="date"><i class="far fa-calendar"></i> {{ publication.datePub | date }}</span>
+                            <span class="meta-separator">|</span>
+                            <span class="author"><i class="far fa-user"></i> {{ publication.dentistName }}</span>
+                        </div>
+                        
+                        <div class="admin-actions">
+                            <button class="btn-validate" (click)="$event.stopPropagation(); validatePublication(publication)">
+                                <i class="fas fa-check"></i> Valider
+                            </button>
+                            <button class="btn-reject" (click)="$event.stopPropagation(); rejectPublication(publication)">
+                                <i class="fas fa-times"></i> Rejeter
+                            </button>
+                        </div>
+                    </div>
+               </div>
+           </div>
+        </div>
+      </section>
+
+      <!-- Articles Grid Section -->
+      <section class="articles-section">
+        <div class="articles-container">
+          <div class="articles-grid">
+            <app-publication-card 
+              *ngFor="let publication of paginatedPublications" 
+              [publication]="publication">
+            </app-publication-card>
+          </div>
+          
+          <div *ngIf="filteredPublications.length === 0" class="no-articles">
+            <p>Aucune publication disponible pour cette catégorie.</p>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination-container" *ngIf="totalPages > 1">
+             <button *ngFor="let page of pagesArray" 
+                     class="page-btn" 
+                     [class.active]="page === currentPage"
+                     [class.ellipsis]="page === '...'"
+                     [disabled]="page === '...'"
+                     (click)="changePage(page)">
+               {{ page }}
+             </button>
+             
+             <button class="page-btn next-btn" 
+                     (click)="changePage(currentPage + 1)"
+                     [disabled]="currentPage === totalPages">
+                >>
+             </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Add Modal -->
+      <app-add-publication-modal
+        *ngIf="showAddModal"
+        (close)="closeAddModal()"
+        (publish)="onPublish($event)">
+      </app-add-publication-modal>
+
+    </div>

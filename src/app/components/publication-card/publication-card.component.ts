@@ -10,5 +10,5 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./publication-card.component.scss']
 })
 export class PublicationCardComponent {
-  @Input() article: any;
+  @Input() publication: any;
 }

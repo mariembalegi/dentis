@@ -26,6 +26,7 @@ export class ServiceMedicalService {
     return this.apiService.get<ServiceMedical[]>('/services/dentist/me');
   }
 
+
   createService(service: ServiceMedical): Observable<any> {
     return this.apiService.post<any>('/services', service);
   }

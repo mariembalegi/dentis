@@ -157,21 +157,21 @@
                     <tr *ngFor="let pub of paginatedPublications" (click)="openPublicationModal(pub)" class="clickable-row">
                         <td>
                             <div class="pub-info">
-                                <img [src]="pub.image" alt="cover" class="pub-thumb">
-                                <span>{{ pub.title }}</span>
+                                <img [src]="pub.affichePub || 'assets/images/placeholder_dental.jpg'" alt="cover" class="pub-thumb">
+                                <span>{{ pub.titrePub }}</span>
                             </div>
                         </td>
-                        <td>{{ pub.author }}</td>
-                        <td>{{ pub.mainCategory }}</td>
-                        <td>{{ pub.date }}</td>
+                        <td>{{ pub.dentistName }}</td>
+                        <td>{{ pub.typePub }}</td>
+                        <td>{{ pub.datePub | date }}</td>
                         <td>
-                            <span class="status-badge" [class.pending]="pub.status === 'PENDING'" [class.validated]="pub.status === 'VALIDATED'">
-                                {{ pub.status  === 'PENDING' ? 'À valider' : 'Publié' }}
+                            <span class="status-badge" [class.pending]="!pub.valide" [class.validated]="pub.valide">
+                                {{ !pub.valide ? 'À valider' : 'Publié' }}
                             </span>
                         </td>
                         <td (click)="$event.stopPropagation()">
                             <div class="action-buttons">
-                                <button *ngIf="pub.status === 'PENDING'" class="btn-validate" (click)="validatePublication(pub)">
+                                <button *ngIf="!pub.valide" class="btn-validate" (click)="validatePublication(pub)">
                                     <i class="fas fa-check"></i>
                                 </button>
                                 <button class="btn-delete" (click)="deletePublication(pub)">
@@ -244,22 +244,22 @@
         <div class="modal-body scrollable" *ngIf="selectedPublication">
             <!-- Reuse publication view style broadly -->
             <div class="article-preview">
-                <img [src]="selectedPublication.image" class="article-hero-img">
+                <img [src]="selectedPublication.affichePub || 'assets/images/placeholder_dental.jpg'" class="article-hero-img">
                 <div class="article-meta">
-                    <span class="category-tag">{{ selectedPublication.mainCategory }}</span>
-                    <span class="date">{{ selectedPublication.date }}</span>
+                    <span class="category-tag">{{ selectedPublication.typePub }}</span>
+                    <span class="date">{{ selectedPublication.datePub | date }}</span>
                 </div>
-                <h1>{{ selectedPublication.title }}</h1>
-                <div class="author-line">Par {{ selectedPublication.author }}</div>
+                <h1>{{ selectedPublication.titrePub }}</h1>
+                <div class="author-line">Par {{ selectedPublication.dentistName }}</div>
                 
                 <p class="article-description">{{ selectedPublication.description }}</p>
                 <hr>
                 <div class="article-status-bar">
-                    Status: <strong>{{ selectedPublication.status }}</strong>
+                    Status: <strong>{{ selectedPublication.valide ? 'VALIDÉ' : 'EN ATTENTE' }}</strong>
                 </div>
 
                 <div class="modal-actions">
-                    <button *ngIf="selectedPublication.status === 'PENDING'" class="btn-primary" (click)="validatePublication(selectedPublication); closePublicationModal()">Valider la publication</button>
+                    <button *ngIf="!selectedPublication.valide" class="btn-primary" (click)="validatePublication(selectedPublication); closePublicationModal()">Valider la publication</button>
                     <button class="btn-danger" (click)="deletePublication(selectedPublication)">Supprimer</button>
                 </div>
             </div>
