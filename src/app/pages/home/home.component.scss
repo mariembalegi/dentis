@@ -598,3 +598,121 @@ body {
 
 
 
+
+
+
+
+/* Key Figures Section */
+.key-figures-section {
+  padding: 80px 20px;
+  background-color: white;
+  text-align: center;
+}
+
+.figures-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.figures-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  font-style: italic;
+  color: #1A3251;
+  margin-bottom: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-transform: uppercase;
+}
+
+.title-icon {
+  color: #E55555;
+  font-size: 40px;
+  border: 2px solid #E55555;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(229, 85, 85, 0.05);
+}
+
+.figures-grid {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.figure-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 180px;
+  max-width: 250px;
+}
+
+.figure-circle {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, var(--orange, #F57F17) 0%, #E55555 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 25px rgba(229, 85, 85, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.figure-circle:hover {
+  transform: translateY(-10px);
+}
+
+.figure-icon {
+  width: 50px;
+  height: 50px;
+  color: white; /* Fallback */
+}
+
+/* Ensure SVG paths are white if they rely on currentColor, 
+   but we set stroke="white" explicitly in HTML. 
+   Just in case: */
+.figure-icon path,
+.figure-icon circle {
+  stroke: white;
+}
+
+.figure-number {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #1A3251;
+  line-height: 1.2;
+  margin-bottom: 5px;
+}
+
+.figure-number .small-text {
+  font-size: 16px;
+  vertical-align: super;
+  font-weight: 500;
+}
+
+.figure-label {
+  font-size: 16px;
+  color: #576b88;
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .figures-grid {
+    justify-content: center;
+  }
+}
+

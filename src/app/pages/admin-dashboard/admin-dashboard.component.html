@@ -1,0 +1,268 @@
+<div class="admin-dashboard-container">
+    
+    <!-- STATS HEADER -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="icon-circle users-color">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.users }}</h3>
+                <p>Utilisateurs Totaux</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-circle patients-color">
+                <i class="fas fa-user-injured"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.patients }}</h3>
+                <p>Patients</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-circle dentists-color">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.dentists }}</h3>
+                <p>Dentistes</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-circle pubs-color">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.publications }}</h3>
+                <p>Publications</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- USERS SECTION -->
+    <section class="section-container">
+        <div class="section-header">
+            <h2>Utilisateurs</h2>
+            <div class="controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" [(ngModel)]="userSearchQuery" (input)="onUserSearch()" placeholder="Rechercher nom, email...">
+                </div>
+                <div class="filters">
+                    <button class="filter-btn" [class.active]="activeUserTab==='ALL'" (click)="setUsersTab('ALL')">Tout</button>
+                    <button class="filter-btn" [class.active]="activeUserTab==='DENTISTE'" (click)="setUsersTab('DENTISTE')">Dentistes</button>
+                    <button class="filter-btn" [class.active]="activeUserTab==='PATIENT'" (click)="setUsersTab('PATIENT')">Patients</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive shadow-sm">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th *ngIf="activeUserTab !== 'PATIENT'">Diplôme</th>
+                        <th *ngIf="activeUserTab !== 'PATIENT'">Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of paginatedUsers">
+                        <td>
+                            <div class="user-info">
+                                <div class="avatar">{{ user.prenom[0] }}</div>
+                                <span>{{ user.prenom }} {{ user.nom }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="role-badge" [ngClass]="user.role.toLowerCase()">{{ user.role }}</span>
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td *ngIf="activeUserTab !== 'PATIENT'">
+                            <button *ngIf="user.diplome" class="btn-icon" (click)="downloadDiplome(user)" title="Télécharger le diplôme">
+                                <i class="fas fa-file-download" style="color: #1A3251; font-size: 1.2rem;"></i>
+                            </button>
+                            <span *ngIf="!user.diplome" style="color: #ccc;">-</span>
+                        </td>
+                        <td *ngIf="activeUserTab !== 'PATIENT'">
+                            <span *ngIf="user.role === 'DENTISTE'" class="status-badge" [class.pending]="user.status === 'PENDING'" [class.validated]="user.status === 'VALIDATED'">
+                                {{ user.status === 'PENDING' ? 'À vérifier' : 'Validé' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button *ngIf="user.role === 'DENTISTE' && user.status === 'PENDING'" class="btn-validate" (click)="validateDentist(user)">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-delete" (click)="deleteUser(user)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination Controls Users -->
+        <div class="pagination-container" *ngIf="totalPagesUsers > 1">
+            <!-- Previous Button (Visible if not on first page, or disabled) -->
+            <button class="page-btn" (click)="currentPageUsers = currentPageUsers - 1" [disabled]="currentPageUsers === 1">
+               {{ '<<' }}
+            </button>
+            
+            <button *ngFor="let page of pagesArrayUsers" 
+                    class="page-btn" 
+                    [class.active]="page === currentPageUsers"
+                    (click)="currentPageUsers = page">
+                {{ page }}
+            </button>
+
+            <button class="page-btn" (click)="currentPageUsers = currentPageUsers + 1" [disabled]="currentPageUsers === totalPagesUsers">
+               {{ '>>' }}
+            </button>
+        </div>
+    </section>
+
+
+    <!-- PUBLICATIONS SECTION -->
+    <section class="section-container">
+        <div class="section-header">
+            <h2>Publications</h2>
+            <div class="controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" [(ngModel)]="publicationSearchQuery" (input)="onPublicationSearch()" placeholder="Rechercher titre, auteur...">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive shadow-sm">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Article</th>
+                        <th>Auteur</th>
+                        <th>Catégorie</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pub of paginatedPublications" (click)="openPublicationModal(pub)" class="clickable-row">
+                        <td>
+                            <div class="pub-info">
+                                <img [src]="pub.image" alt="cover" class="pub-thumb">
+                                <span>{{ pub.title }}</span>
+                            </div>
+                        </td>
+                        <td>{{ pub.author }}</td>
+                        <td>{{ pub.mainCategory }}</td>
+                        <td>{{ pub.date }}</td>
+                        <td>
+                            <span class="status-badge" [class.pending]="pub.status === 'PENDING'" [class.validated]="pub.status === 'VALIDATED'">
+                                {{ pub.status  === 'PENDING' ? 'À valider' : 'Publié' }}
+                            </span>
+                        </td>
+                        <td (click)="$event.stopPropagation()">
+                            <div class="action-buttons">
+                                <button *ngIf="pub.status === 'PENDING'" class="btn-validate" (click)="validatePublication(pub)">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-delete" (click)="deletePublication(pub)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls Publications -->
+        <div class="pagination-container" *ngIf="totalPagesPublications > 1">
+            <button class="page-btn" (click)="currentPagePublications = currentPagePublications - 1" [disabled]="currentPagePublications === 1">
+               {{ '<<' }}
+            </button>
+            
+             <button *ngFor="let page of pagesArrayPublications" 
+                    class="page-btn" 
+                    [class.active]="page === currentPagePublications"
+                    (click)="currentPagePublications = page">
+                {{ page }}
+            </button>
+
+            <button class="page-btn" (click)="currentPagePublications = currentPagePublications + 1" [disabled]="currentPagePublications === totalPagesPublications">
+               {{ '>>' }}
+            </button>
+        </div>
+    </section>
+
+</div>
+
+<!-- USER DETAILS MODAL -->
+<div class="modal-overlay" *ngIf="showUserModal" (click)="closeUserModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeUserModal()">&times;</button>
+        <div class="modal-header">
+            <h3>Détails Utilisateur</h3>
+        </div>
+        <div class="modal-body" *ngIf="selectedUser">
+            <div class="detail-row">
+                <strong>Nom complet:</strong> {{ selectedUser.prenom }} {{ selectedUser.nom }}
+            </div>
+            <div class="detail-row">
+                <strong>Email:</strong> {{ selectedUser.email }}
+            </div>
+            <div class="detail-row">
+                <strong>Role:</strong> {{ selectedUser.role }}
+            </div>
+            <div class="detail-row" *ngIf="selectedUser.status">
+                <strong>Statut:</strong> {{ selectedUser.status }}
+            </div>
+            <div class="detail-row" *ngIf="selectedUser.diplome">
+                <strong>Diplôme:</strong> <a href="#" onclick="return false;">{{ selectedUser.diplome }}</a>
+            </div>
+            
+            <div class="modal-actions">
+                <button *ngIf="selectedUser.role === 'DENTISTE' && selectedUser.status === 'PENDING'" class="btn-primary" (click)="validateDentist(selectedUser); closeUserModal()">Valider ce dentiste</button>
+                <button class="btn-danger" (click)="deleteUser(selectedUser)">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PUBLICATION PREVIEW MODAL -->
+<div class="modal-overlay" *ngIf="showPublicationModal" (click)="closePublicationModal()">
+    <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closePublicationModal()">&times;</button>
+        <div class="modal-body scrollable" *ngIf="selectedPublication">
+            <!-- Reuse publication view style broadly -->
+            <div class="article-preview">
+                <img [src]="selectedPublication.image" class="article-hero-img">
+                <div class="article-meta">
+                    <span class="category-tag">{{ selectedPublication.mainCategory }}</span>
+                    <span class="date">{{ selectedPublication.date }}</span>
+                </div>
+                <h1>{{ selectedPublication.title }}</h1>
+                <div class="author-line">Par {{ selectedPublication.author }}</div>
+                
+                <p class="article-description">{{ selectedPublication.description }}</p>
+                <hr>
+                <div class="article-status-bar">
+                    Status: <strong>{{ selectedPublication.status }}</strong>
+                </div>
+
+                <div class="modal-actions">
+                    <button *ngIf="selectedPublication.status === 'PENDING'" class="btn-primary" (click)="validatePublication(selectedPublication); closePublicationModal()">Valider la publication</button>
+                    <button class="btn-danger" (click)="deletePublication(selectedPublication)">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

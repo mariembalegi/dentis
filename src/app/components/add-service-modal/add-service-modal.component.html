@@ -1,7 +1,7 @@
 <div class="modal-overlay" (click)="onClose()">
   <div class="modal-container" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2 class="modal-title">Ajouter un service</h2>
+      <h2 class="modal-title">{{ serviceToEdit ? 'Modifier le service' : 'Ajouter un service' }}</h2>
       <button class="close-btn" (click)="onClose()">
         <i class="fas fa-times"></i>
       </button>
@@ -47,7 +47,9 @@
       <div class="modal-footer">
         <button type="button" class="btn-cancel" (click)="onClose()">Annuler</button>
         <button type="submit" class="btn-submit" [disabled]="!serviceForm.valid">
-            <i class="fas fa-plus-circle"></i> Ajouter
+            <i class="fas fa-plus-circle" *ngIf="!serviceToEdit"></i> 
+            <i class="fas fa-save" *ngIf="serviceToEdit"></i>
+            {{ serviceToEdit ? 'Enregistrer' : 'Ajouter' }}
         </button>
       </div>
     </form>

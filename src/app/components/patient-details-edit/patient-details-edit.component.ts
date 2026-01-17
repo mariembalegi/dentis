@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 export class PatientDetailsEditComponent {
   @Input() userDetails: any = {}; // Initialize with current user data
   @Input() isDentist: boolean = false;
+  @Input() isAdmin: boolean = false;
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<any>();
 

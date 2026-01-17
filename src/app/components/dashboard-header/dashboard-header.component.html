@@ -1,19 +1,16 @@
 <header class="dashboard-header" [style.background-color]="customBackgroundColor || ''" [style.color]="textColor || ''">
   <div class="header-container">
-    <div class="logo" routerLink="/">
+    <div class="logo" routerLink="/dashboard">
       <h1 [style.color]="textColor || ''">Dentis</h1>
     </div>
     <nav class="nav-links">
     </nav>
     <div class="right-section">
-      <a routerLink="/publication-category" routerLinkActive="active" class="nav-link-right" [style.color]="textColor || ''">Publications</a>
+      <a *ngIf="!isAdmin" routerLink="/publication-category" routerLinkActive="active" class="nav-link-right" [style.color]="textColor || ''">Publications</a>
       
       <!-- Only show Mes rendez-vous if NOT admin -->
       <a *ngIf="!isAdmin" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link-right" [style.color]="textColor || ''">Mes rendez-vous</a>
       
-      <!-- Show Users if Admin -->
-      <a *ngIf="isAdmin" routerLink="/dashboard/users-management" routerLinkActive="active" class="nav-link-right" [style.color]="textColor || ''">Utilisateurs</a>
-
       <a *ngIf="isDentist" routerLink="/dashboard/services" routerLinkActive="active" class="nav-link-right" [style.color]="textColor || ''">Mes Services</a>
       <div class="user-section">
       <button class="user-button" (click)="toggleDropdown()" [style.color]="textColor || ''">

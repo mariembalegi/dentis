@@ -9,10 +9,29 @@ export interface User {
   prenom: string;
   email: string;
   role: 'PATIENT' | 'DENTISTE' | 'ADMIN';
-  token?: string;
-  dateNaissanceP?: string; // For Patient
+  token?: string; // JWT
+  tel?: number;
+  sexe?: string; // 'M' | 'F'
   photo?: string;
-  sexe?: string;
+
+  // Patient
+  dateNaissanceP?: string;
+  groupeSanguinP?: string; // 'A', 'B', 'AB', 'O'
+  recouvrementP?: string; // 'Médecin de la famille', etc.
+
+  // Dentiste
+  diplome?: string;
+  specialite?: string;
+  gouvernorat?: string;
+  delegation?: string;
+  adresse?: string;
+  verifie?: boolean;
+  services?: any[]; // List of ServiceMedical
+  publications?: any[]; // List of Publication
+  horaires?: any[]; // List of Horaire
+
+  // Admin
+  adminType?: string;
 }
 
 export interface LoginResponse {

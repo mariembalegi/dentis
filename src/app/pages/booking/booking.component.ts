@@ -501,6 +501,12 @@ export class BookingComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.authService.getUser();
+
+    if (this.user?.role === 'ADMIN') {
+      this.router.navigate(['/dashboard/admin']);
+      return;
+    }
+
     this.loadData();
   }
 

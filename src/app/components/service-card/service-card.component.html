@@ -12,4 +12,13 @@
         <span class="service-type">{{ service.typeSM }}</span>
         <p class="description">{{ service.descriptionSM }}</p>
     </div>
+
+    <div class="card-actions">
+        <button class="btn-icon edit" (click)="onEdit($event)" title="Modifier">
+            <i class="fas fa-pen"></i>
+        </button>
+        <button class="btn-icon delete" (click)="onDelete($event)" title="Supprimer">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
 </div>

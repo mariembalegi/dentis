@@ -121,6 +121,14 @@
         color: #0e3048;
     }
 
+    .admin-label {
+        font-family: 'Montserrat', Arial, sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #D04747; /* Orange to match profile icon */
+        margin: -4px 0 8px 0; /* Closer to name */
+    }
+
     .maiden-name {
         font-weight: 400;
     }

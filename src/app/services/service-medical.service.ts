@@ -8,7 +8,6 @@ export interface ServiceMedical {
   typeSM: string;
   descriptionSM: string;
   tarifSM: number;
-  image: string; // base64
   dentistId?: number; // Optional, set by backend or frontend
 }
 
@@ -20,22 +19,22 @@ export class ServiceMedicalService {
   constructor(private apiService: ApiService) { }
 
   getAllServices(): Observable<ServiceMedical[]> {
-    return this.apiService.get<ServiceMedical[]>('/services/');
+    return this.apiService.get<ServiceMedical[]>('/services');
   }
 
   getMyServices(): Observable<ServiceMedical[]> {
     return this.apiService.get<ServiceMedical[]>('/services/dentist/me');
   }
 
-  createService(service: ServiceMedical): Observable<ServiceMedical> {
-    return this.apiService.post<ServiceMedical>('/services/', service);
+  createService(service: ServiceMedical): Observable<any> {
+    return this.apiService.post<any>('/services', service);
   }
 
   updateService(id: number, service: ServiceMedical): Observable<ServiceMedical> {
     return this.apiService.put<ServiceMedical>(`/services/${id}`, service);
   }
 
-  deleteService(id: number): Observable<void> {
-    return this.apiService.delete<void>(`/services/${id}`);
+  deleteService(id: number): Observable<any> {
+    return this.apiService.delete<any>(`/services/${id}`);
   }
 }

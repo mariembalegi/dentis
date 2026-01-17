@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PatientDetailsEditComponent } from '../../components/patient-details-edit/patient-details-edit.component';
 import { AuthService, User } from '../../services/auth.service';
@@ -26,12 +26,14 @@ export class PatientProfileDetailsComponent implements OnInit {
     bloodGroup: 'A',
     gender: 'Masculin',
     speciality: 'Chirurgien Dentiste',
-    city: 'Tunis'
+    city: 'Tunis',
+    adminType: 'Super Admin' 
   };
 
   showEditModal = false;
   showHoursEditModal = false;
   isDentist = false;
+  isAdmin = false;
 
   workingHours: DaySchedule[] = [
     { day: 'Lundi', morning: { start: '09:00', end: '13:00' }, afternoon: { start: '14:00', end: '18:00' }, isClosed: false },
@@ -43,12 +45,13 @@ export class PatientProfileDetailsComponent implements OnInit {
     { day: 'Dimanche', morning: { start: '', end: '' }, afternoon: { start: '', end: '' }, isClosed: true }
   ];
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private location: Location) {}
 
   ngOnInit() {
     this.authService.user$.subscribe(currentUser => {
       if (currentUser) {
         this.isDentist = currentUser.role === 'DENTISTE';
+        this.isAdmin = currentUser.role === 'ADMIN';
 
         // Map AuthService user to local user structure
         this.user.firstName = currentUser.prenom || this.user.firstName;
@@ -135,6 +138,10 @@ export class PatientProfileDetailsComponent implements OnInit {
 
   closeEditModal() {
     this.showEditModal = false;
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   saveDetails(updatedData: any) {

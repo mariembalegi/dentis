@@ -41,15 +41,15 @@
           <input type="text" id="lastName" name="lastName" [(ngModel)]="formData.lastName" class="form-input">
         </div>
 
-        <!-- Birth Date (Patient Only) -->
-        <div class="form-group" *ngIf="!isDentist">
+        <!-- Birth Date (Patient Only, Not Admin) -->
+        <div class="form-group" *ngIf="!isDentist && !isAdmin">
           <label for="birthDate" class="field-label">Date de naissance</label>
           <p class="field-helper">Format : jj/mm/aaaa</p>
           <input type="text" id="birthDate" name="birthDate" [(ngModel)]="formData.birthDate" class="form-input" placeholder="jj/mm/aaaa">
         </div>
 
-        <!-- Row: Recouvrement & Groupe Sanguin (Patient Only) -->
-        <div class="form-row" *ngIf="!isDentist">
+        <!-- Row: Recouvrement & Groupe Sanguin (Patient Only, Not Admin) -->
+        <div class="form-row" *ngIf="!isDentist && !isAdmin">
             <!-- Recouvrement -->
             <div class="form-group">
               <label for="recoveryType" class="field-label">Recouvrement</label>

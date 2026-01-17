@@ -1,6 +1,6 @@
 <div class="details-container">
   <div class="breadcrumb">
-    <a routerLink="/patient-profile" class="back-link">
+    <a (click)="goBack()" class="back-link" style="cursor: pointer;">
       ← Mon compte
     </a>
   </div>
@@ -23,9 +23,11 @@
         <h2 class="user-name">
           {{ user.firstName }} {{ user.lastName }}
         </h2>
+
+        <p *ngIf="isAdmin" class="admin-label">{{ user.adminType }}</p>
         
         <div class="user-details">
-          <ng-container *ngIf="!isDentist">
+          <ng-container *ngIf="!isDentist && !isAdmin">
             <p>Né(e) le {{ user.birthDate }} ({{ user.age }} ans)</p>
             <p><span class="label">Recouvrement :</span> {{ user.recoveryType }}</p>
             <p><span class="label">Groupe Sanguin :</span> {{ user.bloodGroup }}</p>
@@ -65,6 +67,7 @@
     *ngIf="showEditModal"
     [userDetails]="user"
     [isDentist]="isDentist"
+    [isAdmin]="isAdmin"
     (close)="closeEditModal()"
     (save)="saveDetails($event)">
   </app-patient-details-edit>

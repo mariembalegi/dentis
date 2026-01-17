@@ -14,6 +14,7 @@ import { ServiceCardComponent } from '../../components/service-card/service-card
 export class DentistServicesComponent implements OnInit {
   services: ServiceMedical[] = [];
   showAddModal = false;
+  selectedService: ServiceMedical | null = null;
 
   constructor(private serviceMedicalService: ServiceMedicalService) {}
 
@@ -22,47 +23,77 @@ export class DentistServicesComponent implements OnInit {
   }
 
   loadServices() {
-    // In a real app, this would fetch from API
-    // this.serviceMedicalService.getMyServices().subscribe(data => this.services = data);
-    
-    // Using mock data for now as per likely current state
-    /*
-    this.services = [
-        {
-            nomSM: 'Détartrage',
-            typeSM: 'Soins dentaires',
-            descriptionSM: 'Nettoyage complet des dents pour enlever le tartre.',
-            tarifSM: 80,
-            image: ''
-        },
-        {
-            nomSM: 'Blanchiment',
-            typeSM: 'Esthétique',
-            descriptionSM: 'Éclaircissement des dents pour un sourire éclatant.',
-            tarifSM: 400,
-            image: ''
-        }
-    ];
-    */
+    console.log('Fetching services...');
+    this.serviceMedicalService.getAllServices().subscribe({
+      next: (data) => {
+        console.log('Services loaded from API:', data);
+        this.services = data || [];
+      },
+      error: (err) => {
+        console.error('Error loading services', err);
+      }
+    });
   }
 
   openAddModal() {
+    this.selectedService = null;
+    this.showAddModal = true;
+  }
+
+  openEditModal(service: ServiceMedical) {
+    this.selectedService = service;
     this.showAddModal = true;
   }
 
   closeAddModal() {
     this.showAddModal = false;
+    this.selectedService = null;
   }
 
   onAddService(newService: ServiceMedical) {
-    // Add logic to save via service
-    console.log('Adding service:', newService);
-    // Optimistic update
-    this.services.unshift(newService);
-    
-    this.closeAddModal();
-    
-    // Call API
-    // this.serviceMedicalService.createService(newService).subscribe(...);
+    console.log('Sending new service to API:', newService);
+    this.serviceMedicalService.createService(newService).subscribe({
+      next: (response: any) => {
+        console.log('Service added successfully, response:', response);
+        // Assign ID returned by backend
+        newService.numSM = response.id;
+        
+        // Update local list (immutable update to ensure change detection)
+        this.services = [newService, ...this.services];
+        console.log('Local services list updated:', this.services);
+        
+        this.closeAddModal();
+      },
+      error: (err) => {
+        console.error('Error adding service', err);
+      }
+    });
+  }
+
+  onUpdateService(updatedService: ServiceMedical) {
+      if (!updatedService.numSM) return;
+      
+      this.serviceMedicalService.updateService(updatedService.numSM, updatedService).subscribe({
+          next: (response) => {
+              // Update local list
+              const index = this.services.findIndex(s => s.numSM === updatedService.numSM);
+              if (index !== -1) {
+                  this.services[index] = updatedService;
+              }
+              this.closeAddModal();
+          },
+          error: (err) => console.error('Error updating service', err)
+      });
+  }
+
+  onDeleteService(id: number) {
+      if(confirm('Voulez-vous vraiment supprimer ce service ?')) {
+          this.serviceMedicalService.deleteService(id).subscribe({
+              next: () => {
+                  this.services = this.services.filter(s => s.numSM !== id);
+              },
+              error: (err) => console.error('Error deleting service', err)
+          });
+      }
   }
 }

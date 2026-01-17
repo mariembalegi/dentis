@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ServiceMedical } from '../../services/service-medical.service';
@@ -10,17 +10,24 @@ import { ServiceMedical } from '../../services/service-medical.service';
   templateUrl: './add-service-modal.component.html',
   styleUrls: ['./add-service-modal.component.scss']
 })
-export class AddServiceModalComponent {
+export class AddServiceModalComponent implements OnInit {
+  @Input() serviceToEdit: ServiceMedical | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() add = new EventEmitter<ServiceMedical>();
+  @Output() update = new EventEmitter<ServiceMedical>();
 
   formData: Partial<ServiceMedical> = {
     nomSM: '',
     typeSM: '',
     descriptionSM: '',
-    tarifSM: undefined,
-    image: '' // Optional or default placeholder could be handled
+    tarifSM: undefined
   };
+
+  ngOnInit() {
+    if (this.serviceToEdit) {
+      this.formData = { ...this.serviceToEdit };
+    }
+  }
 
   serviceTypesGroups = [
     {
@@ -47,7 +54,11 @@ export class AddServiceModalComponent {
 
   onSubmit() {
     if (this.formData.nomSM && this.formData.typeSM && this.formData.descriptionSM && this.formData.tarifSM !== undefined) {
-      this.add.emit(this.formData as ServiceMedical);
+      if (this.serviceToEdit) {
+          this.update.emit(this.formData as ServiceMedical);
+      } else {
+          this.add.emit(this.formData as ServiceMedical);
+      }
       this.resetForm();
     }
   }
@@ -57,8 +68,7 @@ export class AddServiceModalComponent {
         nomSM: '',
         typeSM: '',
         descriptionSM: '',
-        tarifSM: undefined,
-        image: ''
+        tarifSM: undefined
     };
   }
 }

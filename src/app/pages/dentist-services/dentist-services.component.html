@@ -9,7 +9,12 @@
   </div>
 
   <div class="services-grid">
-    <app-service-card *ngFor="let service of services" [service]="service"></app-service-card>
+    <app-service-card 
+        *ngFor="let service of services" 
+        [service]="service"
+        (edit)="openEditModal($event)"
+        (delete)="onDeleteService($event)">
+    </app-service-card>
 
     <div class="empty-state" *ngIf="services.length === 0">
         <i class="fas fa-notes-medical"></i>
@@ -19,7 +24,9 @@
 
   <app-add-service-modal
     *ngIf="showAddModal"
+    [serviceToEdit]="selectedService"
     (close)="closeAddModal()"
-    (add)="onAddService($event)">
+    (add)="onAddService($event)"
+    (update)="onUpdateService($event)">
   </app-add-service-modal>
 </div>

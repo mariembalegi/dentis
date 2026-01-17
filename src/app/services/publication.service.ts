@@ -12,6 +12,7 @@ export interface Article {
   image: string;
   content?: string; // Optional full content
   description?: string; // Short description
+  status?: 'VALIDATED' | 'PENDING';
 }
 
 @Injectable({
@@ -29,7 +30,8 @@ export class PublicationService {
       category: 'Santé mentale',
       mainCategory: 'Article scientifique',
       image: 'https://images.unsplash.com/photo-1590611936760-eeb9bc598548?auto=format&fit=crop&w=800&q=80',
-      description: 'Une analyse approfondie des troubles de la personnalité schizotypique et des approches thérapeutiques modernes.'
+      description: 'Une analyse approfondie des troubles de la personnalité schizotypique et des approches thérapeutiques modernes.',
+      status: 'VALIDATED'
     },
     {
       id: 2,
@@ -40,7 +42,8 @@ export class PublicationService {
       category: 'Bien-être',
       mainCategory: 'Article scientifique',
       image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80',
-      description: 'Approches cliniques et psychologiques pour traiter les dysfonctions sexuelles masculines courantes.'
+      description: 'Approches cliniques et psychologiques pour traiter les dysfonctions sexuelles masculines courantes.',
+      status: 'PENDING'
     },
     {
       id: 3,
@@ -115,5 +118,16 @@ export class PublicationService {
 
   getArticleById(id: number): Article | undefined {
     return this.articles.find(a => a.id === id);
+  }
+
+  deleteArticle(id: number) {
+    this.articles = this.articles.filter(a => a.id !== id);
+  }
+
+  validateArticle(id: number) {
+    const article = this.articles.find(a => a.id === id);
+    if (article) {
+      article.status = 'VALIDATED';
+    }
   }
 }
