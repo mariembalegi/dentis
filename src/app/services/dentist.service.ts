@@ -23,7 +23,7 @@ export interface DentistSearchResult {
   photo?: string | null;
   diplome?: string;
   specialite?: string;
-  telephone?: string;
+  tel?: number;
 }
 
 export interface SearchDropdownResponse {

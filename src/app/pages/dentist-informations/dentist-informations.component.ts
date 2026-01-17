@@ -78,7 +78,7 @@ export class DentistInformationsComponent implements OnInit {
                 nom: 'Dupont',
                 prenom: 'Jean',
                 ville: 'Tunis',
-                telephone: '71 123 456',
+                tel: 71123456,
                 photo: '', // Will use default
                 diplome: 'Chirurgien Dentiste - Diplômé de la Faculté de Médecine Dentaire de Monastir'
               };

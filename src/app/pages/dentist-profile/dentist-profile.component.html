@@ -34,7 +34,7 @@
         <p class="role-label">{{ dentist.specialite || 'Chirurgien Dentiste' }}</p>
         
         <div class="user-details">
-            <p><strong>Téléphone :</strong> {{ dentist.telephone || 'Non renseigné' }}</p>
+            <p><strong>Téléphone :</strong> {{ dentist.tel || 'Non renseigné' }}</p>
             <p><strong>Adresse :</strong> 
                 <ng-container *ngIf="dentist.adresse">{{ dentist.adresse }}</ng-container>
                 <ng-container *ngIf="dentist.delegation">, {{ dentist.delegation }}</ng-container>
@@ -91,7 +91,7 @@
             </div>
              <div class="form-group">
                 <label>Téléphone</label>
-                <input [(ngModel)]="editProfileData.telephone" name="telephone">
+                <input [(ngModel)]="editProfileData.tel" name="tel">
             </div>
             <div class="form-group">
                 <label>Adresse</label>
