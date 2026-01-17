@@ -9,7 +9,7 @@ export interface Rendezvous {
   serviceId?: number;
   dateRv: string; // YYYY-MM-DD
   heureRv: string; // HH:mm
-  statutRv?: 'PENDING' | 'VALIDATED' | 'REFUSED' | 'CANCELLED';
+  statutRv?: 'DISPONIBLE' | 'NON_DISPONIBLE';
   descriptionRv: string;
   patientName?: string;
   dentistName?: string;
@@ -28,7 +28,11 @@ export class RendezvousService {
   }
 
   getMyAppointments(): Observable<Rendezvous[]> {
-    return this.apiService.get<Rendezvous[]>('/rendezvous/my');
+    return this.apiService.get<Rendezvous[]>('/rendezvousREST/my');
+  }
+
+  addAvailableSlot(slot: { dateRv: string, heureRv: string, descriptionRv?: string }): Observable<any> {
+    return this.apiService.post('/rendezvousREST/add', slot);
   }
 
   validateAppointment(id: number, status: 'VALIDATED' | 'REFUSED'): Observable<void> {

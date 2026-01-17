@@ -1,6 +1,6 @@
 <header class="dashboard-header" [style.background-color]="customBackgroundColor || ''" [style.color]="textColor || ''">
   <div class="header-container">
-    <div class="logo" routerLink="/dashboard">
+    <div class="logo" [routerLink]="isPatient ? '/' : '/dashboard'">
       <h1 [style.color]="textColor || ''">Dentis</h1>
     </div>
     <nav class="nav-links">

@@ -171,10 +171,13 @@
                         </td>
                         <td (click)="$event.stopPropagation()">
                             <div class="action-buttons">
-                                <button *ngIf="!pub.valide" class="btn-validate" (click)="validatePublication(pub)">
+                                <button *ngIf="!pub.valide" class="btn-validate" (click)="$event.stopPropagation(); validatePublication(pub)" title="Valider">
                                     <i class="fas fa-check"></i>
                                 </button>
-                                <button class="btn-delete" (click)="deletePublication(pub)">
+                                <button *ngIf="pub.valide" class="btn-invalidate" (click)="$event.stopPropagation(); invalidatePublication(pub)" title="Annuler la validation">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <button class="btn-delete" (click)="$event.stopPropagation(); deletePublication(pub)" title="Supprimer">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -245,21 +248,37 @@
             <!-- Reuse publication view style broadly -->
             <div class="article-preview">
                 <img [src]="selectedPublication.affichePub || 'assets/images/placeholder_dental.jpg'" class="article-hero-img">
+                
                 <div class="article-meta">
                     <span class="category-tag">{{ selectedPublication.typePub }}</span>
-                    <span class="date">{{ selectedPublication.datePub | date }}</span>
+                    <div class="meta-right">
+                         <span class="author" *ngIf="selectedPublication.dentistName">
+                            <i class="far fa-user"></i> {{ selectedPublication.dentistName }}
+                         </span>
+                         <span class="date">
+                            <i class="far fa-calendar"></i> {{ selectedPublication.datePub | date }}
+                         </span>
+                    </div>
                 </div>
+
                 <h1>{{ selectedPublication.titrePub }}</h1>
-                <div class="author-line">Par {{ selectedPublication.dentistName }}</div>
                 
                 <p class="article-description">{{ selectedPublication.description }}</p>
+                
+                <div *ngIf="selectedPublication.fichierPub" style="margin: 15px 0;">
+                    <a [href]="getSafeUrl(selectedPublication.fichierPub)" download="document.pdf" class="btn-pdf">
+                        <i class="fas fa-file-pdf"></i> Voir PDF
+                    </a>
+                </div>
+
                 <hr>
                 <div class="article-status-bar">
                     Status: <strong>{{ selectedPublication.valide ? 'VALIDÉ' : 'EN ATTENTE' }}</strong>
                 </div>
 
                 <div class="modal-actions">
-                    <button *ngIf="!selectedPublication.valide" class="btn-primary" (click)="validatePublication(selectedPublication); closePublicationModal()">Valider la publication</button>
+                    <button *ngIf="!selectedPublication.valide" class="btn-primary" (click)="validatePublication(selectedPublication)">Valider la publication</button>
+                    <button *ngIf="selectedPublication.valide" class="btn-warning" (click)="invalidatePublication(selectedPublication)">Annuler la validation</button>
                     <button class="btn-danger" (click)="deletePublication(selectedPublication)">Supprimer</button>
                 </div>
             </div>

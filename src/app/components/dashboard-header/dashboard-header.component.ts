@@ -19,6 +19,7 @@ export class DashboardHeaderComponent implements OnInit {
   showAccueil = true;
   isDentist = false;
   isAdmin = false;
+  isPatient = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -28,12 +29,11 @@ export class DashboardHeaderComponent implements OnInit {
         this.userName = `${user.prenom} ${user.nom}`;
         this.isDentist = user.role === 'DENTISTE';
         this.isAdmin = user.role === 'ADMIN';
+        this.isPatient = user.role === 'PATIENT';
         // Hide 'Accueil' if patient and on home
         this.showAccueil = !(user.role === 'PATIENT' && this.router.url === '/');
       } else {
-        this.showAccueil = true;
-        this.isDentist = false;
-        this.isAdmin = false;
+        this.setDefaults();
       }
     });
     // Also listen to route changes
@@ -43,12 +43,18 @@ export class DashboardHeaderComponent implements OnInit {
         this.showAccueil = !(user.role === 'PATIENT' && this.router.url === '/');
         this.isDentist = user.role === 'DENTISTE';
         this.isAdmin = user.role === 'ADMIN';
+        this.isPatient = user.role === 'PATIENT';
       } else {
-        this.showAccueil = true;
-        this.isDentist = false;
-        this.isAdmin = false;
+        this.setDefaults();
       }
     });
+  }
+
+  private setDefaults() {
+    this.showAccueil = true;
+    this.isDentist = false;
+    this.isAdmin = false;
+    this.isPatient = false;
   }
 
   toggleDropdown() {

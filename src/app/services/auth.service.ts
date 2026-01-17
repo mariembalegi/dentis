@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { Router } from '@angular/router';
+import { ServiceMedical } from './service-medical.service';
+import { PublicationDTO } from './publication.service';
+import { Horaire } from './dentist.service';
 
 export interface User {
   id: number;
@@ -11,7 +14,7 @@ export interface User {
   role: 'PATIENT' | 'DENTISTE' | 'ADMIN';
   token?: string; // JWT
   tel?: number;
-  sexe?: string; // 'M' | 'F'
+  sexe?: 'M' | 'F'; 
   photo?: string;
 
   // Patient
@@ -26,9 +29,9 @@ export interface User {
   delegation?: string;
   adresse?: string;
   verifie?: boolean;
-  services?: any[]; // List of ServiceMedical
-  publications?: any[]; // List of Publication
-  horaires?: any[]; // List of Horaire
+  services?: ServiceMedical[]; 
+  publications?: PublicationDTO[]; 
+  horaires?: Horaire[];
 
   // Admin
   adminType?: string;

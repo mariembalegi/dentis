@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PublicationService, PublicationDTO } from '../../services/publication.service';
@@ -10,7 +10,8 @@ import { PublicationService, PublicationDTO } from '../../services/publication.s
   templateUrl: './add-publication-modal.component.html',
   styleUrls: ['./add-publication-modal.component.scss']
 })
-export class AddPublicationModalComponent {
+export class AddPublicationModalComponent implements OnInit {
+  @Input() publicationToEdit: PublicationDTO | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() publish = new EventEmitter<any>();
 
@@ -27,6 +28,21 @@ export class AddPublicationModalComponent {
   isSubmitting = false;
 
   constructor(private publicationService: PublicationService) {}
+
+  ngOnInit() {
+    if (this.publicationToEdit) {
+        this.formData.title = this.publicationToEdit.titrePub;
+        this.formData.category = this.publicationToEdit.typePub;
+        this.formData.description = this.publicationToEdit.description;
+        
+        if (this.publicationToEdit.affichePub) {
+            this.imageFileName = "Image actuelle conservée";
+        }
+        if (this.publicationToEdit.fichierPub) {
+            this.pdfFileName = "PDF actuel conservé (ajouter pour modifier)";
+        }
+    }
+  }
 
   onClose() {
     this.close.emit();
@@ -58,41 +74,73 @@ export class AddPublicationModalComponent {
   async onSubmit() {
     if (this.isSubmitting) return;
 
-    if (!this.formData.title || !this.formData.image || !this.formData.pdf) {
-      alert('Veuillez remplir tous les champs obligatoires.');
+    // Validation
+    const isEdit = !!this.publicationToEdit;
+    if (!this.formData.title || !this.formData.category) {
+        alert('Veuillez remplir les champs Titre et Catégorie.');
+        return;
+    }
+    
+    // If NOT edit, need files. If edit, files are optional (keep old).
+    if (!isEdit && (!this.formData.image || !this.formData.pdf)) {
+      alert('Veuillez ajouter une image et un PDF.');
       return;
     }
 
     this.isSubmitting = true;
 
     try {
-      // Convert files to Base64
-      const imageBase64 = await this.fileToBase64(this.formData.image);
-      const pdfBase64 = await this.fileToBase64(this.formData.pdf);
+      // Convert files to Base64 (or keep old)
+      let imageBase64 = this.publicationToEdit?.affichePub;
+      if (this.formData.image) {
+          imageBase64 = await this.fileToBase64(this.formData.image);
+      }
+
+      let pdfBase64 = this.publicationToEdit?.fichierPub;
+      if (this.formData.pdf) {
+          pdfBase64 = await this.fileToBase64(this.formData.pdf);
+      }
 
       // Prepare DTO
       const dto: PublicationDTO = {
         titrePub: this.formData.title,
         typePub: this.formData.category,
         description: this.formData.description,
-        affichePub: imageBase64, // Image sent as Base64 DataURL
-        fichierPub: pdfBase64    // PDF sent as Base64 DataURL
+        affichePub: imageBase64, 
+        fichierPub: pdfBase64   
       };
 
-      // Call Service
-      this.publicationService.addPublication(dto).subscribe({
-        next: (response) => {
-          console.log('Publication successful', response);
-          alert('Publication ajoutée avec succès ! En attente de validation.');
-          this.publish.emit(dto); // Notify parent (maybe to refresh list or just close)
-          this.onClose();
-        },
-        error: (err) => {
-          console.error('Error adding publication', err);
-          alert('Erreur lors de l\'ajout de la publication. Vérifiez que vous êtes connecté en tant que dentiste.');
-          this.isSubmitting = false;
-        }
-      });
+      const editId = this.publicationToEdit?.idPub || this.publicationToEdit?.id;
+
+      if (isEdit && editId) {
+          // UPDATE
+          this.publicationService.updatePublication(editId, dto).subscribe({
+            next: (response) => {
+              alert('Publication modifiée avec succès ! Elle doit être revalidée.');
+              this.publish.emit(dto);
+              this.onClose();
+            },
+            error: (err) => {
+              console.error('Error updating', err);
+              alert(err.error || 'Erreur lors de la modification.');
+              this.isSubmitting = false;
+            }
+          });
+      } else {
+          // ADD
+          this.publicationService.addPublication(dto).subscribe({
+            next: (response) => {
+              alert('Publication ajoutée avec succès ! En attente de validation.');
+              this.publish.emit(dto);
+              this.onClose();
+            },
+            error: (err) => {
+              console.error('Error adding publication', err);
+              alert('Erreur lors de l\'ajout de la publication.');
+              this.isSubmitting = false;
+            }
+          });
+      }
 
     } catch (e) {
       console.error('File conversion error', e);

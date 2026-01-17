@@ -26,6 +26,8 @@ export class BookingComponent implements OnInit {
   user: User | null = null;
   services: ServiceMedical[] = [];
   appointments: RendezvousDisplay[] = [];
+  upcomingApps: RendezvousDisplay[] = [];
+  pastApps: RendezvousDisplay[] = [];
   
   // For Patient Booking
   selectedService: ServiceMedical | null = null;
@@ -139,9 +141,26 @@ export class BookingComponent implements OnInit {
 
   deleteEvent(calendarEvent: any) {
     if(confirm(`Voulez-vous supprimer le rendez-vous de ${calendarEvent.patient} ?`)) {
-        this.calendarEvents = this.calendarEvents.filter(e => e !== calendarEvent);
-        if(this.selectedCalendarEvent === calendarEvent) {
-             this.selectedCalendarEvent = null;
+        // If it's a real backend event (has positive ID) or even if mock (we can try)
+        // Ideally we differentiate. Assuming all will be real or we want to try backend for all
+        if (calendarEvent.id) {
+             this.rendezvousService.cancelAppointment(calendarEvent.id).subscribe({
+                 next: () => {
+                     this.calendarEvents = this.calendarEvents.filter(e => e !== calendarEvent);
+                     if(this.selectedCalendarEvent === calendarEvent) {
+                         this.selectedCalendarEvent = null;
+                     }
+                 },
+                 error: (err) => {
+                     console.error('Erreur suppression', err);
+                     // Fallback for mock data or if backend fails but we want to remove from UI (optional)
+                     // this.calendarEvents = this.calendarEvents.filter(e => e !== calendarEvent);
+                     alert('Impossible de supprimer ce rendez-vous.');
+                 }
+             });
+        } else {
+             // Just remove from UI if no ID (should not happen for persisted ones)
+             this.calendarEvents = this.calendarEvents.filter(e => e !== calendarEvent);
         }
     }
     this.closeContextMenu();
@@ -312,87 +331,46 @@ export class BookingComponent implements OnInit {
   }
 
   loadCalendarEvents() {
-    // Generate mock events for the current week
-    if (!this.weekDays.length) return;
-    
-    // Helper for random data
-    const getRandomBlood = () => ['A+', 'A-', 'B+', 'O+', 'O-', 'AB+'][Math.floor(Math.random()*6)];
-    const getRandomCoverage = () => ['CNAM', 'Assurance Privée', 'Payant'][Math.floor(Math.random()*3)];
-    
-    const events = [];
-    
-    // Fixed examples from screenshot
-    // Mon: 9:30 Meunier, 10:30 Demo, 11:30 Pignon, 14:00 Leblanc, 15:30 Zidane, 17:00 Moniane
-    const d0 = this.weekDays[0].toISOString().split('T')[0];
-    events.push(
-        { 
-            id: 1, start: `${d0}T09:30:00`, duration: 60, patient: 'MEUNIER Emma', color: '#FAD284',
-            serviceName: 'Consultation standard', phone: '22 555 123', birthDate: '1990-05-15', gender: 'F',
-            bloodGroup: 'O+', coverageType: 'CNAM', totalPrice: 80
+    this.rendezvousService.getMyAppointments().subscribe({
+        next: (appointments) => {
+            this.calendarEvents = appointments.map(rv => {
+                // Ensure date and time formatting
+                const startIso = `${rv.dateRv}T${rv.heureRv.length === 5 ? rv.heureRv + ':00' : rv.heureRv}`;
+                
+                return {
+                    id: rv.idRv,
+                    start: startIso,
+                    duration: 30, // Default duration
+                    patient: rv.patientName || 'Patient Inconnu',
+                    color: this.getStatusColor(rv.statutRv),
+                    serviceName: rv.serviceName || 'Consultation',
+                    phone: '', // Detailed info might need separate fetch or expanded DTO
+                    birthDate: '', 
+                    gender: 'M',
+                    bloodGroup: '?',
+                    coverageType: '?',
+                    totalPrice: 0,
+                    status: rv.statutRv
+                };
+            });
         },
-        { 
-            id: 2, start: `${d0}T10:30:00`, duration: 30, patient: 'DEMO Dominique', color: '#F4AAB9', isNew: true,
-            serviceName: 'Consultation de suivi de médecine générale', phone: '50 123 456', birthDate: '1955-01-01', gender: 'M',
-            bloodGroup: 'A+', coverageType: 'Assurance Privée', totalPrice: 60
-        },
-        { id: 3, start: `${d0}T11:30:00`, duration: 60, patient: 'PIGNON François', color: '#FAD284', serviceName: 'Détartrage', phone: '98 765 432', birthDate: '1975-08-20', gender: 'M', bloodGroup: 'B+', coverageType: 'CNAM', totalPrice: 120 },
-        { id: 4, start: `${d0}T14:00:00`, duration: 30, patient: 'LEBLANC Juste', color: '#F4AAB9', serviceName: 'Urgence dentaire', phone: '20 000 000', birthDate: '1988-12-12', gender: 'M', bloodGroup: 'AB+', coverageType: 'Payant', totalPrice: 90 },
-        { id: 5, start: `${d0}T14:30:00`, duration: 30, patient: 'BARDOT Bébé', color: '#D2EBD8', serviceName: 'Contrôle', phone: '55 111 222', birthDate: '2015-06-30', gender: 'F', bloodGroup: 'O-', coverageType: 'CNAM', totalPrice: 50 },
-        { id: 6, start: `${d0}T15:30:00`, duration: 60, patient: 'ZIDANE Zinedine', color: '#FAD284', serviceName: 'Implantologie', phone: '90 101 010', birthDate: '1972-06-23', gender: 'M', bloodGroup: 'A-', coverageType: 'Assurance Privée', totalPrice: 2500 },
-        { id: 7, start: `${d0}T17:00:00`, duration: 30, patient: 'MONIANE Perrine', color: '#F4AAB9', serviceName: 'Consultation', phone: '24 680 135', birthDate: '1995-11-01', gender: 'F', bloodGroup: 'A+', coverageType: 'CNAM', totalPrice: 80 },
-        // Removed EXPLORE Fred (18:00) as per closing time limit
-    );
-
-    // Tue
-    const d1 = this.weekDays[1].toISOString().split('T')[0];
-    events.push(
-        { id: 10, start: `${d1}T09:00:00`, duration: 90, patient: 'CROFT Lara', color: '#D2EBD8', serviceName: 'Extraction', phone: '21 444 777', birthDate: '1992-02-14', gender: 'F', bloodGroup: 'B-', coverageType: 'Payant', totalPrice: 150 }, 
-        { id: 11, start: `${d1}T10:30:00`, duration: 60, patient: 'PENNYWORTH Alfred', color: '#D2EBD8', serviceName: 'Prothèse', phone: '99 888 777', birthDate: '1950-03-30', gender: 'M', bloodGroup: 'O+', coverageType: 'CNAM', totalPrice: 2000 },
-        { id: 14, start: `${d1}T14:00:00`, duration: 45, patient: 'PETETIN Philippe', color: '#D2EBD8', serviceName: 'Consultation', phone: '55 666 777', birthDate: '1980-01-01', gender: 'M', bloodGroup: 'AB-', coverageType: 'CNAM', totalPrice: 80 },
-        { id: 15, start: `${d1}T14:45:00`, duration: 30, patient: 'RODGE Hélène', color: '#F4AAB9', serviceName: 'Détartrage', phone: '22 333 444', birthDate: '1998-09-09', gender: 'F', bloodGroup: 'A+', coverageType: 'Assurance Privée', totalPrice: 120 },
-        { id: 16, start: `${d1}T15:30:00`, duration: 45, patient: 'BENZ Lillia', color: '#F4AAB9', serviceName: 'Consultation', phone: '50 000 111', birthDate: '2000-01-20', gender: 'F', bloodGroup: 'O+', coverageType: 'CNAM', totalPrice: 80 },
-        { id: 17, start: `${d1}T17:00:00`, duration: 60, patient: 'GAU Michel', color: '#FAD284', serviceName: 'Implant', phone: '98 123 123', birthDate: '1965-05-05', gender: 'M', bloodGroup: 'B+', coverageType: 'Assurance Privée', totalPrice: 2500 },
-        // Removed DURAND Françoise (18:15)
-    );
-    
-    // Wed
-    const d2 = this.weekDays[2].toISOString().split('T')[0];
-    events.push(
-        { id: 20, start: `${d2}T09:00:00`, duration: 120, patient: 'Formation', color: '#90A4AE', isMeeting: true, serviceName: 'Interne', phone: '', birthDate: '', gender: 'M' }, // Grey
-         { id: 21, start: `${d2}T11:30:00`, duration: 60, patient: 'GAMERRE Raymonde', color: '#FAD284', serviceName: 'Consultation', phone: '55 555 555', birthDate: '1955-08-08', gender: 'F', bloodGroup: 'O+', coverageType: 'CNAM', totalPrice: 80 },
-         { id: 22, start: `${d2}T14:00:00`, duration: 30, patient: 'ANGE Mahaut', color: '#D2EBD8', serviceName: 'Suivi', phone: '20 202 020', birthDate: '2010-01-01', gender: 'F', bloodGroup: 'A+', coverageType: 'CNAM', totalPrice: 50 },
-         { id: 23, start: `${d2}T14:30:00`, duration: 30, patient: 'CRETON Pauline', color: '#F4AAB9', serviceName: 'Détartrage', phone: '98 909 090', birthDate: '1995-03-15', gender: 'F', bloodGroup: 'B+', coverageType: 'Payant', totalPrice: 120 },
-         { id: 24, start: `${d2}T15:00:00`, duration: 45, patient: 'TEST Tim', color: '#FAD284', serviceName: 'Urgence', phone: '50 505 050', birthDate: '1990-10-10', gender: 'M', bloodGroup: 'AB+', coverageType: 'Assurance Privée', totalPrice: 90 },
-         { id: 25, start: `${d2}T16:30:00`, duration: 30, patient: 'MARIN Océane', color: '#F4AAB9', serviceName: 'Consultation', phone: '21 212 121', birthDate: '2005-07-07', gender: 'F', bloodGroup: 'O-', coverageType: 'CNAM', totalPrice: 80 },
-    );
-     // Thu
-    const d3 = this.weekDays[3].toISOString().split('T')[0];
-    events.push(
-        { id: 30, start: `${d3}T09:30:00`, duration: 60, patient: 'SASOEUR Marlène', color: '#D2EBD8', serviceName: 'Prothèse', phone: '22 111 222', birthDate: '1980-08-08', gender: 'F', bloodGroup: 'A+', coverageType: 'CNAM', totalPrice: 1800 }, 
-        { id: 31, start: `${d3}T11:00:00`, duration: 60, patient: 'BOYER Claudine', color: '#D2EBD8', serviceName: 'Consultation', phone: '55 222 333', birthDate: '1970-02-02', gender: 'F', bloodGroup: 'B+', coverageType: 'Assurance Privée', totalPrice: 80 }, 
-        { id: 32, start: `${d3}T14:00:00`, duration: 45, patient: 'RAPOP Antoine', color: '#FAD284', serviceName: 'Détartrage', phone: '98 333 444', birthDate: '1990-09-09', gender: 'M', bloodGroup: 'O+', coverageType: 'Payant', totalPrice: 120 }, 
-        { id: 33, start: `${d3}T15:30:00`, duration: 30, patient: 'LOKER Romain', color: '#F4AAB9', serviceName: 'Suivi', phone: '20 444 555', birthDate: '1999-12-12', gender: 'M', bloodGroup: 'A-', coverageType: 'CNAM', totalPrice: 50 }, 
-        { id: 34, start: `${d3}T16:00:00`, duration: 30, patient: 'PALOU Jean', color: '#F4AAB9', serviceName: 'Consultation', phone: '50 555 666', birthDate: '1985-05-05', gender: 'M', bloodGroup: 'AB+', coverageType: 'CNAM', totalPrice: 80 }, 
-        { id: 35, start: `${d3}T17:00:00`, duration: 60, patient: 'DUPONT Nathalie', color: '#FAD284', serviceName: 'Implant', phone: '24 666 777', birthDate: '1978-01-01', gender: 'F', bloodGroup: 'B-', coverageType: 'Assurance Privée', totalPrice: 2500 }, 
-    );
-    
-    // Fri
-    const d4 = this.weekDays[4].toISOString().split('T')[0];
-    events.push(
-        { id: 40, start: `${d4}T09:00:00`, duration: 30, patient: 'SANNE Aurel', color: '#D2EBD8', serviceName: 'Consultation', phone: '22 777 888', birthDate: '2000-02-02', gender: 'M', bloodGroup: 'O+', coverageType: 'CNAM', totalPrice: 80 }, 
-        { id: 41, start: `${d4}T10:00:00`, duration: 30, patient: 'DEMO Jean', color: '#F4AAB9', serviceName: 'Suivi', phone: '55 888 999', birthDate: '1995-05-05', gender: 'M', bloodGroup: 'A+', coverageType: 'Payant', totalPrice: 50 }, 
-        { id: 42, start: `${d4}T10:30:00`, duration: 30, patient: 'DOE John', color: '#F4AAB9', serviceName: 'Détartrage', phone: '98 000 111', birthDate: '1990-01-01', gender: 'M', bloodGroup: 'B+', coverageType: 'CNAM', totalPrice: 120 }, 
-        { id: 43, start: `${d4}T11:30:00`, duration: 60, patient: 'EXEMPLE Marie', color: '#FAD284', serviceName: 'Implant', phone: '20 111 000', birthDate: '1988-08-08', gender: 'F', bloodGroup: 'O-', coverageType: 'Assurance Privée', totalPrice: 2500 }, 
-        { id: 44, start: `${d4}T14:00:00`, duration: 30, patient: 'VASCON Romain', color: '#AED6F1', serviceName: 'Consultation', phone: '50 222 333', birthDate: '2002-12-12', gender: 'M', bloodGroup: 'AB+', coverageType: 'CNAM', totalPrice: 80 }, 
-        { id: 45, start: `${d4}T15:00:00`, duration: 30, patient: 'BAILA Marcia', color: '#AED6F1', serviceName: 'Suivi', phone: '24 333 444', birthDate: '1997-07-07', gender: 'F', bloodGroup: 'A-', coverageType: 'Payant', totalPrice: 50 }, 
-        { id: 46, start: `${d4}T15:30:00`, duration: 30, patient: 'MORANE Bob', color: '#AED6F1', serviceName: 'Urgence', phone: '22 444 555', birthDate: '1980-04-04', gender: 'M', bloodGroup: 'B-', coverageType: 'CNAM', totalPrice: 90 }, 
-        { id: 47, start: `${d4}T16:30:00`, duration: 30, patient: 'PATI Etienne', color: '#AED6F1', serviceName: 'Détartrage', phone: '55 555 666', birthDate: '1975-05-05', gender: 'M', bloodGroup: 'O+', coverageType: 'CNAM', totalPrice: 120 }, 
-    );
-    
-    this.calendarEvents = events;
+        error: (err) => console.error('Failed to load real appointments', err)
+    });
   }
-  
-  // Helper to filter events for a specific day and return them for iterating in the template
+
+  getStatusColor(status: string | undefined): string {
+      switch(status) {
+          case 'DISPONIBLE': return '#AED6F1'; // Blue (Available)
+          case 'NON_DISPONIBLE': return '#E0E0E0'; // Grey (Not Available)
+          case 'VALIDATED': return '#D2EBD8'; // Green
+          case 'PENDING': return '#FAD284'; // Yellow
+          case 'REFUSED': return '#F4AAB9'; // Red
+          default: return '#AED6F1'; // Blue default
+      }
+  }
+
+
+
   getEventsForDaySimple(day: Date): any[] {
       const dStr = day.toISOString().split('T')[0];
       return this.calendarEvents.filter(e => e.start.startsWith(dStr));
@@ -452,11 +430,34 @@ export class BookingComponent implements OnInit {
       if (!this.newAppointmentDate || !this.newAppointmentTime) return;
 
       const dStr = this.newAppointmentDate.toISOString().split('T')[0];
-      // Format time from 8:00 to 08:00:00 if needed, usually 'T09:30:00'
+      // Format time from 8:00 to 08:00:00 if needed
       let timeStr = this.newAppointmentTime; 
-      if (timeStr.length === 4) timeStr = '0' + timeStr; // 8:00 -> 08:00
-      if (timeStr.length === 5) timeStr = timeStr + ':00'; // 08:00 -> 08:00:00
+      if (timeStr.length === 4) timeStr = '0' + timeStr; 
+      if (timeStr.length === 5) timeStr = timeStr + ':00'; 
 
+      // If Dentist, create available slot via backend
+      if (this.user && this.user.role === 'DENTISTE') {
+          const slot = {
+              dateRv: dStr,
+              heureRv: timeStr,
+              descriptionRv: this.newAppointmentNote || 'Créneau disponible'
+          };
+          
+          this.rendezvousService.addAvailableSlot(slot).subscribe({
+              next: () => {
+                  alert('Créneau de rendez-vous ajouté avec succès');
+                  this.loadCalendarEvents(); // RELOAD FROM BACKEND
+                  this.closeAddAppointmentModal();
+              },
+              error: (err) => {
+                  console.error('Erreur ajout créneau', err);
+                  alert('Erreur: ' + (err.error || 'Impossible de créer le créneau'));
+              }
+          });
+          return;
+      }
+
+      // Fallback for Patient or local mock (existing logic)
       const fullStart = `${dStr}T${timeStr}`;
 
       const newEvent = {
@@ -510,6 +511,24 @@ export class BookingComponent implements OnInit {
     this.loadData();
   }
 
+  /* Getters replaced by properties updated in updateFilteredLists() */
+  
+  updateFilteredLists() {
+    if (!this.appointments) return;
+    this.upcomingApps = this.appointments.filter(a => this.isUpcoming(a.dateRv)).sort((a,b) => new Date(a.dateRv).getTime() - new Date(b.dateRv).getTime());
+    this.pastApps = this.appointments.filter(a => !this.isUpcoming(a.dateRv)).sort((a,b) => new Date(b.dateRv).getTime() - new Date(a.dateRv).getTime());
+  }
+
+  isUpcoming(dateStr: string): boolean {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    return new Date(dateStr) >= today;
+  }
+
+  selectAppointment(app: RendezvousDisplay) {
+    this.selectedAppointment = app;
+  }
+
   loadData() {
     if (!this.user) return;
 
@@ -538,7 +557,7 @@ export class BookingComponent implements OnInit {
         patientId: 1,
         dateRv: '2025-12-05',
         heureRv: '10:00',
-        statutRv: 'VALIDATED', // Was PASSE
+        statutRv: 'NON_DISPONIBLE', // Was PASSE
         serviceName: 'Première consultation dentaire',
         dentistName: 'Dr Raouia Ben Ismail',
         dentistSpeciality: 'Chirurgien-dentiste',
@@ -550,7 +569,7 @@ export class BookingComponent implements OnInit {
         patientId: 1,
         dateRv: '2025-09-12',
         heureRv: '10:30',
-        statutRv: 'VALIDATED',
+        statutRv: 'NON_DISPONIBLE',
         serviceName: 'Détartrage complet',
         dentistName: 'Dr. Florent Meyrial',
         dentistSpeciality: 'Chirurgien-dentiste',
@@ -562,7 +581,7 @@ export class BookingComponent implements OnInit {
         patientId: 1,
         dateRv: '2025-08-20',
         heureRv: '14:00',
-        statutRv: 'VALIDATED',
+        statutRv: 'NON_DISPONIBLE',
         serviceName: 'Consultation de suivi',
         dentistName: 'Dr. Sarah Connor',
         dentistSpeciality: 'Orthodontiste',
@@ -574,7 +593,7 @@ export class BookingComponent implements OnInit {
         patientId: 1,
         dateRv: '2025-07-15',
         heureRv: '09:15',
-        statutRv: 'VALIDATED',
+        statutRv: 'NON_DISPONIBLE',
         serviceName: 'Urgence dentaire',
         dentistName: 'Dr. John Doe',
         dentistSpeciality: 'Chirurgien-dentiste',
@@ -586,7 +605,7 @@ export class BookingComponent implements OnInit {
         patientId: 1,
         dateRv: '2025-05-30',
         heureRv: '11:45',
-        statutRv: 'VALIDATED',
+        statutRv: 'NON_DISPONIBLE',
         serviceName: 'Blanchiment des dents',
         dentistName: 'Dr. Emily Blunt',
         dentistSpeciality: 'Chirurgien-dentiste',
@@ -598,7 +617,7 @@ export class BookingComponent implements OnInit {
         patientId: 1,
         dateRv: '2025-03-22',
         heureRv: '16:00',
-        statutRv: 'VALIDATED',
+        statutRv: 'NON_DISPONIBLE',
         serviceName: 'Pose de couronne',
         dentistName: 'Dr. Gregory House',
         dentistSpeciality: 'Chirurgien-dentiste',
@@ -610,7 +629,7 @@ export class BookingComponent implements OnInit {
         patientId: 1,
         dateRv: '2025-01-10',
         heureRv: '08:30',
-        statutRv: 'VALIDATED',
+        statutRv: 'NON_DISPONIBLE',
         serviceName: 'Contrôle annuel',
         dentistName: 'Dr. Lisa Cuddy',
         dentistSpeciality: 'Pédodontiste',
@@ -618,53 +637,21 @@ export class BookingComponent implements OnInit {
         descriptionRv: 'Mock'
       }
     ] as RendezvousDisplay[];
-    // this.selectedAppointment = this.appointments[0]; // Don't auto-select to show default empty state
+    this.updateFilteredLists();
   }
 
-  get upcomingApps(): RendezvousDisplay[] {
-    const today = new Date().toISOString().split('T')[0];
-    return this.appointments
-      .filter(a => a.dateRv && a.dateRv >= today && a.statutRv !== 'REFUSED' && a.statutRv !== 'CANCELLED')
-      .sort((a, b) => new Date(a.dateRv + 'T' + a.heureRv).getTime() - new Date(b.dateRv + 'T' + b.heureRv).getTime());
-  }
+  // Helper moved to updateFilteredLists
 
-  get pastApps(): RendezvousDisplay[] {
-    const today = new Date().toISOString().split('T')[0];
-    return this.appointments
-      .filter(a => a.dateRv && a.dateRv < today && a.statutRv !== 'REFUSED' && a.statutRv !== 'CANCELLED')
-      .sort((a, b) => new Date(b.dateRv + 'T' + b.heureRv).getTime() - new Date(a.dateRv + 'T' + a.heureRv).getTime());
-  }
 
-  get pendingApps(): RendezvousDisplay[] {
-    return this.appointments
-      .filter(a => a.statutRv === 'PENDING')
-      .sort((a, b) => new Date(a.dateRv + 'T' + a.heureRv).getTime() - new Date(b.dateRv + 'T' + b.heureRv).getTime());
-  }
-
-  get validatedUpcomingApps(): RendezvousDisplay[] {
-    const today = new Date().toISOString().split('T')[0];
-    return this.appointments
-      .filter(a => a.dateRv && a.dateRv >= today && a.statutRv === 'VALIDATED')
-      .sort((a, b) => new Date(a.dateRv + 'T' + a.heureRv).getTime() - new Date(b.dateRv + 'T' + b.heureRv).getTime());
-  }
-
-  selectAppointment(rv: RendezvousDisplay) {
-      this.selectedAppointment = rv;
-  }
-
-  isUpcoming(dateRv: string | undefined): boolean {
-    if (!dateRv) return false;
-    const today = new Date().toISOString().split('T')[0];
-    return dateRv >= today;
-  }
 
   isNewPatient(patientId: number): boolean {
     const today = new Date().toISOString().split('T')[0];
     // A patient is considered new if they have no validated appointments in the past
+    // Using 'NON_DISPONIBLE' to represent a booked/validated appointment
     return !this.appointments.some(a => 
       a.patientId === patientId && 
       a.dateRv < today && 
-      a.statutRv === 'VALIDATED'
+      a.statutRv === 'NON_DISPONIBLE'
     );
   }
 

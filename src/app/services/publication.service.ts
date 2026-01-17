@@ -4,6 +4,7 @@ import { ApiService } from './api.service';
 
 export interface PublicationDTO {
   idPub?: number;
+  id?: number; // Backend might send 'id' or 'idPub'
   titrePub: string;
   typePub: string;
   description: string;
@@ -36,6 +37,25 @@ export class PublicationService {
     return this.apiService.get<PublicationDTO[]>('/publicationRest/pending');
   }
 
+  getMyPublications(): Observable<PublicationDTO[]> {
+    return this.apiService.get<PublicationDTO[]>('/publicationRest/my');
+  }
+
+  updatePublication(id: number, publication: PublicationDTO): Observable<any> {
+    return this.apiService.put(`/publicationRest/${id}`, publication);
+  }
+
+  validatePublication(id: number): Observable<any> {
+    return this.apiService.put(`/publicationRest/${id}/validate`, {});
+  }
+
+  invalidatePublication(id: number): Observable<any> {
+    return this.apiService.put(`/publicationRest/${id}/invalidate`, {});
+  }
+
+  deletePublication(id: number): Observable<any> {
+    return this.apiService.delete(`/publicationRest/${id}`);
+  }
 
 }
 

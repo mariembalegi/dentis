@@ -42,17 +42,17 @@
           </button>
       </div>
 
-      <!-- Admin Validation Section -->
-      <section class="validation-section" *ngIf="isAdmin && filteredPendingPublications.length > 0">
+      <!-- Validation / Pending Section -->
+      <section class="validation-section" *ngIf="(isAdmin || isDentist) && filteredPendingPublications.length > 0">
         <div class="articles-container">  
            <h2 class="pending-section-title">
-               <i class="fas fa-tasks"></i> Publications en attente de validation
+               <i class="fas" [class.fa-tasks]="isAdmin" [class.fa-clock]="!isAdmin"></i> 
+               {{ isAdmin ? 'Publications en attente de validation' : 'Mes publications en attente' }}
            </h2>
            <div class="articles-grid">
                <!-- Card mimics app-publication-card structure -->
                <div class="article-card pending-card" 
-                    *ngFor="let publication of filteredPendingPublications"
-                    [routerLink]="['/publication', 'publication', publication.idPub]">
+                    *ngFor="let publication of filteredPendingPublications">
                     <div class="card-image" [style.backgroundImage]="'url(' + (publication.affichePub || 'assets/images/placeholder_dental.jpg') + ')'">
                     </div>
                     <div class="card-content">
@@ -63,13 +63,27 @@
                             <span class="author"><i class="far fa-user"></i> {{ publication.dentistName }}</span>
                         </div>
                         
-                        <div class="admin-actions">
+                        <div class="admin-actions" *ngIf="isAdmin">
                             <button class="btn-validate" (click)="$event.stopPropagation(); validatePublication(publication)">
                                 <i class="fas fa-check"></i> Valider
                             </button>
                             <button class="btn-reject" (click)="$event.stopPropagation(); rejectPublication(publication)">
                                 <i class="fas fa-times"></i> Rejeter
                             </button>
+                        </div>
+
+                        <div class="status-badge-container" *ngIf="!isAdmin">
+                            <span class="status-badge pending">
+                                <i class="far fa-clock"></i> En attente de validation
+                            </span>
+                             <div class="dentist-actions">
+                                <button class="btn-action edit" (click)="$event.stopPropagation(); editPublication(publication)" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-action delete" (click)="$event.stopPropagation(); deleteMyPublication(publication)" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                </div>
@@ -114,6 +128,7 @@
       <!-- Add Modal -->
       <app-add-publication-modal
         *ngIf="showAddModal"
+        [publicationToEdit]="publicationToEdit"
         (close)="closeAddModal()"
         (publish)="onPublish($event)">
       </app-add-publication-modal>

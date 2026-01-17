@@ -2,6 +2,16 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 
+export interface Horaire {
+  idHoraire?: number;
+  jourSemaine: 'LUNDI' | 'MARDI' | 'MERCREDI' | 'JEUDI' | 'VENDREDI' | 'SAMEDI' | 'DIMANCHE';
+  matinDebut?: string;
+  matinFin?: string;
+  apresMidiDebut?: string;
+  apresMidiFin?: string;
+  estFerme?: boolean;
+}
+
 export interface DentistSearchResult {
   id: number;
   nom: string;

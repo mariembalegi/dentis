@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PublicationService, PublicationDTO } from '../../services/publication.service';
 import { Router } from '@angular/router';
 
@@ -54,7 +55,11 @@ export class AdminDashboardComponent implements OnInit {
   selectedPublication: PublicationDTO | null = null;
   showPublicationModal = false;
 
-  constructor(private publicationService: PublicationService, private router: Router) {
+  constructor(
+      private publicationService: PublicationService, 
+      private router: Router,
+      private sanitizer: DomSanitizer
+  ) {
     // Generate dummy users for pagination
     for (let i = 6; i <= 55; i++) {
         const role = i % 2 === 0 ? 'DENTISTE' : 'PATIENT';
@@ -252,19 +257,75 @@ export class AdminDashboardComponent implements OnInit {
 
   deletePublication(pub: PublicationDTO) {
      if(confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
-        // Implement delete API
-        alert('Supression API non implémentée');
-        // this.publicationService.deleteArticle(pub.idPub);
-        this.refreshData(); // get fresh list
-        this.closePublicationModal();
+        if (pub.idPub) {
+            this.publicationService.deletePublication(pub.idPub).subscribe({
+                next: () => {
+                    this.refreshData();
+                    this.closePublicationModal();
+                },
+                error: (err) => console.error('Erreur suppression', err)
+            });
+        }
      }
   }
 
   validatePublication(pub: PublicationDTO) {
-      // Implement validate API
-      alert('Validation API non implémentée');
-      // this.publicationService.validateArticle(pub.idPub);
-      pub.valide = true; // Optimistic update
-      this.refreshData();
+      console.log('Validating publication:', pub);
+      const id = pub.idPub || pub.id;
+      
+      if (id) {
+          this.publicationService.validatePublication(id).subscribe({
+              next: () => {
+                  console.log('Validation success');
+                  this.refreshData();
+                  if (this.selectedPublication && (this.selectedPublication.idPub === id || this.selectedPublication.id === id)) {
+                      this.closePublicationModal();
+                  }
+              },
+              error: (err) => {
+                  console.error('Erreur validation', err);
+                  if (err.status === 403) {
+                      alert('Accès refusé (403). Session expirée ou droits insuffisants (Admin requis). Veuillez vous reconnecter.');
+                  } else {
+                      alert('Erreur lors de la validation. Vérifiez la console pour plus de détails.');
+                  }
+              }
+          });
+      } else {
+          console.error('ID Publication manquant:', pub);
+          alert('Impossible de valider : ID de publication manquant.');
+      }
+  }
+
+  invalidatePublication(pub: PublicationDTO) {
+      const id = pub.idPub || pub.id;
+      if (id) {
+          if(confirm('Annuler la validation de cette publication ? Elle repassera en attente.')) {
+            this.publicationService.invalidatePublication(id).subscribe({
+                next: () => {
+                    alert('Publication dépubliée (remise en attente).');
+                    this.refreshData();
+                    if (this.selectedPublication && (this.selectedPublication.idPub === id || this.selectedPublication.id === id)) {
+                        this.closePublicationModal();
+                    }
+                },
+                error: (err) => {
+                    console.error('Erreur invalidation', err);
+                    if (err.status === 403) {
+                        alert('Accès refusé (403). Session expirée ou droits insuffisants (Admin requis). Veuillez vous reconnecter.');
+                    } else {
+                        alert('Erreur lors de l\'invalidation.');
+                    }
+                }
+            });
+          }
+      }
+  }
+
+
+  
+  getSafeUrl(url: string | undefined): SafeResourceUrl | undefined {
+      if (!url) return undefined;
+      return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 }

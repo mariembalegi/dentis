@@ -26,6 +26,9 @@ export class PublicationCategoryComponent implements OnInit {
     // Admin Pending
     pendingPublications: PublicationDTO[] = [];
     
+    // Edit Mode
+    publicationToEdit: PublicationDTO | null = null;
+    
     categoryName: string = 'Actualités/innovation';
     filteredPublications: PublicationDTO[] = [];
     allPublications: PublicationDTO[] = []; // Store all fetched publications
@@ -77,8 +80,8 @@ export class PublicationCategoryComponent implements OnInit {
           error: (err) => console.error('Failed to load publications', err)
       });
       
-      // If admin, load pending
-      if (this.isAdmin) {
+      // If admin or dentist, load pending (Dentist needs to see their own)
+      if (this.isAdmin || this.isDentist) {
           this.publicationService.getPendingPublications().subscribe({
               next: (data) => {
                   this.pendingPublications = data;
@@ -88,28 +91,102 @@ export class PublicationCategoryComponent implements OnInit {
       }
   }
 
-  openAddModal() {
+  openAddModal(pub: PublicationDTO | null = null) {
+    this.publicationToEdit = pub;
     this.showAddModal = true;
   }
 
   closeAddModal() {
     this.showAddModal = false;
+    this.publicationToEdit = null;
   }
 
   validatePublication(publication: PublicationDTO) {
-      // Implement validation logic / API call here
-      alert('Implémentez la validation via API');
+      const id = publication.idPub || publication.id;
+      if (id) {
+          this.publicationService.validatePublication(id).subscribe({
+              next: () => {
+                  this.loadData();
+              },
+              error: (err) => console.error('Failed to validate', err)
+          });
+      } else {
+        console.error('ID Publication manquant:', publication);
+      }
   }
 
   rejectPublication(publication: PublicationDTO) {
-       // Implement rejection logic / API call here
-       alert('Implémentez le rejet via API');
+       const id = publication.idPub || publication.id;
+       if (confirm('Voulez-vous vraiment rejeter/supprimer cette publication ?') && id) {
+           this.publicationService.deletePublication(id).subscribe({
+               next: () => {
+                   this.loadData();
+               },
+               error: (err) => console.error('Failed to reject', err)
+           });
+       }
+  }
+
+  deleteMyPublication(publication: PublicationDTO) {
+      const id = publication.idPub || publication.id;
+      if (confirm('Voulez-vous vraiment supprimer votre publication ?') && id) {
+           this.publicationService.deletePublication(id).subscribe({
+               next: () => {
+                   this.loadData();
+               },
+               error: (err) => console.error('Failed to delete', err)
+           });
+      }
+  }
+
+  editPublication(publication: PublicationDTO) {
+      this.openAddModal(publication);
   }
   
   toggleFilter() {
     this.showMyPublicationsOnly = !this.showMyPublicationsOnly;
     this.currentPage = 1;
-    this.filterPublications();
+    
+    if (this.showMyPublicationsOnly) {
+         this.publicationService.getMyPublications().subscribe({
+             next: (data) => {
+                 // For the main list, we only want "Valid" ones if we follow the pattern that
+                 // pending ones are shown in the specific pending section.
+                 // However, "My Publications" view usually implies seeing everything.
+                 // But the pending section logic is independent of the main list logic.
+                 // The main list `allPublications` is currently filtered by category.
+                 
+                 // If we populate `allPublications` with `data` (which is ALL my pubs),
+                 // `filterPublications` will filter by category.
+                 // This allows seeing "My Publications" for the specific category active.
+                 // Note: filtering by "Valid" or not?
+                 // `allPublications` (original) only had valid.
+                 // If `getMyPublications` returns everything, we might see duplicates if we don't handle it.
+                 // Pending are shown in `pendingPublications`.
+                 // So we should probably filter `data` to only show `valide == true` in the main grid.
+                 
+                 this.allPublications = data.filter(p => p.valide);
+                 this.filterPublications();
+                 
+                 // Also, we should probably update `pendingPublications`?
+                 // The pending logic for dentist is:
+                 /*
+                   if (this.isAdmin || this.isDentist) {
+                        this.publicationService.getPendingPublications().subscribe(...)
+                   }
+                 */
+                 // `getPendingPublications` (Backend) returns ALL pending for Admin, maybe ALL for Dentist too?
+                 // Or separate logic?
+                 // If `getPendingPublications` returns correct pending list, we don't need to touch it.
+                 // But `getMyPublications` might be a more up-to-date source for the specific user.
+                 
+                 // Let's just update the main grid for now.
+             },
+             error: (err) => console.error('Failed to load my publications', err)
+         });
+    } else {
+        this.loadData();
+    }
   }
 
   onPublish(newPublication: any) {
@@ -132,7 +209,12 @@ export class PublicationCategoryComponent implements OnInit {
   }
 
   get filteredPendingPublications() {
-      return this.pendingPublications.filter(a => a.typePub === this.categoryName);
+      let pubs = this.pendingPublications.filter(a => a.typePub === this.categoryName);
+      // If dentist (and not admin), show only their own
+      if (this.isDentist && !this.isAdmin && this.currentUser?.id) {
+          pubs = pubs.filter(a => a.dentistId === this.currentUser!.id);
+      }
+      return pubs;
   }
 
   get totalPages(): number {

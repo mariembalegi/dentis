@@ -347,3 +347,58 @@
         transition: background-color 0.2s;
     }
     .btn-reject:hover { background-color: #c0392b; }
+
+    .status-badge-container {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .dentist-actions {
+        display: flex;
+        gap: 10px;
+        
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: white;
+
+            &.edit {
+                background-color: #1976D2; // Blue
+                &:hover { background-color: #1565C0; }
+            }
+            
+            &.delete {
+                background-color: #E53935; // Red
+                &:hover { background-color: #D32F2F; }
+            }
+        }
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        
+        &.pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+    }
