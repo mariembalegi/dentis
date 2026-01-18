@@ -18,7 +18,7 @@ export interface SignupData {
   recouvrementP?: string;
 
   // Dentist specific
-  ville?: string;
+  gouvernorat?: string;
   adresse?: string;
   specialite?: string;
   diplome?: string; // base64
@@ -85,9 +85,13 @@ export class SignupService {
       tel: data.tel,
       sexe: data.sexe,
       photo: data.photo,
-      ville: data.ville,
+      gouvernorat: data.gouvernorat,
+      delegation: data.delegation,
+      adresse: data.adresse,
+      specialite: data.specialite,
       diplome: data.diplome
     };
+    console.log('Registering dentist with payload:', payload); // Debug
     return this.apiService.post('/userREST/signup/dentist', payload);
   }
 }

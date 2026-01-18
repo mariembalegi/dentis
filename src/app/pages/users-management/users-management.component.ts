@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-users-management',
@@ -12,33 +13,44 @@ import { FormsModule } from '@angular/forms';
 export class UsersManagementComponent implements OnInit {
   activeTab = 'DENTISTE'; // DENTISTE, PATIENT, ADMIN
   
-  // Mock Data
   stats = {
-    dentists: 15,
-    patients: 120,
-    admins: 2
+    dentists: 0,
+    patients: 0,
+    admins: 0
   };
 
-  users = [
-    { id: 1, nom: 'Dupont', prenom: 'Jean', email: 'jean.dupont@email.com', role: 'DENTISTE', status: 'PENDING', diplome: 'diplome_jean.pdf' },
-    { id: 2, nom: 'Martin', prenom: 'Sophie', email: 'sophie.martin@email.com', role: 'DENTISTE', status: 'VALIDATED', diplome: 'diplome_sophie.pdf' },
-    { id: 3, nom: 'Kefi', prenom: 'Ryma', email: 'ryma.kefi@email.com', role: 'PATIENT' },
-    { id: 4, nom: 'Ben Ali', prenom: 'Ahmed', email: 'ahmed.benali@email.com', role: 'PATIENT' },
-    { id: 5, nom: 'Admin', prenom: 'Super', email: 'admin@dentis.com', role: 'ADMIN' }
-  ];
-
+  users: any[] = [];
   filteredUsers: any[] = [];
 
   // Modal State
   showAddAdminModal = false;
   newAdmin = { nom: '', prenom: '', email: '', password: '' };
 
-  // Verification Modal State
-  showVerificationModal = false;
-  selectedDentist: any = null;
+
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.filterUsers();
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.authService.getAllUsers().subscribe({
+        next: (response) => {
+            this.users = response;
+            this.calculateStats();
+            this.filterUsers();
+        },
+        error: (err) => {
+            console.error('Error loading users', err);
+        }
+    });
+  }
+
+  calculateStats() {
+    this.stats.dentists = this.users.filter(u => u.role === 'DENTISTE').length;
+    this.stats.patients = this.users.filter(u => u.role === 'PATIENT').length;
+    this.stats.admins = this.users.filter(u => u.role === 'ADMIN').length;
   }
 
   setTab(tab: string) {
@@ -61,36 +73,22 @@ export class UsersManagementComponent implements OnInit {
   }
 
   saveNewAdmin() {
+    // TODO: Implement backend creation for Admin
     if(this.newAdmin.email && this.newAdmin.password) {
-        // Add mock admin
-        this.users.push({
-            id: this.users.length + 1,
+        console.warn('Backend creation for Admin not implemented yet. Updating UI only.');
+        const fakeAdmin = {
+            id: -1, 
             nom: this.newAdmin.nom,
             prenom: this.newAdmin.prenom,
             email: this.newAdmin.email,
             role: 'ADMIN'
-        });
-        this.stats.admins++;
+        };
+        this.users.push(fakeAdmin);
+        this.calculateStats();
         this.filterUsers();
         this.closeAddAdminModal();
     }
   }
 
-  // Dentist Verification
-  openVerificationModal(dentist: any) {
-      this.selectedDentist = dentist;
-      this.showVerificationModal = true;
-  }
 
-  closeVerificationModal() {
-      this.selectedDentist = null;
-      this.showVerificationModal = false;
-  }
-
-  validateDentist() {
-      if(this.selectedDentist) {
-          this.selectedDentist.status = 'VALIDATED';
-          this.closeVerificationModal();
-      }
-  }
 }

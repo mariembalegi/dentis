@@ -1374,3 +1374,161 @@ $primary-color: #1A3251; // Keeping for compatibility
 .btn-reject:hover {
     background-color: #FFEBEE;
 }
+
+/* NEW MODAL STYLES (MATCHING ADD-SERVICE) */
+.modal-container {
+  background-color: white;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; /* Allow scrolling if content is long */
+  position: relative; // Ensure z-index works if needed
+
+  .modal-header {
+    background-color: #1A3251;
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: none;
+    margin-bottom: 0;
+
+    .modal-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+        color: white;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.2s;
+        position: static; // Override absolute positioning from elsewhere
+        width: auto;
+        height: auto;
+        border-radius: 0;
+        box-shadow: none; // Remove potential shadow from other styles
+  
+        &:hover {
+            color: white;
+            background: none;
+            border-color: transparent;
+        }
+    }
+  }
+
+  .modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+
+        .form-group {
+            margin-bottom: 0; // Remove bottom margin when inside a row
+        }
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .field-label {
+        display: block;
+        font-size: 14px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        color: #1A3251;
+        margin-bottom: 8px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e1e1e1;
+        border-radius: 8px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+        color: #333;
+        background-color: #f8fcfe;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus {
+            border-color: #0596DE;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(5, 150, 222, 0.1);
+        }
+        
+        &.disabled {
+             background-color: #f0f0f0;
+             color: #666;
+        }
+    }
+    
+    textarea.form-input {
+        resize: vertical;
+        min-height: 100px; 
+    }
+  }
+
+  .modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 0;
+
+    .btn-cancel {
+        padding: 10px 25px;
+        border-radius: 30px;
+        background: white;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            background: #f1f5f9;
+        }
+    }
+
+    .btn-submit {
+        background: var(--orange);
+        color: var(--white);
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: "Roboto", Arial, sans-serif;
+
+        &:hover {
+            background: var(--dark-blue);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        &:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    }
+  }
+}

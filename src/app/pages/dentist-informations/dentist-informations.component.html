@@ -3,7 +3,14 @@
     <div class="profile-header-strip">
         <div class="container strip-content">
             <div class="profile-avatar-large">
-                <img [src]="selectedDentist.photo || defaultAvatar" alt="Dr {{selectedDentist.nom}}">
+                <ng-container *ngIf="selectedDentist.photo; else initialsBlock">
+                    <img [src]="selectedDentist.photo" alt="Dr {{selectedDentist.nom}}">
+                </ng-container>
+                <ng-template #initialsBlock>
+                    <div class="avatar-circle">
+                        {{ getInitials() }}
+                    </div>
+                </ng-template>
             </div>
             <div class="profile-identity">
                 <h1>Dr {{ selectedDentist.prenom }} {{ selectedDentist.nom }}</h1>

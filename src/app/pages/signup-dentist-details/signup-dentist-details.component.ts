@@ -34,7 +34,7 @@ import { SignupService } from '../../services/signup.service';
         <div class="form-row">
             <div class="form-group">
               <label class="form-label">Gouvernorat</label>
-              <select class="form-input" [(ngModel)]="ville" (change)="onGouvernoratChange()">
+              <select class="form-input" [(ngModel)]="gouvernorat" (change)="onGouvernoratChange()">
                  <option value="" disabled>Sélectionner</option>
                  <option value="Tunis">Tunis</option>
                  <option value="Ariana">Ariana</option>
@@ -65,7 +65,7 @@ import { SignupService } from '../../services/signup.service';
 
             <div class="form-group">
               <label class="form-label">Délégation</label>
-              <select class="form-input" [(ngModel)]="delegation" [disabled]="!ville">
+              <select class="form-input" [(ngModel)]="delegation" [disabled]="!gouvernorat">
                 <option value="" disabled selected>Sélectionner</option>
                 <option *ngFor="let del of delegationsOptions" [value]="del">{{ del }}</option>
               </select>
@@ -101,7 +101,7 @@ import { SignupService } from '../../services/signup.service';
 })
 export class SignupDentistDetailsComponent implements OnInit {
   sexe = 'feminin';
-  ville = '';
+  gouvernorat = '';
   delegation = '';
   adresse = '';
   specialite = '';
@@ -194,8 +194,8 @@ export class SignupDentistDetailsComponent implements OnInit {
   onGouvernoratChange() {
     this.delegation = '';
     
-    if (this.ville && this.tunisiaData[this.ville]) {
-      this.delegationsOptions = Object.keys(this.tunisiaData[this.ville]);
+    if (this.gouvernorat && this.tunisiaData[this.gouvernorat]) {
+      this.delegationsOptions = Object.keys(this.tunisiaData[this.gouvernorat]);
     } else {
       this.delegationsOptions = [];
     }
@@ -217,7 +217,7 @@ export class SignupDentistDetailsComponent implements OnInit {
   }
 
   onContinueClick() {
-    if (!this.sexe || !this.ville || !this.delegation || !this.adresse || !this.specialite || !this.diplomeBase64) {
+    if (!this.sexe || !this.gouvernorat || !this.delegation || !this.adresse || !this.specialite || !this.diplomeBase64) {
       this.errorMessage = 'Tous les champs sont requis.';
       return;
     }
@@ -227,7 +227,7 @@ export class SignupDentistDetailsComponent implements OnInit {
 
     this.signupService.updateData({
       sexe: mappedSexe,
-      ville: this.ville,
+      gouvernorat: this.gouvernorat,
       delegation: this.delegation,
       adresse: this.adresse,
       specialite: this.specialite,

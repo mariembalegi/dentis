@@ -118,10 +118,6 @@ export const routes: Routes = [
           loadComponent: () => import('./pages/service-categories-booking/service-categories-booking.component').then(m => m.ServiceCategoriesBookingComponent)
         },
         {
-          path: 'date-booking',
-          loadComponent: () => import('./pages/date-booking/date-booking.component').then(m => m.DateBookingComponent)
-        },
-        {
           path: 'booking-confirmation',
           loadComponent: () => import('./pages/booking-confirmation/booking-confirmation.component').then(m => m.BookingConfirmationComponent)
         },

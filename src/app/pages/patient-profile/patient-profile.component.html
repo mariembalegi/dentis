@@ -1,106 +1,134 @@
-<div class="account-container">
-  <h1 class="page-title">Mon compte</h1>
+<div class="details-container" *ngIf="user">
+  <h1 class="page-title">Mon profil</h1>
 
-  <!-- Identity Section -->
-  <div class="section-group">
-    <h3 class="section-title">Identité</h3>
-    
-    <div class="menu-item" [routerLink]="['/dashboard/profile-details']">
-      <div class="item-icon-wrapper blue-icon">
-        <i class="fas fa-user-circle"></i>
+  <div class="content-wrapper">
+    <!-- Profile Card -->
+    <div class="info-card">
+      <div class="card-header">
+        <div class="avatar-wrapper">
+            <ng-container *ngIf="user.photo; else initialsBlock">
+                <img [src]="user.photo" class="img-avatar" alt="Photo">
+            </ng-container>
+            <ng-template #initialsBlock>
+                <div class="avatar-circle">
+                    {{ initials }}
+                </div>
+            </ng-template>
+            <label class="avatar-edit-btn" for="photoInput">
+                <i class="fas fa-camera"></i>
+            </label>
+            <input type="file" id="photoInput" (change)="onPhotoSelected($event)" accept="image/*" hidden>
+        </div>
+        <button class="btn-edit" (click)="openProfileEdit()">
+          <i class="fas fa-edit"></i> Modifier
+        </button>
       </div>
-      <div class="item-content">
-        <span class="item-label">Mon profil</span>
-        <span class="item-value">{{ patientName }}</span>
-      </div>
-      <i class="fas fa-chevron-right arrow-icon"></i>
-    </div>
 
+      <div class="card-body">
+        <h2 class="user-name">
+          {{ user.prenom }} {{ user.nom }}
+        </h2>
 
-  </div>
-
-  <!-- Connection Section -->
-  <div class="section-group">
-    <h3 class="section-title">Connexion</h3>
-    
-    <div class="menu-item" (click)="openPhoneModal()">
-      <div class="item-icon-wrapper blue-icon">
-        <i class="fas fa-phone-alt"></i>
+        <p class="role-label">Patient</p>
+        
+        <div class="user-details">
+          <p><strong>Email :</strong> {{ user.email || 'Non renseigné' }}</p>
+          <p><strong>Téléphone :</strong> {{ $any(user).tel || 'Non renseigné' }}</p>
+          <p *ngIf="user.dateNaissanceP">
+            <strong>Date de naissance :</strong> {{ formatBirthDate() }} ({{ calculateAge() }} ans)
+          </p>
+          <p><strong>Groupe sanguin :</strong> {{ user.groupeSanguinP || 'Non renseigné' }}</p>
+          <p><strong>Recouvrement :</strong> {{ user.recouvrementP || 'Non renseigné' }}</p>
+        </div>
       </div>
-      <div class="item-content">
-        <span class="item-label">Téléphone</span>
-        <span class="item-value">{{ patientPhone }}</span>
-      </div>
-      <i class="fas fa-chevron-right arrow-icon"></i>
-    </div>
-
-    <div class="menu-item" (click)="openEmailModal()">
-      <div class="item-icon-wrapper blue-icon">
-        <i class="fas fa-envelope"></i>
-      </div>
-      <div class="item-content">
-        <span class="item-label">E-mail</span>
-        <span class="item-value">{{ patientEmail }}</span>
-      </div>
-      <i class="fas fa-chevron-right arrow-icon"></i>
-    </div>
-
-    <div class="menu-item" (click)="openPasswordModal()">
-      <div class="item-icon-wrapper blue-icon">
-        <i class="fas fa-lock"></i>
-      </div>
-      <div class="item-content">
-        <span class="item-label">Mot de passe</span>
-        <span class="item-value">••••••••••••••••</span>
-      </div>
-      <i class="fas fa-chevron-right arrow-icon"></i>
     </div>
   </div>
-
-  <!-- Confidentialite Section -->
-  <div class="section-group">
-    <h3 class="section-title">Confidentialité</h3>
-
-
-
-    <div class="menu-item" (click)="logout()">
-      <div class="item-icon-wrapper red-icon">
-        <i class="fas fa-sign-out-alt"></i>
-      </div>
-      <div class="item-content">
-        <span class="item-label red-text">Déconnexion</span>
-      </div>
-      <i class="fas fa-chevron-right arrow-icon"></i>
-    </div>
-  </div>
-
 </div>
 
-<!-- Phone Edit Modal -->
-<app-phone-edit-modal
-  *ngIf="showPhoneModal"
-  [currentPhone]="patientPhone"
-  (close)="closePhoneModal()"
-  (save)="savePhone($event)">
-</app-phone-edit-modal>
+<!-- Edit Profile Modal -->
+<div class="modal-overlay" *ngIf="showProfileEditModal" (click)="closeProfileEdit()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Modifier mon profil</h2>
+      <button class="close-btn" (click)="closeProfileEdit()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form (ngSubmit)="saveProfile()">
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label">Nom *</label>
+            <input [(ngModel)]="editProfileData.nom" name="nom" required class="form-input" placeholder="Votre nom">
+          </div>
+          <div class="form-group">
+            <label class="field-label">Prénom *</label>
+            <input [(ngModel)]="editProfileData.prenom" name="prenom" required class="form-input" placeholder="Votre prénom">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Email</label>
+          <input [(ngModel)]="editProfileData.email" name="email" type="email" class="form-input" placeholder="exemple@email.com">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Téléphone</label>
+          <input [(ngModel)]="editProfileData.tel" name="tel" class="form-input" placeholder="Ex: 22 222 222">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Date de naissance</label>
+          <input [(ngModel)]="editProfileData.dateNaissanceP" name="dateNaissanceP" type="date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Sexe</label>
+          <div class="select-wrapper">
+            <select [(ngModel)]="editProfileData.sexe" name="sexe" class="form-input">
+              <option value="">Sélectionner</option>
+              <option value="M">Masculin</option>
+              <option value="F">Féminin</option>
+            </select>
+            <i class="fas fa-caret-down select-icon"></i>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label">Groupe Sanguin</label>
+            <div class="select-wrapper">
+              <select [(ngModel)]="editProfileData.groupeSanguin" name="groupeSanguin" class="form-input">
+                <option value="">Sélectionner</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+              <i class="fas fa-caret-down select-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="field-label">Recouvrement</label>
+            <div class="select-wrapper">
+              <select [(ngModel)]="editProfileData.recouvrement" name="recouvrement" class="form-input">
+                <option value="">Sélectionner</option>
+                <option value="Remboursement">Remboursement</option>
+                <option value="Tiers Payant">Tiers Payant</option>
+                <option value="Aucun">Aucun</option>
+              </select>
+              <i class="fas fa-caret-down select-icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<!-- Email Edit Modal -->
-<app-email-edit-modal
-  *ngIf="showEmailModal"
-  [currentEmail]="patientEmail"
-  (close)="closeEmailModal()"
-  (save)="saveEmail($event)">
-</app-email-edit-modal>
-
-<!-- Password Edit Modal -->
-<app-password-edit-modal
-  *ngIf="showPasswordModal"
-  (close)="closePasswordModal()"
-  (save)="savePassword($event)">
-</app-password-edit-modal>
-
-<!-- Delete Account Modal -->
-<app-delete-account-modal
-  *ngIf="showDeleteModal"
-  (close)="closeDeleteModal()">
-</app-delete-account-modal>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeProfileEdit()">Annuler</button>
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-save"></i> Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

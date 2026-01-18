@@ -45,7 +45,7 @@ export class BookingConfirmationComponent implements OnInit {
   }
 
   goToAppointments() {
-    this.router.navigate(['/dashboard/patient-profile']);
+    this.router.navigate(['/dashboard/booking']);
   }
 
   goHome() {

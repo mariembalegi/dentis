@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PublicationService, PublicationDTO } from '../../services/publication.service';
+import { AuthService, User } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -26,13 +27,7 @@ export class AdminDashboardComponent implements OnInit {
   activeUserTab = 'ALL'; // ALL, DENTISTE, PATIENT, ADMIN
   
   // Data
-  users: any[] = [
-    { id: 1, nom: 'Dupont', prenom: 'Jean', email: 'jean.dupont@email.com', role: 'DENTISTE', status: 'PENDING', diplome: 'diplome_jean.pdf' },
-    { id: 2, nom: 'Martin', prenom: 'Sophie', email: 'sophie.martin@email.com', role: 'DENTISTE', status: 'VALIDATED', diplome: 'diplome_sophie.pdf' },
-    { id: 3, nom: 'Kefi', prenom: 'Ryma', email: 'ryma.kefi@email.com', role: 'PATIENT' },
-    { id: 4, nom: 'Ben Ali', prenom: 'Ahmed', email: 'ahmed.benali@email.com', role: 'PATIENT' },
-    { id: 5, nom: 'Admin', prenom: 'Super', email: 'admin@dentis.com', role: 'ADMIN' }
-  ];
+  users: any[] = [];
   filteredUsers: any[] = [];
   userSearchQuery = '';
   
@@ -57,24 +52,10 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
       private publicationService: PublicationService, 
+      private authService: AuthService,
       private router: Router,
       private sanitizer: DomSanitizer
-  ) {
-    // Generate dummy users for pagination
-    for (let i = 6; i <= 55; i++) {
-        const role = i % 2 === 0 ? 'DENTISTE' : 'PATIENT';
-        const status = role === 'DENTISTE' ? (i % 3 === 0 ? 'PENDING' : 'VALIDATED') : undefined;
-        this.users.push({
-            id: i,
-            nom: `Nom${i}`,
-            prenom: `Prenom${i}`,
-            email: `user${i}@example.com`,
-            role: role,
-            status: status,
-            diplome: role === 'DENTISTE' ? `diplome_${i}.pdf` : undefined
-        });
-    }
-  }
+  ) {}
 
   ngOnInit() {
     this.refreshData();
@@ -86,12 +67,34 @@ export class AdminDashboardComponent implements OnInit {
         this.publicationService.getPendingPublications().subscribe(pending => {
             this.publications = [...valid, ...pending];
             this.filterPublications();
+            this.updateStats(); // Update stats after loading publications
         });
     });
 
-    // Users
-    this.filterUsers();
-    this.updateStats();
+    // Load Users from Backend
+    console.log('Tentative de chargement des utilisateurs...');
+    this.authService.getAllUsers().subscribe({
+        next: (users) => {
+             console.log('Utilisateurs reçus du backend:', users);
+             if (!users || users.length === 0) {
+                 console.warn('Aucun utilisateur trouvé ou liste vide reçue.');
+             }
+             this.users = users.map(u => ({
+                ...u,
+                status: u.role === 'DENTISTE' ? (u.verifie ? 'VALIDATED' : 'PENDING') : undefined
+            }));
+            this.filterUsers();
+            this.updateStats();
+        },
+        error: (err) => {
+            console.error('Erreur lors du chargement des utilisateurs:', err);
+            if (err.status === 403) {
+                 alert('Erreur 403: Vous n\'avez pas la permission de voir les utilisateurs (Admin requis).');
+            } else if (err.status === 404) {
+                 console.error('Endpoint /userREST/all non trouvé.');
+            }
+        }
+    });
   }
 
   updateStats() {
@@ -155,6 +158,7 @@ export class AdminDashboardComponent implements OnInit {
     this.filterUsers();
   }
 
+  /*
   openUserModal(user: any) {
     this.selectedUser = user;
     this.showUserModal = true;
@@ -164,20 +168,28 @@ export class AdminDashboardComponent implements OnInit {
     this.selectedUser = null;
     this.showUserModal = false;
   }
+  */
 
   deleteUser(user: any) {
     if(confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-        this.users = this.users.filter(u => u.id !== user.id);
-        this.filterUsers();
-        this.updateStats();
-        this.closeUserModal();
+        this.authService.deleteUser(user.id).subscribe({
+            next: () => {
+                this.users = this.users.filter(u => u.id !== user.id);
+                this.filterUsers();
+                this.updateStats();
+                // this.closeUserModal();
+            },
+           error: (err) => console.error(err)
+        });
     }
   }
 
+  /*
   validateDentist(user: any) {
     user.status = 'VALIDATED';
     this.filterUsers(); // Re-sort
   }
+  */
 
   downloadDiplome(user: any) {
     if (user.diplome) {

@@ -107,4 +107,41 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.userSubject.value;
   }
+
+  getAllUsers(): Observable<User[]> {
+      return this.apiService.get<User[]>('/userREST/users');
+  }
+
+  getUserById(id: number): Observable<User> {
+      return this.apiService.get<User>(`/userREST/user/${id}`);
+  }
+
+  updateUser(id: number, userData: any): Observable<any> {
+    // Backend endpoint: @PUT @Path("/user/{id}") within /userREST
+    return this.apiService.put<any>(`/userREST/user/${id}`, userData).pipe(
+        tap(() => {
+            const currentUser = this.getUser();
+            if (currentUser && currentUser.id === id) {
+               // Update local state with the data we just sent
+               const newUser = { ...currentUser, ...userData };
+               // Ensure mapping back to internal property names if needed
+               if (userData.dateNaissance) newUser.dateNaissanceP = userData.dateNaissance;
+               if (userData.groupeSanguin) newUser.groupeSanguinP = userData.groupeSanguin;
+               if (userData.recouvrement) newUser.recouvrementP = userData.recouvrement;
+               
+               this.setUser(newUser);
+            }
+        })
+    );
+  }
+
+  deleteUser(id: number): Observable<void> {
+      return this.apiService.delete<void>(`/userREST/user/${id}`);
+  }
+
+  /*
+  validateDentist(id: number): Observable<void> {
+      return this.apiService.put<void>(`/userREST/dentist/${id}/validate`, {});
+  }
+  */
 }

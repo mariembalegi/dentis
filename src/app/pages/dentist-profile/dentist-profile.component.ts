@@ -124,6 +124,7 @@ export class DentistProfileComponent implements OnInit {
 
   loadProfile(id: number) {
     this.dentistService.getDentistById(id).subscribe(data => {
+      console.log('Dentist data from API:', data); // Debug: voir les champs retournés
       this.dentist = data;
       this.computeInitials();
     });
@@ -193,6 +194,26 @@ export class DentistProfileComponent implements OnInit {
     }
  }
 
+  onPhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && this.dentist) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const photoBase64 = e.target.result;
+        // Save photo directly to API
+        this.dentistService.updateProfile(this.dentist!.id, { photo: photoBase64 }).subscribe({
+          next: () => {
+            this.loadProfile(this.dentist!.id);
+          },
+          error: (err) => {
+            console.error('Error updating photo:', err);
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   openProfileEdit() {
     if (!this.dentist) return;
     this.editProfileData = { ...this.dentist };
@@ -206,10 +227,16 @@ export class DentistProfileComponent implements OnInit {
 
   saveProfile() {
     if (!this.dentist) return;
-    this.dentistService.updateProfile(this.dentist.id, this.editProfileData).subscribe(updated => {
-      // API might return null or updated object, fetch again to be sure
-      this.loadProfile(this.dentist!.id);
-      this.showProfileEditModal = false;
+    console.log('Sending to API:', this.editProfileData); // Debug: voir ce qui est envoyé
+    this.dentistService.updateProfile(this.dentist.id, this.editProfileData).subscribe({
+      next: (updated) => {
+        console.log('API response:', updated); // Debug: voir la réponse
+        this.loadProfile(this.dentist!.id);
+        this.showProfileEditModal = false;
+      },
+      error: (err) => {
+        console.error('Error updating profile:', err); // Debug: voir les erreurs
+      }
     });
   }
 

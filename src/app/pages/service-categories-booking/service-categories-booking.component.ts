@@ -215,7 +215,8 @@ export class ServiceCategoriesBookingComponent implements OnInit {
                 queryParams: {
                     date: this.selectedSlot?.date,
                     time: this.selectedSlot?.time,
-                    dentistName: `${this.dentist?.prenom} ${this.dentist?.nom}`
+                    dentistName: `${this.dentist?.prenom} ${this.dentist?.nom}`,
+                    serviceName: serviceNames
                 }
             });
         },

@@ -1,25 +1,24 @@
 <div class="details-container" *ngIf="dentist">
-  <!-- Breadcrumb -->
-  <div class="breadcrumb">
-    <a routerLink="/dashboard" class="back-link">
-      ← Mon compte
-    </a>
-  </div>
-
   <h1 class="page-title">Mon profil</h1>
 
   <div class="content-wrapper">
     <!-- Left Card: Personal Info -->
     <div class="info-card">
       <div class="card-header">
-        <ng-container *ngIf="dentist.photo; else initialsBlock">
-            <img [src]="dentist.photo" class="img-avatar" alt="Photo">
-        </ng-container>
-        <ng-template #initialsBlock>
-            <div class="avatar-circle">
-                {{ initials }}
-            </div>
-        </ng-template>
+        <div class="avatar-wrapper">
+            <ng-container *ngIf="dentist.photo; else initialsBlock">
+                <img [src]="dentist.photo" class="img-avatar" alt="Photo">
+            </ng-container>
+            <ng-template #initialsBlock>
+                <div class="avatar-circle">
+                    {{ initials }}
+                </div>
+            </ng-template>
+            <label class="avatar-edit-btn" for="photoInput">
+                <i class="fas fa-camera"></i>
+            </label>
+            <input type="file" id="photoInput" (change)="onPhotoSelected($event)" accept="image/*" hidden>
+        </div>
 
         <button class="btn-edit" (click)="openProfileEdit()">
           <i class="fas fa-edit"></i> Modifier
@@ -78,56 +77,74 @@
 
 <!-- Edit Profile Modal -->
 <div class="modal-overlay" *ngIf="showProfileEditModal" (click)="closeProfileEdit()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-        <h2>Modifier mon profil</h2>
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2 class="modal-title">Modifier mon profil</h2>
+            <button class="close-btn" (click)="closeProfileEdit()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
         <form (ngSubmit)="saveProfile()">
-            <div class="form-group">
-                <label>Nom</label>
-                <input [(ngModel)]="editProfileData.nom" name="nom" required>
-            </div>
-            <div class="form-group">
-                <label>Prénom</label>
-                <input [(ngModel)]="editProfileData.prenom" name="prenom" required>
-            </div>
-             <div class="form-group">
-                <label>Téléphone</label>
-                <input [(ngModel)]="editProfileData.tel" name="tel">
-            </div>
-            <div class="form-group">
-                <label>Adresse</label>
-                <input [(ngModel)]="editProfileData.adresse" name="adresse">
-            </div>
-            <div class="form-group">
-                <label>Gouvernorat</label>
-                <select [(ngModel)]="editProfileData.gouvernorat" name="gouvernorat" (change)="onGouvernoratChange()">
-                   <option value="" disabled>Sélectionner</option>
-                   <option *ngFor="let g of gouvernoratList" [value]="g">{{ g }}</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Délégation</label>
-                <select [(ngModel)]="editProfileData.delegation" name="delegation" [disabled]="!editProfileData.gouvernorat">
-                  <option value="" disabled>Sélectionner</option>
-                  <option *ngFor="let del of delegationsOptions" [value]="del">{{ del }}</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Spécialité</label>
-                <input [(ngModel)]="editProfileData.specialite" name="specialite">
-            </div>
-            <!-- Diplome file upload and preview -->
-            <div class="form-group">
-                <label>Diplôme</label>
-                <input type="file" (change)="onFileSelected($event)" accept=".pdf, image/*">
-                <div *ngIf="editProfileData.diplome" class="diplome-preview" style="margin-top: 10px;">
-                    <img *ngIf="editProfileData.diplome.startsWith('data:image')" [src]="editProfileData.diplome" alt="Diplôme" style="max-width: 100%; max-height: 200px; border: 1px solid #ccc; padding: 4px;">
-                    <p *ngIf="!editProfileData.diplome.startsWith('data:image')" style="font-size: 0.9rem; color: #666;">Fichier chargé ({{ editProfileData.diplome.substring(0, 30) }}...)</p>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="field-label">Nom *</label>
+                        <input [(ngModel)]="editProfileData.nom" name="nom" required class="form-input" placeholder="Votre nom">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Prénom *</label>
+                        <input [(ngModel)]="editProfileData.prenom" name="prenom" required class="form-input" placeholder="Votre prénom">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="field-label">Téléphone</label>
+                    <input [(ngModel)]="editProfileData.tel" name="tel" class="form-input" placeholder="Ex: 22 222 222">
+                </div>
+                <div class="form-group">
+                    <label class="field-label">Adresse</label>
+                    <input [(ngModel)]="editProfileData.adresse" name="adresse" class="form-input" placeholder="Votre adresse">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="field-label">Gouvernorat</label>
+                        <div class="select-wrapper">
+                            <select [(ngModel)]="editProfileData.gouvernorat" name="gouvernorat" (change)="onGouvernoratChange()" class="form-input">
+                                <option value="" disabled>Sélectionner un gouvernorat</option>
+                                <option *ngFor="let g of gouvernoratList" [value]="g">{{ g }}</option>
+                            </select>
+                            <i class="fas fa-caret-down select-icon"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Délégation</label>
+                        <div class="select-wrapper">
+                            <select [(ngModel)]="editProfileData.delegation" name="delegation" [disabled]="!editProfileData.gouvernorat" class="form-input">
+                                <option value="" disabled>Sélectionner une délégation</option>
+                                <option *ngFor="let del of delegationsOptions" [value]="del">{{ del }}</option>
+                            </select>
+                            <i class="fas fa-caret-down select-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="field-label">Spécialité</label>
+                        <input [(ngModel)]="editProfileData.specialite" name="specialite" class="form-input" placeholder="Ex: Chirurgien Dentiste">
+                    </div>
+                    <!-- Diplome file upload -->
+                    <div class="form-group">
+                        <label class="field-label">Diplôme</label>
+                        <input type="file" (change)="onFileSelected($event)" accept=".pdf, image/*" class="form-input file-input">
+                    </div>
                 </div>
             </div>
             
-            <div class="modal-actions">
+            <div class="modal-footer">
                 <button type="button" class="btn-cancel" (click)="closeProfileEdit()">Annuler</button>
-                <button type="submit" class="btn-save">Enregistrer</button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
             </div>
         </form>
     </div>

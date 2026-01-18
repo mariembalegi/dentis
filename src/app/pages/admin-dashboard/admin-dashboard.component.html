@@ -66,7 +66,6 @@
                         <th>Role</th>
                         <th>Email</th>
                         <th *ngIf="activeUserTab !== 'PATIENT'">Diplôme</th>
-                        <th *ngIf="activeUserTab !== 'PATIENT'">Statut</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -88,16 +87,8 @@
                             </button>
                             <span *ngIf="!user.diplome" style="color: #ccc;">-</span>
                         </td>
-                        <td *ngIf="activeUserTab !== 'PATIENT'">
-                            <span *ngIf="user.role === 'DENTISTE'" class="status-badge" [class.pending]="user.status === 'PENDING'" [class.validated]="user.status === 'VALIDATED'">
-                                {{ user.status === 'PENDING' ? 'À vérifier' : 'Validé' }}
-                            </span>
-                        </td>
                         <td>
                             <div class="action-buttons">
-                                <button *ngIf="user.role === 'DENTISTE' && user.status === 'PENDING'" class="btn-validate" (click)="validateDentist(user)">
-                                    <i class="fas fa-check"></i>
-                                </button>
                                 <button class="btn-delete" (click)="deleteUser(user)">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -206,38 +197,6 @@
         </div>
     </section>
 
-</div>
-
-<!-- USER DETAILS MODAL -->
-<div class="modal-overlay" *ngIf="showUserModal" (click)="closeUserModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-        <button class="close-btn" (click)="closeUserModal()">&times;</button>
-        <div class="modal-header">
-            <h3>Détails Utilisateur</h3>
-        </div>
-        <div class="modal-body" *ngIf="selectedUser">
-            <div class="detail-row">
-                <strong>Nom complet:</strong> {{ selectedUser.prenom }} {{ selectedUser.nom }}
-            </div>
-            <div class="detail-row">
-                <strong>Email:</strong> {{ selectedUser.email }}
-            </div>
-            <div class="detail-row">
-                <strong>Role:</strong> {{ selectedUser.role }}
-            </div>
-            <div class="detail-row" *ngIf="selectedUser.status">
-                <strong>Statut:</strong> {{ selectedUser.status }}
-            </div>
-            <div class="detail-row" *ngIf="selectedUser.diplome">
-                <strong>Diplôme:</strong> <a href="#" onclick="return false;">{{ selectedUser.diplome }}</a>
-            </div>
-            
-            <div class="modal-actions">
-                <button *ngIf="selectedUser.role === 'DENTISTE' && selectedUser.status === 'PENDING'" class="btn-primary" (click)="validateDentist(selectedUser); closeUserModal()">Valider ce dentiste</button>
-                <button class="btn-danger" (click)="deleteUser(selectedUser)">Supprimer</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- PUBLICATION PREVIEW MODAL -->

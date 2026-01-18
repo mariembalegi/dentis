@@ -108,4 +108,11 @@ export class DentistInformationsComponent implements OnInit {
     }
     return schedule || 'Fermé';
   }
+
+  getInitials(): string {
+    if (!this.selectedDentist) return '';
+    const first = this.selectedDentist.prenom ? this.selectedDentist.prenom.charAt(0) : '';
+    const last = this.selectedDentist.nom ? this.selectedDentist.nom.charAt(0) : '';
+    return (first + last).toUpperCase();
+  }
 }

@@ -8,6 +8,24 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const injector = inject(Injector);
 
+  // Get token from session storage
+  const storedUserStr = sessionStorage.getItem('dentis_user');
+  let token = null;
+  if (storedUserStr) {
+    try {
+      const user = JSON.parse(storedUserStr);
+      token = user.token || user.sessionId; 
+    } catch (e) {}
+  }
+
+  if (token) {
+    req = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {

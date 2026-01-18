@@ -57,12 +57,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
 }
 
 .card-header {
@@ -83,6 +77,20 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  
+  .avatar-circle {
+      width: 100%;
+      height: 100%;
+      background-color: #D04747;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 24px;
+      text-transform: uppercase;
   }
 }
 
@@ -142,9 +150,19 @@
 .btn-book {
   background-color: var(--orange);
   color: white;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
 
   &:hover {
     background-color: #c03d3d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(208, 71, 71, 0.4);
+  }
+
+  &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(208, 71, 71, 0.2);
   }
 }
 

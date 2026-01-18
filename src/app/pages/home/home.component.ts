@@ -158,4 +158,10 @@ export class HomeComponent implements OnInit {
           this.router.navigate(['/dashboard/dentist', dentist.id]);
       }
   }
+
+  getInitials(dentist: DentistSearchResult): string {
+      const first = dentist.prenom ? dentist.prenom.charAt(0) : '';
+      const last = dentist.nom ? dentist.nom.charAt(0) : '';
+      return (first + last).toUpperCase();
+  }
 }

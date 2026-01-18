@@ -4,7 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { AuthService, User } from '../../services/auth.service';
 import { ServiceMedicalService, ServiceMedical } from '../../services/service-medical.service';
 import { RendezvousService, Rendezvous } from '../../services/rendezvous.service';
+import { DentistService, Horaire } from '../../services/dentist.service';
 import { Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 // Extended interface for UI display purposes
 interface RendezvousDisplay extends Rendezvous {
@@ -72,6 +75,7 @@ export class BookingComponent implements OnInit {
 
   // Add Appointment Modal State
   showAddAppointmentModal = false;
+  editingAppointmentId: number | null = null; // Track if we're editing an existing appointment
   newAppointmentDate: Date | null = null;
   newAppointmentTime: string = '';
   newAppointmentPatientName: string = '';
@@ -104,9 +108,10 @@ export class BookingComponent implements OnInit {
     private authService: AuthService,
     private medicalService: ServiceMedicalService,
     private rendezvousService: RendezvousService,
+    private dentistService: DentistService,
     private router: Router
   ) {
-    this.initCalendar();
+    // Calendar will be initialized after loading horaires
   }
   
   selectCalendarEvent(event: any) {
@@ -128,12 +133,13 @@ export class BookingComponent implements OnInit {
 
   editEvent(calendarEvent: any) {
     this.closeContextMenu();
-    // Logic to open edit modal (using Add Modal for now passing data)
+    // Store the ID of the appointment we're editing
+    this.editingAppointmentId = calendarEvent.id || null;
     this.newAppointmentDate = new Date(calendarEvent.start);
     const start = new Date(calendarEvent.start);
     this.newAppointmentTime = start.toTimeString().substring(0, 5);
     this.newAppointmentPatientName = calendarEvent.patient;
-    this.newAppointmentNote = '';
+    this.newAppointmentNote = calendarEvent.descriptionRv || '';
     // If we had stored services on the event, we would load them here. 
     // For now, load based on serviceName if possible or empty
     this.newAppointmentServices = calendarEvent.serviceName ? [calendarEvent.serviceName] : []; 
@@ -142,20 +148,18 @@ export class BookingComponent implements OnInit {
 
   deleteEvent(calendarEvent: any) {
     if(confirm(`Voulez-vous supprimer le rendez-vous de ${calendarEvent.patient} ?`)) {
-        // If it's a real backend event (has positive ID) or even if mock (we can try)
-        // Ideally we differentiate. Assuming all will be real or we want to try backend for all
         if (calendarEvent.id) {
-             this.rendezvousService.cancelAppointment(calendarEvent.id).subscribe({
+             // Use deleteAppointment for dentists
+             this.rendezvousService.deleteAppointment(calendarEvent.id).subscribe({
                  next: () => {
                      this.calendarEvents = this.calendarEvents.filter(e => e !== calendarEvent);
                      if(this.selectedCalendarEvent === calendarEvent) {
                          this.selectedCalendarEvent = null;
                      }
+                     alert('Rendez-vous supprimé avec succès');
                  },
                  error: (err) => {
                      console.error('Erreur suppression', err);
-                     // Fallback for mock data or if backend fails but we want to remove from UI (optional)
-                     // this.calendarEvents = this.calendarEvents.filter(e => e !== calendarEvent);
                      alert('Impossible de supprimer ce rendez-vous.');
                  }
              });
@@ -185,11 +189,54 @@ export class BookingComponent implements OnInit {
 
   initCalendar() {
     this.hours = [];
-    // Initialize hours based on max working range (9:00 to 18:00)
-    // 18:00 is closing time, so the last slot is 17:00-18:00
-    for (let i = 9; i < 18; i++) {
+    // Default hours if no horaires loaded (9:00 to 18:00)
+    for (let i = 9; i <= 18; i++) {
         this.hours.push(`${i}:00`);
     }
+    this.updateWeekDays();
+  }
+
+  initCalendarWithHoraires(horaires: Horaire[]) {
+    // Find min start time and max end time from all days
+    let minHour = 23;
+    let maxHour = 0;
+
+    for (const h of horaires) {
+      if (h.estFerme) continue;
+      
+      // Check morning times
+      if (h.matinDebut) {
+        const hour = parseInt(h.matinDebut.split(':')[0], 10);
+        if (hour < minHour) minHour = hour;
+      }
+      if (h.matinFin) {
+        const hour = parseInt(h.matinFin.split(':')[0], 10);
+        if (hour > maxHour) maxHour = hour;
+      }
+      
+      // Check afternoon times
+      if (h.apresMidiDebut) {
+        const hour = parseInt(h.apresMidiDebut.split(':')[0], 10);
+        if (hour < minHour) minHour = hour;
+      }
+      if (h.apresMidiFin) {
+        const hour = parseInt(h.apresMidiFin.split(':')[0], 10);
+        if (hour > maxHour) maxHour = hour;
+      }
+    }
+
+    // Fallback to defaults if no valid hours found
+    if (minHour > maxHour || minHour === 23 || maxHour === 0) {
+      minHour = 9;
+      maxHour = 18;
+    }
+
+    // Generate hour slots from minHour to maxHour
+    this.hours = [];
+    for (let i = minHour; i <= maxHour; i++) {
+      this.hours.push(`${i}:00`);
+    }
+    
     this.updateWeekDays();
   }
 
@@ -334,26 +381,69 @@ export class BookingComponent implements OnInit {
   loadCalendarEvents() {
     this.rendezvousService.getMyAppointments().subscribe({
         next: (appointments) => {
-            this.calendarEvents = appointments.map(rv => {
-                // Ensure date and time formatting
-                const startIso = `${rv.dateRv}T${rv.heureRv.length === 5 ? rv.heureRv + ':00' : rv.heureRv}`;
-                
-                return {
+            // Create an array of observables for loading user details
+            const userLoadPromises = appointments.map(rv => {
+                const baseEvent: any = {
                     id: rv.idRv,
-                    start: startIso,
-                    duration: 30, // Default duration
+                    start: `${rv.dateRv}T${rv.heureRv.length === 5 ? rv.heureRv + ':00' : rv.heureRv}`,
+                    duration: 30,
                     patient: rv.patientName || 'Patient Inconnu',
                     color: this.getStatusColor(rv.statutRv),
                     serviceName: rv.serviceName || 'Consultation',
-                    phone: '', // Detailed info might need separate fetch or expanded DTO
-                    birthDate: '', 
+                    phone: '',
+                    birthDate: '',
                     gender: 'M',
                     bloodGroup: '?',
                     coverageType: '?',
                     totalPrice: 0,
                     status: rv.statutRv
                 };
+                
+                // If patient ID exists, fetch full patient details
+                if (rv.patientId) {
+                    return this.authService.getUserById(rv.patientId).pipe(
+                        map(user => {
+                            if (user) {
+                                const u: any = user; // Fallback for mismatched keys
+                                baseEvent.phone = user.tel ? user.tel.toString() : '';
+                                baseEvent.birthDate = user.dateNaissanceP || u.dateNaissance || '';
+                                baseEvent.gender = user.sexe || 'M';
+                                baseEvent.bloodGroup = user.groupeSanguinP || u.groupeSanguin || '?';
+                                baseEvent.coverageType = user.recouvrementP || u.recouvrement || '?';
+                            }
+                            return baseEvent;
+                        })
+                    );
+                } else {
+                    return of(baseEvent);
+                }
             });
+            
+            // Wait for all user details to load before updating calendar
+            forkJoin(userLoadPromises).subscribe(
+                (loadedEvents) => {
+                    this.calendarEvents = loadedEvents;
+                },
+                (err) => {
+                    console.error('Error loading calendar events with user details:', err);
+                    // Fallback: use events without user details
+                    this.calendarEvents = appointments.map(rv => ({
+                        id: rv.idRv,
+                        start: `${rv.dateRv}T${rv.heureRv.length === 5 ? rv.heureRv + ':00' : rv.heureRv}`,
+                        duration: 30,
+                        patient: rv.patientName || 'Patient Inconnu',
+                        color: this.getStatusColor(rv.statutRv),
+                        serviceName: rv.serviceName || 'Consultation',
+                        phone: '',
+                        birthDate: '',
+                        gender: 'M',
+                        bloodGroup: '?',
+                        coverageType: '?',
+                        totalPrice: 0,
+                        status: rv.statutRv
+                    }));
+                }
+            );
         },
         error: (err) => console.error('Failed to load real appointments', err)
     });
@@ -425,6 +515,7 @@ export class BookingComponent implements OnInit {
   closeAddAppointmentModal() {
       this.showAddAppointmentModal = false;
       this.newAppointmentDate = null;
+      this.editingAppointmentId = null; // Reset edit mode
   }
 
   saveNewAppointment() {
@@ -436,7 +527,7 @@ export class BookingComponent implements OnInit {
       if (timeStr.length === 4) timeStr = '0' + timeStr; 
       if (timeStr.length === 5) timeStr = timeStr + ':00'; 
 
-      // If Dentist, create available slot via backend
+      // If Dentist, create or update slot via backend
       if (this.user && this.user.role === 'DENTISTE') {
           const slot = {
               dateRv: dStr,
@@ -444,17 +535,32 @@ export class BookingComponent implements OnInit {
               descriptionRv: this.newAppointmentNote || 'Créneau disponible'
           };
           
-          this.rendezvousService.addAvailableSlot(slot).subscribe({
-              next: () => {
-                  alert('Créneau de rendez-vous ajouté avec succès');
-                  this.loadCalendarEvents(); // RELOAD FROM BACKEND
-                  this.closeAddAppointmentModal();
-              },
-              error: (err) => {
-                  console.error('Erreur ajout créneau', err);
-                  alert('Erreur: ' + (err.error || 'Impossible de créer le créneau'));
-              }
-          });
+          // Check if we're editing an existing appointment
+          if (this.editingAppointmentId) {
+              this.rendezvousService.updateAppointment(this.editingAppointmentId, slot).subscribe({
+                  next: () => {
+                      alert('Rendez-vous modifié avec succès');
+                      this.loadCalendarEvents(); // RELOAD FROM BACKEND
+                      this.closeAddAppointmentModal();
+                  },
+                  error: (err) => {
+                      console.error('Erreur modification', err);
+                      alert('Erreur: ' + (err.error || 'Impossible de modifier le rendez-vous'));
+                  }
+              });
+          } else {
+              this.rendezvousService.addAvailableSlot(slot).subscribe({
+                  next: () => {
+                      alert('Créneau de rendez-vous ajouté avec succès');
+                      this.loadCalendarEvents(); // RELOAD FROM BACKEND
+                      this.closeAddAppointmentModal();
+                  },
+                  error: (err) => {
+                      console.error('Erreur ajout créneau', err);
+                      alert('Erreur: ' + (err.error || 'Impossible de créer le créneau'));
+                  }
+              });
+          }
           return;
       }
 
@@ -570,9 +676,23 @@ export class BookingComponent implements OnInit {
   }
   
   loadDentistData() {
-     // Load calendar data
-     this.initCalendar();
-     this.loadCalendarEvents();
+     // Load horaires first, then initialize calendar with proper hours
+     if (this.user) {
+       this.dentistService.getHoraires(this.user.id).subscribe({
+         next: (horaires) => {
+           this.initCalendarWithHoraires(horaires);
+           this.loadCalendarEvents();
+         },
+         error: (err) => {
+           console.error('Failed to load horaires, using defaults', err);
+           this.initCalendar(); // Fallback to default 9-18
+           this.loadCalendarEvents();
+         }
+       });
+     } else {
+       this.initCalendar();
+       this.loadCalendarEvents();
+     }
   }
 
   mockAppointments() {
@@ -696,17 +816,6 @@ export class BookingComponent implements OnInit {
       this.router.navigate(['/dashboard/dentist', dentistId]);
   }
 
-  rescheduleBooking(rv: RendezvousDisplay) {
-    this.router.navigate(['/dashboard/date-booking'], {
-      queryParams: {
-        dentistName: rv.dentistName,
-        dentistSpecialty: rv.dentistSpeciality,
-        dentistAddress: '1 Rue Charles Drot, 92500 Rueil-Malmaison',
-        dentistPhoto: rv.dentistPhoto,
-        serviceName: rv.serviceName
-      }
-    });
-  }
 
   confirmBooking() {
     if (!this.user || !this.selectedService) return;
@@ -748,11 +857,20 @@ export class BookingComponent implements OnInit {
 
   confirmCancel() {
     if (this.appointmentToCancelId) {
-      // Remove local appointment manually (don't call loadData to avoid mock reset)
-      this.appointments = this.appointments.filter(a => a.idRv !== this.appointmentToCancelId);
-      
-      this.selectedAppointment = null; // Deselect
-      this.closeCancelModal();
+      this.rendezvousService.cancelAppointment(this.appointmentToCancelId).subscribe({
+        next: () => {
+          // Alert user and refresh data
+          alert('Le rendez-vous a été annulé et le créneau est de nouveau disponible.');
+          this.loadData();
+          this.selectedAppointment = null;
+          this.closeCancelModal();
+        },
+        error: (err) => {
+          console.error(err);
+          alert("Impossible d'annuler le rendez-vous.");
+          this.closeCancelModal();
+        }
+      });
     }
   }
 

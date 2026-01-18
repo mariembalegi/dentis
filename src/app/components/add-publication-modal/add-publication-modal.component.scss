@@ -1,3 +1,5 @@
+@import '../../app.scss';
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -7,69 +9,68 @@
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center; // Center vertically as well
+  align-items: center;
   z-index: 1000;
-  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .modal-container {
-  background: white;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 600px; // Slightly wider for the row of files
-  max-height: 90vh;
+  background-color: white;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  animation: slideUp 0.3s ease-out;
+  max-height: 90vh; /* Allow scrolling if content is long */
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* Header */
 .modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #eee;
+  background-color: #1A3251;
+  color: white;
+  padding: 20px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
 
-  .modal-title {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-    color: #1A3251;
-  }
+.modal-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
 
-  .close-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #64748b;
-    cursor: pointer;
-    padding: 4px;
-    
-    &:hover { color: #1A3251; }
+.close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s;
+  
+  &:hover {
+    color: white;
   }
 }
 
+/* Body */
 .modal-body {
-  padding: 24px;
+  padding: 30px;
   overflow-y: auto;
-  flex: 1;
 }
 
 .form-group {
   margin-bottom: 20px;
-  
-  &:last-child { margin-bottom: 0; }
 }
 
 .field-label {
   display: block;
   font-size: 14px;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   color: #1A3251;
   margin-bottom: 8px;
@@ -77,42 +78,52 @@
 
 .form-input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #cbd5e1;
+  padding: 12px 15px;
+  border: 1px solid #e1e1e1;
   border-radius: 8px;
+  font-family: 'Roboto', sans-serif;
   font-size: 14px;
-  font-family: inherit;
-  transition: border-color 0.2s;
-  
+  color: #333;
+  background-color: #f8fcfe;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
   &:focus {
-    outline: none;
     border-color: #0596DE;
+    outline: none;
     box-shadow: 0 0 0 3px rgba(5, 150, 222, 0.1);
+  }
+
+  &::placeholder {
+    color: #a0a0a0;
   }
 }
 
 textarea.form-input {
-    resize: vertical;
+  resize: vertical;
+  min-height: 100px;
 }
 
+/* Custom Select */
 .select-wrapper {
   position: relative;
-  
-  .form-input {
-    appearance: none;
-    padding-right: 30px;
-    background: white;
-  }
-  
-  .select-icon {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #64748b;
-    pointer-events: none;
-  }
 }
+
+.select-wrapper .form-input {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 40px;
+}
+
+.select-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #1A3251;
+  pointer-events: none;
+}
+
+/* Specific to Publication Modal */
 
 .form-row {
     display: flex;
@@ -121,15 +132,20 @@ textarea.form-input {
     .half {
         flex: 1;
     }
+    
+    @media (max-width: 480px) {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
 
 .file-upload-box {
-    border: 2px dashed #cbd5e1;
+    border: 2px dashed #e1e1e1; // Updated to match input border
     border-radius: 8px;
     padding: 20px;
     text-align: center;
     cursor: pointer;
-    background-color: #f8fafc;
+    background-color: #f8fcfe; // Updated to match input background
     transition: all 0.2s;
     display: flex;
     flex-direction: column;
@@ -139,7 +155,7 @@ textarea.form-input {
     
     &:hover {
         border-color: #0596DE;
-        background-color: aliceblue;
+        background-color: #edf7fc;
     }
     
     &.uploaded {
@@ -168,49 +184,63 @@ textarea.form-input {
     }
 }
 
+
+/* Footer & Button */
 .modal-footer {
-  padding: 16px 24px;
-  background-color: #f8fafc;
+  padding: 20px 30px;
   border-top: 1px solid #eee;
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  gap: 15px;
 }
 
 .btn-cancel {
-  padding: 10px 20px;
-  border: 1px solid #cbd5e1;
+  padding: 10px 25px;
+  border-radius: 30px;
   background: white;
   color: #64748b;
-  font-size: 14px;
+  border: 1px solid #cbd5e1;
   font-weight: 600;
-  border-radius: 6px;
   cursor: pointer;
-  
-  &:hover { background: #f1f5f9; }
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f1f5f9;
+  }
 }
 
 .btn-submit {
-  padding: 10px 20px;
+  /* Style copied from btn-continue in signinemail */
+  background: var(--orange);
+  color: var(--white);
   border: none;
-  background: #E84E36; // Using the reddish accent color from design or blue #0596DE
-  background: #0596DE; // Let's stick to primary blue for standard actions
-  background: #E84E36; // Actually user requested adjustments on colors before, but standard save is often primary. Let's use red accent since user asked about "couleur de header" previously to match hero. 
-  
-  /* Let's follow the red button style from the screenshot "Rechercher" */
-  background: #D32F2F; 
-  color: white;
-  font-size: 14px;
+  padding: 1rem 2rem; /* Adjusted padding for button size in footer */
+  border-radius: 8px;
   font-weight: 600;
-  border-radius: 6px;
+  font-size: 0.875rem;
   cursor: pointer;
-  
-  &:hover:not(:disabled) { background: #b71c1c; }
-  
-  &:disabled {
-    background: #cbd5e1;
-    cursor: not-allowed;
+  transition: all 0.2s ease;
+  font-family: "Roboto", Arial, sans-serif;
+
+  &:hover {
+    background: var(--dark-blue);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
   }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }

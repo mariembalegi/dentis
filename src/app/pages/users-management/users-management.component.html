@@ -48,8 +48,7 @@
                 <tr>
                     <th>Nom</th>
                     <th>Email</th>
-                    <th *ngIf="activeTab === 'DENTISTE'">Statut</th>
-                    <th *ngIf="activeTab === 'DENTISTE'">Actions</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -62,17 +61,7 @@
                     </td>
                     <td>{{ user.email }}</td>
                     
-                    <td *ngIf="activeTab === 'DENTISTE'">
-                        <span class="status-badge" [class.pending]="user.status === 'PENDING'" [class.validated]="user.status === 'VALIDATED'">
-                            {{ user.status === 'PENDING' ? 'En attente' : 'Validé' }}
-                        </span>
-                    </td>
 
-                    <td *ngIf="activeTab === 'DENTISTE'">
-                        <button *ngIf="user.status === 'PENDING'" class="btn-verify" (click)="openVerificationModal(user)">
-                            Vérifier accès
-                        </button>
-                    </td>
                 </tr>
             </tbody>
         </table>
@@ -107,20 +96,3 @@
 </div>
 
 <!-- Verify Dentist Modal -->
-<div class="modal-overlay" *ngIf="showVerificationModal">
-    <div class="modal-box">
-        <h3>Vérification Dentiste</h3>
-        <p>Veuillez vérifier les informations du Dr. {{ selectedDentist?.nom }}</p>
-        
-        <div class="diplome-preview">
-            <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
-            <span>{{ selectedDentist?.diplome }}</span>
-            <a href="#" style="color: blue; text-decoration: underline; margin-left:10px;">Télécharger</a>
-        </div>
-
-        <div class="modal-actions">
-            <button class="btn-cancel" (click)="closeVerificationModal()">Annuler</button>
-            <button class="btn-save" (click)="validateDentist()">Valider l'accès</button>
-        </div>
-    </div>
-</div>

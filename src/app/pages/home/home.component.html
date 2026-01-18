@@ -111,7 +111,14 @@
         <div class="dentist-card" *ngFor="let dentist of searchResults">
           <div class="card-header">
             <div class="dentist-photo">
-               <img [src]="dentist.photo || defaultAvatar" alt="Dr. {{dentist.nom}}">
+               <ng-container *ngIf="dentist.photo; else initialsBlock">
+                   <img [src]="dentist.photo" alt="Dr. {{dentist.nom}}">
+               </ng-container>
+               <ng-template #initialsBlock>
+                   <div class="avatar-circle">
+                       {{ getInitials(dentist) }}
+                   </div>
+               </ng-template>
             </div>
             <div class="dentist-info">
               <h3 class="dentist-name">Dr. {{ dentist.prenom }} {{ dentist.nom }}</h3>
@@ -129,74 +136,10 @@
             </div>
           </div>
           <div class="card-footer">
-             <button class="btn-profile" (click)="selectDentist(dentist)">Voir le profil</button>
              <button class="btn-book" (click)="selectDentist(dentist)">Prendre rendez-vous</button>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- Info Card Component -->
-  <app-info-card 
-    title="Quelle est la différence entre un aide-soignant et une infirmière ?"
-    buttonText="Découvrir"
-    imageSrc="image.png"
-    imageAlt="Soignants"
-    link="/publication/publication/1">
-  </app-info-card>
-
-  <!-- Key Figures Section (Offline Only) -->
-  <section class="key-figures-section" *ngIf="!isPatientConnected && !isDentistConnected">
-    <div class="figures-container">
-        <h2 class="figures-title">
-            <span class="title-icon"><i class="fas fa-chart-pie"></i></span> NOS CHIFFRES CLES
-        </h2>
-        
-        <div class="figures-grid">
-            <!-- Item 2 -->
-             <div class="figure-item">
-                <div class="figure-circle">
-                    <!-- Icon: Dentist (User MD style) -->
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" class="figure-icon">
-                        <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M6 21V19C6 16.7909 7.79086 15 10 15H14C16.2091 15 18 16.7909 18 19V21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M16 12L20 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M18 10L18 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div class="figure-number">+500</div>
-                <div class="figure-label">Dentistes Partenaires</div>
-            </div>
-
-            <!-- Item 3 -->
-             <div class="figure-item">
-                <div class="figure-circle">
-                    <!-- Icon: Users -->
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" class="figure-icon">
-                         <path d="M17 21V19C17 16.7909 15.2091 15 13 15H5C2.79086 15 1 16.7909 1 19V21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                         <circle cx="9" cy="7" r="4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                         <path d="M23 21V19C22.9993 17.2033 21.8488 15.6309 20.2 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                         <path d="M16 3.13C17.1558 3.65586 18.0006 4.70877 18.25 5.9686" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div class="figure-number">+15k</div>
-                <div class="figure-label">Patients Satisfaits</div>
-            </div>
-
-            <!-- Item 4 -->
-             <div class="figure-item">
-                <div class="figure-circle">
-                    <!-- Icon: Map Pin -->
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" class="figure-icon">
-                        <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="10" r="3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div class="figure-number">50</div>
-                <div class="figure-label">Villes couvertes</div>
-            </div>
-        </div>
     </div>
   </section>
 

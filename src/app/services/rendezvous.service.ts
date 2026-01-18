@@ -40,10 +40,18 @@ export class RendezvousService {
   }
 
   validateAppointment(id: number, status: 'VALIDATED' | 'REFUSED'): Observable<void> {
-    return this.apiService.put<void>(`/rendezvous/${id}/validate?status=${status}`, {});
+    return this.apiService.put<void>(`/rendezvousREST/${id}/validate?status=${status}`, {});
   }
 
   cancelAppointment(id: number): Observable<void> {
-    return this.apiService.put<void>(`/rendezvous/${id}/cancel`, {}); // Using put to trigger cancellation as per instruction
+    return this.apiService.put<void>(`/rendezvousREST/${id}/cancel`, {}); // Using put to trigger cancellation as per instruction
+  }
+
+  updateAppointment(id: number, slot: { dateRv: string, heureRv: string, descriptionRv?: string, statutRv?: string }): Observable<any> {
+    return this.apiService.put<any>(`/rendezvousREST/${id}`, slot);
+  }
+
+  deleteAppointment(id: number): Observable<void> {
+    return this.apiService.delete<void>(`/rendezvousREST/${id}`);
   }
 }

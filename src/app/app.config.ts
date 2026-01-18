@@ -3,8 +3,8 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
-import { corsInterceptor } from './interceptors/cors.interceptor';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { corsInterceptor } from './interceptors/cors.interceptor';
 
 import { routes } from './app.routes';
 
