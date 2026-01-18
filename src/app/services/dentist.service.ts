@@ -53,8 +53,8 @@ export class DentistService {
 
   getSearchDropdown(keyword: string): Observable<SearchDropdownResponse> {
     const params = new URLSearchParams();
-    if (keyword) params.append('q', keyword);
-    const url = `/userREST/search/dropdown?${params.toString()}`;
+    if (keyword) params.append('keyword', keyword);
+    const url = `/userREST/search?${params.toString()}`;
     return this.apiService.get<SearchDropdownResponse>(url);
   }
 

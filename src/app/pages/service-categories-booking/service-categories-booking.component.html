@@ -67,6 +67,7 @@
             <!-- Placeholder for logo or image if needed -->
              <div class="avatar-placeholder">
                  <img *ngIf="dentistPhoto" [src]="dentistPhoto" alt="Dr {{ dentistName }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                 <div *ngIf="!dentistPhoto" class="initials-avatar">{{ getInitials() }}</div>
              </div>
             <div class="header-text">
                 <h3>{{ dentistName }}</h3>
@@ -79,6 +80,9 @@
           <ul>
             <li><i class="fas fa-check"></i> Pour {{ patientName }}</li>
             <li><i class="fas fa-check"></i> {{ dentistAddress }}</li>
+            <li *ngFor="let service of selectedCategories">
+              <i class="fas fa-check"></i> {{ service.name }} - {{ service.price }} TND
+            </li>
           </ul>
         </div>
       </div>

@@ -48,6 +48,13 @@ export class ServiceCategoriesBookingComponent implements OnInit {
     return this.dentist?.adresse || this.dentist?.ville || '';
   }
 
+  getInitials(): string {
+    if (!this.dentist) return '';
+    const first = this.dentist.prenom ? this.dentist.prenom.charAt(0) : '';
+    const last = this.dentist.nom ? this.dentist.nom.charAt(0) : '';
+    return (first + last).toUpperCase();
+  }
+
   constructor(
     private router: Router, 
     private route: ActivatedRoute,
@@ -90,35 +97,11 @@ export class ServiceCategoriesBookingComponent implements OnInit {
         ];
       }
 
-      // Map available rendezvous or generate mock
+      // Map available rendezvous
       if (data.availableRendezvous && data.availableRendezvous.length > 0) {
            this.processAvailableSlots(data.availableRendezvous);
-      } else {
-           // Generate some mock slots for demo
-           this.generateMockSlots();
       }
     });
-  }
-
-  generateMockSlots() {
-      const today = new Date();
-      const slots = [];
-      const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-      const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-
-      for (let i = 1; i <= 5; i++) {
-          const d = new Date(today);
-          d.setDate(today.getDate() + i);
-          if (d.getDay() === 0) continue; // Skip Sunday
-
-          slots.push({
-              dateRaw: d.toISOString().split('T')[0],
-              dateDisplay: `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`,
-              times: ['09:00', '10:00', '14:00', '16:00'],
-              expanded: i === 1
-          });
-      }
-      this.availableSlots = slots;
   }
 
   processAvailableSlots(rvs: any[]) {
@@ -197,7 +180,6 @@ export class ServiceCategoriesBookingComponent implements OnInit {
   confirmBooking() {
     if (this.selectedCategories.length === 0 || !this.selectedSlot || !this.dentist || !this.patientId) return;
 
-    // Concat service names
     const serviceNames = this.selectedCategories.map(c => c.name).join(', ');
     
     const rv: Rendezvous = {
@@ -205,22 +187,27 @@ export class ServiceCategoriesBookingComponent implements OnInit {
         dentistId: this.dentist.id,
         dateRv: this.selectedSlot.date,
         heureRv: this.selectedSlot.time,
-        statutRv: 'NON_DISPONIBLE', // Booked
+        statutRv: 'NON_DISPONIBLE',
         descriptionRv: `Rendez-vous pour: ${serviceNames}`
     };
 
     this.rendezvousService.bookAppointmentREST(rv).subscribe({
-        next: (res) => {
+        next: (createdRv: any) => {
+            console.log('✅ Rendez-vous créé:', createdRv);
+            const rendezvousId = createdRv.idRv || createdRv.id;
+            
             this.router.navigate(['/dashboard/booking-confirmation'], {
                 queryParams: {
                     date: this.selectedSlot?.date,
                     time: this.selectedSlot?.time,
                     dentistName: `${this.dentist?.prenom} ${this.dentist?.nom}`,
-                    serviceName: serviceNames
+                    dentistAddress: this.dentist?.adresse || this.dentist?.ville,
+                    serviceName: serviceNames,
+                    rendezvousId: rendezvousId
                 }
             });
         },
-        error: (err) => console.error(err)
+        error: (err) => console.error('❌ Erreur création rendez-vous:', err)
     });
   }
 }
