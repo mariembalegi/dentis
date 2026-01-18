@@ -80,21 +80,21 @@
   }
 
   .btn-login {
-    background-color: #0596DE; 
+    background: var(--orange); 
     color: white;
     
     &:hover {
-      background-color: #047bb6;
+      background: #E05A29;
     }
   }
 
   .btn-signup {
     background-color: transparent;
-    color: #0596DE;
-    border: 1px solid #0596DE;
+    color: var(--orange);
+    border: 1px solid var(--orange);
 
     &:hover {
-      background-color: rgba(5, 150, 222, 0.05);
+      background-color: rgba(255, 94, 31, 0.05);
     }
   }
 }
